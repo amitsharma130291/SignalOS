@@ -1,0 +1,217 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model RawInput {
+  id         String   @id @default(uuid()) @db.Uuid
+  inputType  String   @default("manual_note") @map("input_type")
+  sourceUrl  String?  @map("source_url")
+  sourceName String?  @map("source_name")
+  rawText    String   @map("raw_text")
+  status     String   @default("new")
+  metadata   Json     @default("{}")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  painSignals PainSignal[]
+
+  @@index([inputType])
+  @@index([status])
+  @@index([createdAt])
+  @@map("raw_inputs")
+}
+
+model PainSignal {
+  id         String  @id @default(uuid()) @db.Uuid
+  rawInputId String? @map("raw_input_id") @db.Uuid
+
+  pain               String
+  b2bScore           Float?  @map("b2b_score")
+  urgency            String?
+  affectedTeam       String? @map("affected_team")
+  existingWorkaround String? @map("existing_workaround")
+  possibleIcp        String? @map("possible_icp")
+  monetizationScore  Float?  @map("monetization_score")
+  outreachAngle      String? @map("outreach_angle")
+
+  status        String  @default("new")
+  aiModel       String? @map("ai_model")
+  promptVersion String? @map("prompt_version")
+  aiOutput      Json    @default("{}") @map("ai_output")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  rawInput  RawInput?  @relation(fields: [rawInputId], references: [id], onDelete: SetNull)
+  campaigns Campaign[]
+
+  @@index([status])
+  @@index([b2bScore])
+  @@index([monetizationScore])
+  @@index([createdAt])
+  @@map("pain_signals")
+}
+
+model Company {
+  id              String    @id @default(uuid()) @db.Uuid
+  name            String
+  domain          String?   @unique
+  industry        String?
+  companySize     String?   @map("company_size")
+  location        String?
+  linkedinUrl     String?   @map("linkedin_url")
+  source          String?
+  lastContactedAt DateTime? @map("last_contacted_at")
+  doNotContact    Boolean   @default(false) @map("do_not_contact")
+  metadata        Json      @default("{}")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  contacts Contact[]
+  messages Message[]
+
+  @@index([domain])
+  @@index([doNotContact])
+  @@map("companies")
+}
+
+model Contact {
+  id        String  @id @default(uuid()) @db.Uuid
+  companyId String? @map("company_id") @db.Uuid
+
+  firstName   String? @map("first_name")
+  lastName    String? @map("last_name")
+  fullName    String? @map("full_name")
+  email       String? @unique
+  title       String?
+  linkedinUrl String? @map("linkedin_url")
+
+  status               String    @default("new")
+  emailVerified        Boolean   @default(false) @map("email_verified")
+  verificationProvider String?   @map("verification_provider")
+  verificationResult   String?   @map("verification_result")
+  verifiedAt           DateTime? @map("verified_at")
+  lastContactedAt      DateTime? @map("last_contacted_at")
+  unsubscribedAt       DateTime? @map("unsubscribed_at")
+
+  source    String?
+  metadata  Json     @default("{}")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  company  Company?  @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  messages Message[]
+  replies  Reply[]
+
+  @@index([email])
+  @@index([status])
+  @@index([companyId])
+  @@map("contacts")
+}
+
+model Campaign {
+  id           String  @id @default(uuid()) @db.Uuid
+  painSignalId String? @map("pain_signal_id") @db.Uuid
+
+  name   String
+  status String @default("draft")
+
+  icpDescription   String?  @map("icp_description")
+  targetTitles     String[] @default([]) @map("target_titles")
+  targetIndustries String[] @default([]) @map("target_industries")
+  companySizeRange String?  @map("company_size_range")
+  outreachAngle    String?  @map("outreach_angle")
+
+  smartleadCampaignId String? @map("smartlead_campaign_id")
+
+  emailsSent           Int @default(0) @map("emails_sent")
+  repliesCount         Int @default(0) @map("replies_count")
+  positiveRepliesCount Int @default(0) @map("positive_replies_count")
+  bouncesCount         Int @default(0) @map("bounces_count")
+
+  startedAt   DateTime? @map("started_at")
+  pausedAt    DateTime? @map("paused_at")
+  completedAt DateTime? @map("completed_at")
+  metadata    Json      @default("{}")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  painSignal PainSignal? @relation(fields: [painSignalId], references: [id], onDelete: SetNull)
+  messages   Message[]
+  replies    Reply[]
+
+  @@index([status])
+  @@index([painSignalId])
+  @@map("campaigns")
+}
+
+model Message {
+  id         String  @id @default(uuid()) @db.Uuid
+  campaignId String? @map("campaign_id") @db.Uuid
+  contactId  String? @map("contact_id") @db.Uuid
+  companyId  String? @map("company_id") @db.Uuid
+
+  subject      String?
+  body         String
+  status       String  @default("draft")
+  sequenceStep Int     @default(1) @map("sequence_step")
+
+  requiresHumanReview Boolean   @default(true) @map("requires_human_review")
+  approvedAt          DateTime? @map("approved_at")
+  rejectedAt          DateTime? @map("rejected_at")
+  queuedAt            DateTime? @map("queued_at")
+  sentAt              DateTime? @map("sent_at")
+
+  smartleadMessageId String? @map("smartlead_message_id")
+  errorMessage       String? @map("error_message")
+  metadata           Json    @default("{}")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  campaign Campaign? @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  contact  Contact?  @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  company  Company?  @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  replies  Reply[]
+
+  @@index([status])
+  @@index([campaignId])
+  @@index([contactId])
+  @@index([companyId])
+  @@index([sentAt])
+  @@map("messages")
+}
+
+model Reply {
+  id         String  @id @default(uuid()) @db.Uuid
+  messageId  String? @map("message_id") @db.Uuid
+  campaignId String? @map("campaign_id") @db.Uuid
+  contactId  String? @map("contact_id") @db.Uuid
+
+  rawBody          String  @map("raw_body")
+  cleanedBody      String? @map("cleaned_body")
+  category         String  @default("unknown")
+  confidence       Float?
+  needsHumanReview Boolean @default(true) @map("needs_human_review")
+
+  calendarLinkSent Boolean @default(false) @map("calendar_link_sent")
+  demoBooked       Boolean @default(false) @map("demo_booked")
+
+  receivedAt DateTime @default(now()) @map("received_at")
+  metadata   Json     @default("{}")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  message  Message?  @relation(fields: [messageId], references: [id], onDelete: SetNull)
+  campaign Campaign? @relation(fields: [campaignId], references: [id], onDelete: SetNull)
+  contact  Contact?  @relation(fields: [contactId], references: [id], onDelete: SetNull)
+
+  @@index([category])
+  @@index([campaignId])
+  @@index([contactId])
+  @@index([receivedAt])
+  @@map("replies")
+}
