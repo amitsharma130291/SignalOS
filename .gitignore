@@ -1,8 +1,16 @@
 node_modules/
 **/node_modules/
+
 .env
 .env.local
 **/.env
 **/.env.local
+
 .next/
 **/.next/
+
+.agents/
+.cursor/
+
+dist/
+build/
