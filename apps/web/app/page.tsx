@@ -1,3 +1,4 @@
+import { RunFilterOnAllNewButton } from "@/components/filter-actions";
 import { ManualSignalForm } from "@/components/manual-signal-form";
 import { RecentSignalsList } from "@/components/recent-signals-list";
 import { prisma } from "@/lib/prisma";
@@ -11,6 +12,8 @@ export default async function Home() {
       inputType: true,
       sourceName: true,
       rawText: true,
+      status: true,
+      metadata: true,
       createdAt: true,
     },
   });
@@ -25,14 +28,14 @@ export default async function Home() {
         <section className="animate-fade-up space-y-3">
           <div className="inline-flex items-center gap-2 rounded-full border border-indigo-200/70 bg-indigo-50/80 px-3 py-1 text-xs font-medium text-indigo-700 dark:border-indigo-500/20 dark:bg-indigo-950/40 dark:text-indigo-300">
             <span className="h-1.5 w-1.5 rounded-full bg-indigo-500 animate-pulse-soft" />
-            Day 3 · Manual input
+            Day 4 · Cheap filtering layer
           </div>
           <h1 className="text-3xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50 sm:text-4xl">
             SignalOS
           </h1>
           <p className="max-w-2xl text-base leading-relaxed text-zinc-600 dark:text-zinc-400">
-            Capture raw pain signals manually, save them to your database, and
-            review recent entries below.
+            Capture raw pain signals manually, run deterministic filtering, and
+            review accepted or filtered-out entries below.
           </p>
         </section>
 
@@ -53,6 +56,7 @@ export default async function Home() {
             </span>
           </div>
 
+          <RunFilterOnAllNewButton />
           <RecentSignalsList signals={recentSignals} />
         </section>
       </main>

@@ -1,0 +1,130 @@
+Current task: Day 4 — Cheap Filtering Layer
+
+Follow all Cursor rules in .cursor/rules.
+
+Build a cheap heuristic-based filtering layer for SignalOS.
+
+GOAL:
+Analyze raw_inputs and classify them as:
+- accepted
+- filtered_out
+
+based on operational/B2B pain signals.
+
+IMPORTANT:
+- No OpenAI yet
+- No AI APIs
+- No embeddings
+- No external services
+- Keep logic deterministic, cheap, and fast
+- Keep implementation MVP-simple
+
+FEATURES TO BUILD:
+
+1. Add filtering capability to raw_inputs.
+
+2. Add:
+- "Run Filter" button for each signal
+- "Run Filter on All New" button
+
+3. Filtering should inspect:
+- rawText
+- sourceName (optional)
+
+4. Detect operational/B2B pain keywords.
+
+POSITIVE KEYWORDS:
+- manual
+- spreadsheet
+- workflow
+- repetitive
+- operations
+- CRM
+- handoff
+- reporting
+- support
+- onboarding
+- approval
+- SOP
+- process
+- backlog
+- ticket
+- customer support
+- sales ops
+- revops
+- finance ops
+- HR ops
+- coordination
+- admin work
+- bottleneck
+- compliance
+
+NEGATIVE KEYWORDS:
+- gaming
+- dating
+- fitness
+- recipe
+- travel
+- movie
+- music
+- fashion
+- entertainment
+- consumer app
+- social media app
+- habit tracker
+- calorie tracker
+- influencer
+- personal productivity
+
+FILTER RULES:
+- if positive score > negative score:
+  status = accepted
+- otherwise:
+  status = filtered_out
+
+IMPLEMENTATION REQUIREMENTS:
+
+Create reusable helper:
+lib/filterRawInput.ts
+
+Return structure:
+{
+  status: "accepted" | "filtered_out",
+  score: number,
+  matchedPositiveKeywords: string[],
+  matchedNegativeKeywords: string[],
+  reason: string
+}
+
+Store filter results in:
+raw_inputs.metadata
+
+Update:
+raw_inputs.status
+
+UI REQUIREMENTS:
+- Show current status badge
+- Show filter score
+- Show matched keywords
+- Keep UI responsive
+- Mobile-first
+- Use Server Components where possible
+- Use Client Components only for interactive actions
+
+TECH RULES:
+- Use Prisma server-side only
+- No DATABASE_URL exposure
+- Use TypeScript
+- Keep architecture SSR-first
+- Keep components clean and small
+- Avoid unnecessary abstractions
+- No external libraries unless required
+
+SUCCESS CRITERIA:
+- I can create a raw signal
+- click Run Filter
+- status changes correctly
+- metadata stores filter results
+- I can run filtering on all new inputs
+- accepted/filtered_out visibly updates in UI
+- app works with npm run dev
