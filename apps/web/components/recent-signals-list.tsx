@@ -1,5 +1,6 @@
 import type { Prisma } from "@prisma/client";
 import { RunFilterButton } from "@/components/filter-actions";
+import type { RawInputFilterConfidence, RawInputMarketType } from "@/lib/filterRawInput";
 
 type RecentSignal = {
   id: string;
@@ -12,7 +13,11 @@ type RecentSignal = {
 };
 
 type ParsedFilterMetadata = {
-  score: number;
+  operationalScore: number | null;
+  confidence: RawInputFilterConfidence | null;
+  marketType: RawInputMarketType;
+  b2bScore: number | null;
+  b2cScore: number | null;
   matchedPositiveKeywords: string[];
   matchedNegativeKeywords: string[];
 };
@@ -26,6 +31,10 @@ function formatInputType(type: string) {
   return type.replaceAll("_", " ");
 }
 
+function formatStatusLabel(status: string) {
+  return status.replaceAll("_", " ");
+}
+
 function parseFilterMetadata(metadata: Prisma.JsonValue): ParsedFilterMetadata | null {
   if (!metadata || typeof metadata !== "object" || Array.isArray(metadata)) {
     return null;
@@ -37,20 +46,34 @@ function parseFilterMetadata(metadata: Prisma.JsonValue): ParsedFilterMetadata |
   }
 
   const filter = filterRecord as Record<string, unknown>;
-  const score = typeof filter.score === "number" ? filter.score : null;
+  const operationalScore =
+    typeof filter.operationalScore === "number"
+      ? filter.operationalScore
+      : typeof filter.score === "number"
+        ? filter.score
+        : null;
+  const confidence =
+    filter.confidence === "high" || filter.confidence === "medium" || filter.confidence === "low"
+      ? filter.confidence
+      : null;
+  const marketType =
+    filter.marketType === "b2b" || filter.marketType === "b2c" || filter.marketType === "unknown"
+      ? filter.marketType
+      : "unknown";
+  const b2bScore = typeof filter.b2bScore === "number" ? filter.b2bScore : null;
+  const b2cScore = typeof filter.b2cScore === "number" ? filter.b2cScore : null;
   const matchedPositiveKeywords = Array.isArray(filter.matchedPositiveKeywords)
     ? filter.matchedPositiveKeywords.filter((value): value is string => typeof value === "string")
     : [];
   const matchedNegativeKeywords = Array.isArray(filter.matchedNegativeKeywords)
     ? filter.matchedNegativeKeywords.filter((value): value is string => typeof value === "string")
     : [];
-
-  if (score === null) {
-    return null;
-  }
-
   return {
-    score,
+    operationalScore,
+    confidence,
+    marketType,
+    b2bScore,
+    b2cScore,
     matchedPositiveKeywords,
     matchedNegativeKeywords,
   };
@@ -65,7 +88,66 @@ function getStatusBadgeClassName(status: string) {
     return "rounded-full bg-rose-100 px-2.5 py-1 font-medium text-rose-700 dark:bg-rose-950/50 dark:text-rose-300";
   }
 
-  return "rounded-full bg-amber-100 px-2.5 py-1 font-medium text-amber-700 dark:bg-amber-950/50 dark:text-amber-300";
+  if (status === "needs_review") {
+    return "rounded-full bg-amber-100 px-2.5 py-1 font-medium text-amber-800 dark:bg-amber-950/50 dark:text-amber-300";
+  }
+
+  return "rounded-full bg-zinc-100 px-2.5 py-1 font-medium text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400";
+}
+
+function getConfidenceBadgeClassName(confidence: RawInputFilterConfidence | null) {
+  if (confidence === "high") {
+    return "rounded-full bg-indigo-100 px-2 py-0.5 font-medium text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300";
+  }
+
+  if (confidence === "medium") {
+    return "rounded-full bg-sky-100 px-2 py-0.5 font-medium text-sky-700 dark:bg-sky-950/50 dark:text-sky-300";
+  }
+
+  return "rounded-full bg-zinc-100 px-2 py-0.5 font-medium text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400";
+}
+
+function getMarketBadgeClassName(marketType: RawInputMarketType) {
+  if (marketType === "b2b") {
+    return "rounded-full bg-violet-100 px-2.5 py-1 font-medium uppercase text-violet-700 dark:bg-violet-950/50 dark:text-violet-300";
+  }
+
+  if (marketType === "b2c") {
+    return "rounded-full bg-orange-100 px-2.5 py-1 font-medium uppercase text-orange-700 dark:bg-orange-950/50 dark:text-orange-300";
+  }
+
+  return "rounded-full bg-zinc-100 px-2.5 py-1 font-medium uppercase text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400";
+}
+
+function getVisibleKeywords(keywords: string[], limit = 3) {
+  const visible = keywords.slice(0, limit);
+  const hiddenCount = keywords.length - visible.length;
+
+  if (hiddenCount <= 0) {
+    return visible.join(", ");
+  }
+
+  return `${visible.join(", ")} +${hiddenCount} more`;
+}
+
+function getConciseReason(signalStatus: string, metadata: ParsedFilterMetadata | null) {
+  if (!metadata) {
+    return "Run filter to generate review details.";
+  }
+
+  if (signalStatus === "accepted") {
+    return "Strong operational workflow signal detected.";
+  }
+
+  if ((metadata.b2cScore ?? 0) > (metadata.b2bScore ?? 0)) {
+    return "Consumer/social-media style signal detected.";
+  }
+
+  if (signalStatus === "filtered_out") {
+    return "No operational B2B pain signal detected.";
+  }
+
+  return "Weak operational signal. Needs manual review.";
 }
 
 export function RecentSignalsList({ signals }: { signals: RecentSignal[] }) {
@@ -86,51 +168,86 @@ export function RecentSignalsList({ signals }: { signals: RecentSignal[] }) {
     <ul className="space-y-3">
       {signals.map((signal, index) => {
         const filterMetadata = parseFilterMetadata(signal.metadata);
+        const confidence = filterMetadata?.confidence ?? "low";
         return (
-        <li
-          key={signal.id}
-          className="group animate-fade-up rounded-2xl border border-zinc-200/80 bg-white/80 p-4 shadow-sm backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-indigo-200 hover:shadow-md dark:border-zinc-800/80 dark:bg-zinc-950/80 dark:hover:border-indigo-500/30"
-          style={{ animationDelay: `${index * 60}ms` }}
-        >
-          <div className="mb-3 flex flex-wrap items-center gap-2 text-xs">
-            <span className="rounded-full bg-indigo-50 px-2.5 py-1 font-medium capitalize text-indigo-700 transition-colors group-hover:bg-indigo-100 dark:bg-indigo-950/60 dark:text-indigo-300 dark:group-hover:bg-indigo-950">
-              {formatInputType(signal.inputType)}
-            </span>
-            <span className="rounded-full bg-zinc-100 px-2.5 py-1 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400">
-              {signal.sourceName ?? "No source"}
-            </span>
-            <span className={getStatusBadgeClassName(signal.status)}>{signal.status}</span>
-            <span className="text-zinc-400 dark:text-zinc-500">
-              {new Date(signal.createdAt).toLocaleString()}
-            </span>
-          </div>
-          <p className="text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">
-            {getPreview(signal.rawText)}
-          </p>
-
-          <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
-            <div className="flex flex-wrap items-center gap-2 text-xs text-zinc-500 dark:text-zinc-400">
-              <span>
-                Score:{" "}
-                <span className="font-medium text-zinc-700 dark:text-zinc-200">
-                  {filterMetadata?.score ?? 0}
-                </span>
+          <li
+            key={signal.id}
+            className="group animate-fade-up rounded-2xl border border-zinc-200/80 bg-white/80 p-5 shadow-sm backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-indigo-200 hover:shadow-md dark:border-zinc-800/80 dark:bg-zinc-950/80 dark:hover:border-indigo-500/30"
+            style={{ animationDelay: `${index * 60}ms` }}
+          >
+            <div className="mb-4 flex flex-wrap items-center gap-2 text-xs">
+              <span className="rounded-full bg-indigo-50 px-2.5 py-1 font-medium capitalize text-indigo-700 transition-colors group-hover:bg-indigo-100 dark:bg-indigo-950/60 dark:text-indigo-300 dark:group-hover:bg-indigo-950">
+                {formatInputType(signal.inputType)}
               </span>
-              {filterMetadata?.matchedPositiveKeywords.length ? (
-                <span>
-                  + {filterMetadata.matchedPositiveKeywords.join(", ")}
-                </span>
-              ) : null}
-              {filterMetadata?.matchedNegativeKeywords.length ? (
-                <span>
-                  - {filterMetadata.matchedNegativeKeywords.join(", ")}
-                </span>
-              ) : null}
+              <span className={getStatusBadgeClassName(signal.status)}>
+                {formatStatusLabel(signal.status)}
+              </span>
+              <span className={getMarketBadgeClassName(filterMetadata?.marketType ?? "unknown")}>
+                {filterMetadata?.marketType ?? "unknown"}
+              </span>
+              <span className={getConfidenceBadgeClassName(confidence)}>
+                {confidence} confidence
+              </span>
+              <span className="ml-0 text-[11px] text-zinc-400 dark:text-zinc-500 sm:ml-auto">
+                {new Date(signal.createdAt).toLocaleString()}
+              </span>
             </div>
 
-            <RunFilterButton rawInputId={signal.id} />
-          </div>
-        </li>
+            <p className="text-base leading-relaxed text-zinc-800 dark:text-zinc-200">
+              {getPreview(signal.rawText)}
+            </p>
+
+            <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+              <div className="min-w-0 flex-1 space-y-2">
+                <div className="flex flex-wrap gap-x-2 gap-y-1 text-xs text-zinc-500 dark:text-zinc-400">
+                  <span>
+                    Ops:{" "}
+                    <span className="font-medium text-zinc-700 dark:text-zinc-200">
+                      {filterMetadata?.operationalScore ?? 0}
+                    </span>
+                  </span>
+                  <span aria-hidden="true">•</span>
+                  <span>
+                    B2B:{" "}
+                    <span className="font-medium text-zinc-700 dark:text-zinc-200">
+                      {filterMetadata?.b2bScore ?? 0}
+                    </span>
+                  </span>
+                  <span aria-hidden="true">•</span>
+                  <span>
+                    B2C:{" "}
+                    <span className="font-medium text-zinc-700 dark:text-zinc-200">
+                      {filterMetadata?.b2cScore ?? 0}
+                    </span>
+                  </span>
+                </div>
+
+                {(filterMetadata?.matchedPositiveKeywords.length ||
+                  filterMetadata?.matchedNegativeKeywords.length) ? (
+                  <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs">
+                    {filterMetadata.matchedPositiveKeywords.length ? (
+                      <span className="break-words text-emerald-700 dark:text-emerald-400">
+                        + {getVisibleKeywords(filterMetadata.matchedPositiveKeywords)}
+                      </span>
+                    ) : null}
+                    {filterMetadata.matchedNegativeKeywords.length ? (
+                      <span className="break-words text-rose-700 dark:text-rose-400">
+                        - {getVisibleKeywords(filterMetadata.matchedNegativeKeywords)}
+                      </span>
+                    ) : null}
+                  </div>
+                ) : null}
+
+                <p className="text-xs leading-relaxed text-zinc-500 dark:text-zinc-400">
+                  Reason: {getConciseReason(signal.status, filterMetadata)}
+                </p>
+              </div>
+
+              <div className="shrink-0 sm:pt-0.5">
+                <RunFilterButton rawInputId={signal.id} />
+              </div>
+            </div>
+          </li>
         );
       })}
     </ul>

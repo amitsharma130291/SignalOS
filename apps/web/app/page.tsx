@@ -28,14 +28,14 @@ export default async function Home() {
         <section className="animate-fade-up space-y-3">
           <div className="inline-flex items-center gap-2 rounded-full border border-indigo-200/70 bg-indigo-50/80 px-3 py-1 text-xs font-medium text-indigo-700 dark:border-indigo-500/20 dark:bg-indigo-950/40 dark:text-indigo-300">
             <span className="h-1.5 w-1.5 rounded-full bg-indigo-500 animate-pulse-soft" />
-            Day 4 · Cheap filtering layer
+            Day 4.5 · Improved filtering
           </div>
           <h1 className="text-3xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50 sm:text-4xl">
             SignalOS
           </h1>
           <p className="max-w-2xl text-base leading-relaxed text-zinc-600 dark:text-zinc-400">
-            Capture raw pain signals manually, run deterministic filtering, and
-            review accepted or filtered-out entries below.
+            Capture raw pain signals manually, run weighted heuristic filtering,
+            and review accepted, filtered-out, or needs-review entries below.
           </p>
         </section>
 
