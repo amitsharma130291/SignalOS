@@ -1,5 +1,6 @@
 import type { Prisma } from "@prisma/client";
 import { RunFilterButton } from "@/components/filter-actions";
+import { GenerateICPButton } from "@/components/icp-actions";
 import { ExtractPainButton } from "@/components/pain-extraction-actions";
 import type { RawInputFilterConfidence, RawInputMarketType } from "@/lib/filterRawInput";
 
@@ -18,6 +19,14 @@ type RecentSignal = {
     affectedTeam: string | null;
     possibleIcp: string | null;
     outreachAngle: string | null;
+    targetTitles: Prisma.JsonValue;
+    companySize: string | null;
+    industry: string | null;
+    buyer: string | null;
+    budgetOwner: string | null;
+    triggerEvent: string | null;
+    outreachAngleRefined: string | null;
+    icpGeneratedAt: Date | null;
   }[];
 };
 
@@ -163,6 +172,14 @@ function canExtractPain(status: string) {
   return status === "accepted" || status === "needs_review";
 }
 
+function parseTargetTitles(targetTitles: Prisma.JsonValue) {
+  if (!Array.isArray(targetTitles)) {
+    return [];
+  }
+
+  return targetTitles.filter((title): title is string => typeof title === "string");
+}
+
 export function RecentSignalsList({ signals }: { signals: RecentSignal[] }) {
   if (signals.length === 0) {
     return (
@@ -183,6 +200,7 @@ export function RecentSignalsList({ signals }: { signals: RecentSignal[] }) {
         const filterMetadata = parseFilterMetadata(signal.metadata);
         const confidence = filterMetadata?.confidence ?? "low";
         const painSignal = signal.painSignals[0];
+        const targetTitles = painSignal ? parseTargetTitles(painSignal.targetTitles) : [];
         return (
           <li
             key={signal.id}
@@ -271,9 +289,20 @@ export function RecentSignalsList({ signals }: { signals: RecentSignal[] }) {
 
             {painSignal ? (
               <div className="mt-4 rounded-xl border border-zinc-200 bg-zinc-50/80 p-4 dark:border-zinc-800 dark:bg-zinc-900/60">
-                <p className="text-sm font-medium leading-relaxed text-zinc-800 dark:text-zinc-100">
-                  {painSignal.pain}
-                </p>
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                  <p className="text-sm font-medium leading-relaxed text-zinc-800 dark:text-zinc-100">
+                    {painSignal.pain}
+                  </p>
+                  <div className="shrink-0">
+                    {painSignal.icpGeneratedAt ? (
+                      <span className="rounded-lg border border-violet-200 bg-violet-50 px-3 py-1.5 text-xs font-medium text-violet-700 dark:border-violet-500/30 dark:bg-violet-950/40 dark:text-violet-300">
+                        ICP generated
+                      </span>
+                    ) : (
+                      <GenerateICPButton painSignalId={painSignal.id} />
+                    )}
+                  </div>
+                </div>
                 <dl className="mt-3 grid grid-cols-1 gap-2 text-xs text-zinc-500 dark:text-zinc-400 sm:grid-cols-2">
                   <div>
                     <dt className="font-medium text-zinc-600 dark:text-zinc-300">Urgency</dt>
@@ -292,6 +321,55 @@ export function RecentSignalsList({ signals }: { signals: RecentSignal[] }) {
                     <dd>{painSignal.outreachAngle ?? "Unknown"}</dd>
                   </div>
                 </dl>
+                {painSignal.icpGeneratedAt ? (
+                  <div className="mt-4 border-t border-zinc-200 pt-3 dark:border-zinc-800">
+                    <h3 className="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+                      ICP
+                    </h3>
+                    <dl className="mt-2 grid grid-cols-1 gap-2 text-xs text-zinc-500 dark:text-zinc-400 sm:grid-cols-2">
+                      <div>
+                        <dt className="font-medium text-zinc-600 dark:text-zinc-300">
+                          Target Titles
+                        </dt>
+                        <dd>{targetTitles.length ? targetTitles.join(", ") : "Unknown"}</dd>
+                      </div>
+                      <div>
+                        <dt className="font-medium text-zinc-600 dark:text-zinc-300">
+                          Industry
+                        </dt>
+                        <dd>{painSignal.industry ?? "Unknown"}</dd>
+                      </div>
+                      <div>
+                        <dt className="font-medium text-zinc-600 dark:text-zinc-300">
+                          Company Size
+                        </dt>
+                        <dd>{painSignal.companySize ?? "Unknown"}</dd>
+                      </div>
+                      <div>
+                        <dt className="font-medium text-zinc-600 dark:text-zinc-300">Buyer</dt>
+                        <dd>{painSignal.buyer ?? "Unknown"}</dd>
+                      </div>
+                      <div>
+                        <dt className="font-medium text-zinc-600 dark:text-zinc-300">
+                          Budget Owner
+                        </dt>
+                        <dd>{painSignal.budgetOwner ?? "Unknown"}</dd>
+                      </div>
+                      <div>
+                        <dt className="font-medium text-zinc-600 dark:text-zinc-300">
+                          Trigger Event
+                        </dt>
+                        <dd>{painSignal.triggerEvent ?? "Unknown"}</dd>
+                      </div>
+                      <div className="sm:col-span-2">
+                        <dt className="font-medium text-zinc-600 dark:text-zinc-300">
+                          Refined Outreach Angle
+                        </dt>
+                        <dd>{painSignal.outreachAngleRefined ?? "Unknown"}</dd>
+                      </div>
+                    </dl>
+                  </div>
+                ) : null}
               </div>
             ) : null}
           </li>

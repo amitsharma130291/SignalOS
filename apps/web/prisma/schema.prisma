@@ -37,6 +37,15 @@ model PainSignal {
   monetizationScore  Float?  @map("monetization_score")
   outreachAngle      String? @map("outreach_angle")
 
+  targetTitles        Json?     @map("target_titles")
+  companySize         String?   @map("company_size")
+  industry            String?
+  buyer               String?
+  budgetOwner         String?   @map("budget_owner")
+  triggerEvent        String?   @map("trigger_event")
+  outreachAngleRefined String?  @map("outreach_angle_refined")
+  icpGeneratedAt      DateTime? @map("icp_generated_at")
+
   status        String  @default("new")
   aiModel       String? @map("ai_model")
   promptVersion String? @map("prompt_version")

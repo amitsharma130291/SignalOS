@@ -3,6 +3,8 @@ import { ManualSignalForm } from "@/components/manual-signal-form";
 import { RecentSignalsList } from "@/components/recent-signals-list";
 import { prisma } from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
   const recentSignals = await prisma.rawInput.findMany({
     orderBy: { createdAt: "desc" },
@@ -25,6 +27,14 @@ export default async function Home() {
           affectedTeam: true,
           possibleIcp: true,
           outreachAngle: true,
+          targetTitles: true,
+          companySize: true,
+          industry: true,
+          buyer: true,
+          budgetOwner: true,
+          triggerEvent: true,
+          outreachAngleRefined: true,
+          icpGeneratedAt: true,
         },
       },
     },
