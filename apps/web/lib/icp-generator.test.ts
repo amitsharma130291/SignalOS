@@ -57,6 +57,45 @@ describe("generateICPFromPainSignal", () => {
     assert.equal(icp.trigger_event, "Support volume increasing repetitive operational work");
   });
 
+  it("keeps finance ICP separate from support ICP", () => {
+    const icp = generateICPFromPainSignal({
+      affectedTeam: "Finance Ops",
+      pain: "Finance ops manually reconciles Stripe payouts with NetSuite.",
+    });
+
+    assert.equal(icp.buyer, "Finance Operations");
+    assert.equal(icp.budget_owner, "VP Finance");
+    assert.equal(icp.target_titles.includes("Head of Support"), false);
+    assert.equal(icp.trigger_event.includes("Support volume"), false);
+  });
+
+  it("keeps support ICP separate from finance ICP", () => {
+    const icp = generateICPFromPainSignal({
+      affectedTeam: "Support",
+      pain: "Support team manually triages tickets.",
+    });
+
+    assert.equal(icp.buyer, "Support Operations");
+    assert.equal(icp.budget_owner, "VP Customer Experience");
+    assert.equal(icp.target_titles.includes("Controller"), false);
+    assert.equal(icp.trigger_event.includes("Finance workflows"), false);
+  });
+
+  it("keeps customer success ICP mapped to CS ownership", () => {
+    const icp = generateICPFromPainSignal({
+      affectedTeam: "Customer Success",
+      pain: "Customer success has onboarding coordination issues.",
+    });
+
+    assert.equal(icp.buyer, "Customer Success");
+    assert.equal(icp.budget_owner, "VP Customer Success");
+    assert.deepEqual(icp.target_titles, [
+      "Head of Customer Success",
+      "Customer Success Operations",
+      "VP Customer Experience",
+    ]);
+  });
+
   it("uses fallback logic when fields are missing", () => {
     const icp = generateICPFromPainSignal({});
 

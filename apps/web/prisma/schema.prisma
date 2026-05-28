@@ -56,6 +56,7 @@ model PainSignal {
 
   rawInput  RawInput?  @relation(fields: [rawInputId], references: [id], onDelete: SetNull)
   campaigns Campaign[]
+  messages  Message[]
 
   @@index([status])
   @@index([b2bScore])
@@ -161,12 +162,14 @@ model Campaign {
 model Message {
   id         String  @id @default(uuid()) @db.Uuid
   campaignId String? @map("campaign_id") @db.Uuid
+  painSignalId String? @map("pain_signal_id") @db.Uuid
   contactId  String? @map("contact_id") @db.Uuid
   companyId  String? @map("company_id") @db.Uuid
 
   subject      String?
   body         String
   status       String  @default("draft")
+  generatedAt  DateTime @default(now()) @map("generated_at")
   sequenceStep Int     @default(1) @map("sequence_step")
 
   requiresHumanReview Boolean   @default(true) @map("requires_human_review")
@@ -183,15 +186,18 @@ model Message {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   campaign Campaign? @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  painSignal PainSignal? @relation(fields: [painSignalId], references: [id], onDelete: SetNull)
   contact  Contact?  @relation(fields: [contactId], references: [id], onDelete: Cascade)
   company  Company?  @relation(fields: [companyId], references: [id], onDelete: SetNull)
   replies  Reply[]
 
   @@index([status])
   @@index([campaignId])
+  @@index([painSignalId])
   @@index([contactId])
   @@index([companyId])
   @@index([sentAt])
+  @@index([generatedAt])
   @@map("messages")
 }
 

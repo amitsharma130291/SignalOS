@@ -24,6 +24,7 @@ describe("shapeOpportunity", () => {
     assert.equal(opportunity.industry, "Unknown");
     assert.deepEqual(opportunity.targetTitles, []);
     assert.equal(opportunity.icpGenerated, false);
+    assert.equal(opportunity.latestDraft, null);
     assert.equal(opportunity.rawSignalText, "Manual spreadsheet reporting handoffs");
   });
 

@@ -8,6 +8,14 @@ type RawInputForOpportunity = {
   metadata?: Prisma.JsonValue | null;
 };
 
+type MessageDraftForOpportunity = {
+  id: string;
+  subject?: string | null;
+  body?: string | null;
+  status?: string | null;
+  generatedAt?: Date | string | null;
+};
+
 export type PainSignalForOpportunity = {
   id: string;
   pain?: string | null;
@@ -28,6 +36,7 @@ export type PainSignalForOpportunity = {
   outreachAngleRefined?: string | null;
   icpGeneratedAt?: Date | string | null;
   rawInput?: RawInputForOpportunity | null;
+  messages?: MessageDraftForOpportunity[] | null;
 };
 
 export type OpportunityDashboardItem = {
@@ -52,6 +61,13 @@ export type OpportunityDashboardItem = {
   outreachAngleRefined: string;
   reviewStatus: ReviewStatus;
   icpGenerated: boolean;
+  latestDraft: {
+    id: string;
+    subject: string;
+    body: string;
+    status: string;
+    generatedAt: Date | string | null;
+  } | null;
   opportunityScore: ReturnType<typeof calculateOpportunityScore>;
 };
 
@@ -82,6 +98,7 @@ export function shapeOpportunity(signal: PainSignalForOpportunity): OpportunityD
   const targetTitles = parseTargetTitles(signal.targetTitles);
   const icpGenerated = Boolean(signal.icpGeneratedAt || targetTitles.length > 0);
   const filterStatus = signal.rawInput?.status ?? "unknown";
+  const latestMessage = signal.messages?.[0] ?? null;
 
   return {
     id: signal.id,
@@ -105,6 +122,15 @@ export function shapeOpportunity(signal: PainSignalForOpportunity): OpportunityD
     outreachAngleRefined: signal.outreachAngleRefined ?? "Unknown",
     reviewStatus,
     icpGenerated,
+    latestDraft: latestMessage
+      ? {
+          id: latestMessage.id,
+          subject: latestMessage.subject ?? "Untitled draft",
+          body: latestMessage.body ?? "",
+          status: latestMessage.status ?? "draft",
+          generatedAt: latestMessage.generatedAt ?? null,
+        }
+      : null,
     opportunityScore: calculateOpportunityScore({
       b2bScore: signal.b2bScore,
       monetizationScore: signal.monetizationScore,

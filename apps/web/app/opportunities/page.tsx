@@ -18,37 +18,76 @@ function MetricCard({ label, value }: { label: string; value: number }) {
   );
 }
 
-export default async function OpportunitiesPage() {
-  const painSignals = await prisma.painSignal.findMany({
-    orderBy: { createdAt: "desc" },
-    select: {
-      id: true,
-      pain: true,
-      urgency: true,
-      affectedTeam: true,
-      existingWorkaround: true,
-      possibleIcp: true,
-      monetizationScore: true,
-      outreachAngle: true,
-      b2bScore: true,
-      status: true,
-      targetTitles: true,
-      companySize: true,
-      industry: true,
-      buyer: true,
-      budgetOwner: true,
-      triggerEvent: true,
-      outreachAngleRefined: true,
-      icpGeneratedAt: true,
-      rawInput: {
-        select: {
-          rawText: true,
-          status: true,
-          metadata: true,
-        },
+function isMissingColumnError(error: unknown) {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    (error as { code?: string }).code === "P2022"
+  );
+}
+
+async function getPainSignalsForDashboard() {
+  const baseSelect = {
+    id: true,
+    pain: true,
+    urgency: true,
+    affectedTeam: true,
+    existingWorkaround: true,
+    possibleIcp: true,
+    monetizationScore: true,
+    outreachAngle: true,
+    b2bScore: true,
+    status: true,
+    targetTitles: true,
+    companySize: true,
+    industry: true,
+    buyer: true,
+    budgetOwner: true,
+    triggerEvent: true,
+    outreachAngleRefined: true,
+    icpGeneratedAt: true,
+    rawInput: {
+      select: {
+        rawText: true,
+        status: true,
+        metadata: true,
       },
     },
-  });
+  } as const;
+
+  try {
+    return await prisma.painSignal.findMany({
+      orderBy: { createdAt: "desc" },
+      select: {
+        ...baseSelect,
+        messages: {
+          orderBy: { generatedAt: "desc" },
+          take: 1,
+          select: {
+            id: true,
+            subject: true,
+            body: true,
+            status: true,
+            generatedAt: true,
+          },
+        },
+      },
+    });
+  } catch (error) {
+    if (!isMissingColumnError(error)) {
+      throw error;
+    }
+
+    return prisma.painSignal.findMany({
+      orderBy: { createdAt: "desc" },
+      select: baseSelect,
+    });
+  }
+}
+
+export default async function OpportunitiesPage() {
+  const painSignals = await getPainSignalsForDashboard();
   const opportunities = painSignals.map(shapeOpportunity);
   const metrics = getOpportunityMetrics(opportunities);
 
