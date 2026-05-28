@@ -75,12 +75,43 @@ model PainSignal {
   rawInput  RawInput?  @relation(fields: [rawInputId], references: [id], onDelete: SetNull)
   campaigns Campaign[]
   messages  Message[]
+  outreachDraft OutreachDraft?
 
   @@index([status])
   @@index([b2bScore])
   @@index([monetizationScore])
   @@index([createdAt])
   @@map("pain_signals")
+}
+
+model OutreachDraft {
+  id           String @id @default(uuid()) @db.Uuid
+  painSignalId String @unique @map("pain_signal_id") @db.Uuid
+
+  generatedDraft  Json   @map("generated_draft")
+  qualityScore    Float  @default(0) @map("quality_score")
+  qualityWarnings Json   @default("[]") @map("quality_warnings")
+  status          String @default("draft_pending")
+
+  humanSubject         String? @map("human_subject")
+  humanColdEmail       String? @map("human_cold_email")
+  humanLinkedinMessage String? @map("human_linkedin_message")
+  humanCta             String? @map("human_cta")
+  humanHook            String? @map("human_hook")
+  humanNotes           String? @map("human_notes")
+  humanEditedAt        DateTime? @map("human_edited_at")
+  reviewedAt           DateTime? @map("reviewed_at")
+
+  generatedAt DateTime @default(now()) @map("generated_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  painSignal PainSignal @relation(fields: [painSignalId], references: [id], onDelete: Cascade)
+
+  @@index([status])
+  @@index([generatedAt])
+  @@index([reviewedAt])
+  @@map("outreach_drafts")
 }
 
 model Company {

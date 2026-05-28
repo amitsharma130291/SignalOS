@@ -149,6 +149,12 @@ export default async function OpportunitiesPage() {
               >
                 Review Queue
               </Link>
+              <Link
+                href="/outreach"
+                className="inline-flex w-fit rounded-xl border border-indigo-200 bg-indigo-50/90 px-4 py-2 text-sm font-medium text-indigo-700 shadow-sm transition-colors hover:border-indigo-300 hover:bg-indigo-100 dark:border-indigo-500/30 dark:bg-indigo-950/50 dark:text-indigo-300 dark:hover:bg-indigo-950"
+              >
+                Outreach Drafts
+              </Link>
             </div>
           </div>
         </section>
