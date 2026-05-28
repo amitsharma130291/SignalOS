@@ -1,5 +1,6 @@
 import type { Prisma } from "@prisma/client";
 import { RunFilterButton } from "@/components/filter-actions";
+import { ExtractPainButton } from "@/components/pain-extraction-actions";
 import type { RawInputFilterConfidence, RawInputMarketType } from "@/lib/filterRawInput";
 
 type RecentSignal = {
@@ -10,6 +11,14 @@ type RecentSignal = {
   status: string;
   metadata: Prisma.JsonValue;
   createdAt: Date;
+  painSignals: {
+    id: string;
+    pain: string;
+    urgency: string | null;
+    affectedTeam: string | null;
+    possibleIcp: string | null;
+    outreachAngle: string | null;
+  }[];
 };
 
 type ParsedFilterMetadata = {
@@ -150,6 +159,10 @@ function getConciseReason(signalStatus: string, metadata: ParsedFilterMetadata |
   return "Weak operational signal. Needs manual review.";
 }
 
+function canExtractPain(status: string) {
+  return status === "accepted" || status === "needs_review";
+}
+
 export function RecentSignalsList({ signals }: { signals: RecentSignal[] }) {
   if (signals.length === 0) {
     return (
@@ -169,6 +182,7 @@ export function RecentSignalsList({ signals }: { signals: RecentSignal[] }) {
       {signals.map((signal, index) => {
         const filterMetadata = parseFilterMetadata(signal.metadata);
         const confidence = filterMetadata?.confidence ?? "low";
+        const painSignal = signal.painSignals[0];
         return (
           <li
             key={signal.id}
@@ -243,10 +257,43 @@ export function RecentSignalsList({ signals }: { signals: RecentSignal[] }) {
                 </p>
               </div>
 
-              <div className="shrink-0 sm:pt-0.5">
+              <div className="flex shrink-0 flex-wrap items-start gap-2 sm:flex-col sm:pt-0.5">
                 <RunFilterButton rawInputId={signal.id} />
+                {painSignal ? (
+                  <span className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-950/40 dark:text-emerald-300">
+                    Pain extracted
+                  </span>
+                ) : canExtractPain(signal.status) ? (
+                  <ExtractPainButton rawInputId={signal.id} />
+                ) : null}
               </div>
             </div>
+
+            {painSignal ? (
+              <div className="mt-4 rounded-xl border border-zinc-200 bg-zinc-50/80 p-4 dark:border-zinc-800 dark:bg-zinc-900/60">
+                <p className="text-sm font-medium leading-relaxed text-zinc-800 dark:text-zinc-100">
+                  {painSignal.pain}
+                </p>
+                <dl className="mt-3 grid grid-cols-1 gap-2 text-xs text-zinc-500 dark:text-zinc-400 sm:grid-cols-2">
+                  <div>
+                    <dt className="font-medium text-zinc-600 dark:text-zinc-300">Urgency</dt>
+                    <dd className="capitalize">{painSignal.urgency ?? "Unknown"}</dd>
+                  </div>
+                  <div>
+                    <dt className="font-medium text-zinc-600 dark:text-zinc-300">Team</dt>
+                    <dd>{painSignal.affectedTeam ?? "Unknown"}</dd>
+                  </div>
+                  <div>
+                    <dt className="font-medium text-zinc-600 dark:text-zinc-300">Possible ICP</dt>
+                    <dd>{painSignal.possibleIcp ?? "Unknown"}</dd>
+                  </div>
+                  <div>
+                    <dt className="font-medium text-zinc-600 dark:text-zinc-300">Outreach Angle</dt>
+                    <dd>{painSignal.outreachAngle ?? "Unknown"}</dd>
+                  </div>
+                </dl>
+              </div>
+            ) : null}
           </li>
         );
       })}

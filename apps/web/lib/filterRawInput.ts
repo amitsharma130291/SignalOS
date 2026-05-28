@@ -1,16 +1,20 @@
 export const POSITIVE_KEYWORD_WEIGHTS: Record<string, number> = {
   spreadsheet: 3,
-  crm: 3,
-  manual: 2,
+  "crm fields": 3,
+  crm: 4,
+  manually: 2,
+  manual: 3,
   "manual process": 3,
-  workflow: 2,
+  "sales reps": 3,
+  "customer call": 1,
+  workflow: 3,
   repetitive: 2,
-  operations: 2,
-  handoff: 2,
-  reporting: 2,
+  operations: 3,
+  handoff: 3,
+  reporting: 3,
   support: 2,
-  onboarding: 2,
-  approval: 2,
+  onboarding: 3,
+  approval: 3,
   sop: 2,
   process: 1,
   backlog: 1,
@@ -48,6 +52,7 @@ export const NEGATIVE_KEYWORD_WEIGHTS: Record<string, number> = {
 
 export const B2B_KEYWORDS = [
   "crm",
+  "sales reps",
   "sales ops",
   "revops",
   "operations",
@@ -70,6 +75,31 @@ export const B2B_KEYWORDS = [
   "support ops",
 ] as const;
 
+export const B2B_KEYWORD_WEIGHTS: Record<(typeof B2B_KEYWORDS)[number], number> = {
+  crm: 4,
+  "sales reps": 4,
+  "sales ops": 4,
+  revops: 4,
+  operations: 3,
+  workflow: 3,
+  spreadsheet: 3,
+  reporting: 3,
+  handoff: 3,
+  "support team": 3,
+  onboarding: 3,
+  "back office": 3,
+  "internal tool": 3,
+  "manual process": 3,
+  "finance ops": 3,
+  "customer success": 3,
+  compliance: 3,
+  procurement: 3,
+  "admin work": 3,
+  "operations team": 3,
+  "sales team": 3,
+  "support ops": 3,
+};
+
 export const B2C_KEYWORDS = [
   "influencer",
   "creator",
@@ -82,6 +112,19 @@ export const B2C_KEYWORDS = [
   "followers",
   "creator economy",
 ] as const;
+
+export const B2C_KEYWORD_WEIGHTS: Record<(typeof B2C_KEYWORDS)[number], number> = {
+  influencer: 3,
+  creator: 2,
+  fitness: 3,
+  dating: 3,
+  "social media": 3,
+  lifestyle: 2,
+  "habit tracker": 3,
+  gaming: 3,
+  followers: 2,
+  "creator economy": 3,
+};
 
 export const FILTER_VERSION = "v3";
 
@@ -105,35 +148,42 @@ export type RawInputFilterResult = {
   filterVersion: typeof FILTER_VERSION;
 };
 
-function matchWeightedKeywords(
+export function escapeRegex(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+export function matchesKeyword(haystack: string, keyword: string) {
+  const escapedKeyword = escapeRegex(keyword);
+  const pluralSuffix = keyword.endsWith("s") ? "" : "s?";
+
+  // Use word boundaries so substrings do not create false positives
+  // (for example, "updating" must not match the B2C keyword "dating").
+  // The optional plural suffix keeps common variants like "handoffs" and
+  // "workflows" matched without falling back to naive substring matching.
+  return new RegExp(`\\b${escapedKeyword}${pluralSuffix}\\b`, "i").test(haystack);
+}
+
+export function matchWeightedKeywords<TKeyword extends string>(
   haystack: string,
-  weights: Record<string, number>,
-): { matched: string[]; total: number } {
+  weights: Record<TKeyword, number>,
+): { matched: TKeyword[]; total: number } {
   const matched: string[] = [];
   let total = 0;
 
-  const keywords = Object.keys(weights).sort((a, b) => b.length - a.length);
+  const keywords = Object.keys(weights).sort((a, b) => b.length - a.length) as TKeyword[];
 
   for (const keyword of keywords) {
-    if (haystack.includes(keyword)) {
+    if (matchesKeyword(haystack, keyword)) {
       matched.push(keyword);
       total += weights[keyword] ?? 0;
     }
   }
 
-  return { matched, total };
-}
-
-function matchMarketKeywords(haystack: string, keywords: readonly string[]) {
-  const matched = keywords.filter((keyword) => haystack.includes(keyword));
-
-  return {
-    matched,
-    total: matched.length,
-  };
+  return { matched: matched as TKeyword[], total };
 }
 
 export function resolveMarketType(b2bScore: number, b2cScore: number): RawInputMarketType {
+  // Market classification compares accumulated B2B/B2C keyword evidence.
   if (b2bScore >= 3 && b2bScore > b2cScore) return "b2b";
   if (b2cScore >= 3 && b2cScore > b2bScore) return "b2c";
   return "unknown";
@@ -145,6 +195,8 @@ export function resolveFilterStatusFromScore(
   b2bScore = 0,
   b2cScore = 0,
 ): RawInputFilterStatus {
+  // Thresholds favor clear operational B2B pain, keep weak signals for review,
+  // and filter out low-ops or clearly consumer/lifestyle signals.
   if (score >= 5 && b2bScore > b2cScore) return "accepted";
   if (score <= 0 || b2cScore > b2bScore) return "filtered_out";
   if ((score >= 1 && score <= 4) || marketType === "unknown") return "needs_review";
@@ -156,6 +208,7 @@ export function resolveFilterConfidence(
   b2bScore = 0,
   b2cScore = 0,
 ): RawInputFilterConfidence {
+  // Confidence reflects strength of either operational evidence or market evidence.
   if (
     (score >= 5 && b2bScore > b2cScore) ||
     score <= -5 ||
@@ -205,19 +258,13 @@ export function filterRawInput(rawText: string, sourceName?: string | null): Raw
 
   const positive = matchWeightedKeywords(haystack, POSITIVE_KEYWORD_WEIGHTS);
   const negative = matchWeightedKeywords(haystack, NEGATIVE_KEYWORD_WEIGHTS);
-  const b2b = matchMarketKeywords(haystack, B2B_KEYWORDS);
-  const b2c = matchMarketKeywords(haystack, B2C_KEYWORDS);
+  const b2b = matchWeightedKeywords(haystack, B2B_KEYWORD_WEIGHTS);
+  const b2c = matchWeightedKeywords(haystack, B2C_KEYWORD_WEIGHTS);
 
   const operationalScore = positive.total + negative.total;
   const marketType = resolveMarketType(b2b.total, b2c.total);
   const status = resolveFilterStatusFromScore(operationalScore, marketType, b2b.total, b2c.total);
   const confidence = resolveFilterConfidence(operationalScore, b2b.total, b2c.total);
-
-  console.log({
-    text: rawText,
-    matchedB2BKeywords: b2b.matched,
-    b2bScore: b2b.total,
-  });
 
   return {
     status,
