@@ -51,4 +51,45 @@ describe("shapeOpportunity", () => {
       false,
     );
   });
+
+  it("marks human-edited opportunity fields", () => {
+    const opportunity = shapeOpportunity({
+      id: "pain-1",
+      pain: "Generated pain",
+      humanPain: "Human pain",
+    });
+
+    assert.equal(opportunity.hasHumanEdits, true);
+  });
+
+  it("marks human-edited message fields", () => {
+    const opportunity = shapeOpportunity({
+      id: "pain-1",
+      pain: "Generated pain",
+      messages: [
+        {
+          id: "message-1",
+          body: "Generated body",
+          humanBody: "Human body",
+        },
+      ],
+    });
+
+    assert.equal(opportunity.hasHumanEdits, true);
+  });
+
+  it("does not mark generated-only opportunity fields as edited", () => {
+    const opportunity = shapeOpportunity({
+      id: "pain-1",
+      pain: "Generated pain",
+      messages: [
+        {
+          id: "message-1",
+          body: "Generated body",
+        },
+      ],
+    });
+
+    assert.equal(opportunity.hasHumanEdits, false);
+  });
 });

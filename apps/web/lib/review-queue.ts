@@ -1,15 +1,9 @@
 import type { Prisma } from "@prisma/client";
 import { calculateOpportunityScore } from "./opportunity-score.ts";
-import { hasHumanEditedState, preferHumanValue } from "./review-overrides.ts";
+import { preferHumanValue, hasHumanEditedState } from "./review-overrides.ts";
 import { isReviewStatus, type ReviewStatus } from "./review-status.ts";
 
-type RawInputForOpportunity = {
-  rawText?: string | null;
-  status?: string | null;
-  metadata?: Prisma.JsonValue | null;
-};
-
-type MessageDraftForOpportunity = {
+export type ReviewMessageRecord = {
   id: string;
   subject?: string | null;
   body?: string | null;
@@ -21,7 +15,7 @@ type MessageDraftForOpportunity = {
   generatedAt?: Date | string | null;
 };
 
-export type PainSignalForOpportunity = {
+export type PainSignalForReviewQueue = {
   id: string;
   pain?: string | null;
   urgency?: string | null;
@@ -39,7 +33,6 @@ export type PainSignalForOpportunity = {
   budgetOwner?: string | null;
   triggerEvent?: string | null;
   outreachAngleRefined?: string | null;
-  icpGeneratedAt?: Date | string | null;
   humanPain?: string | null;
   humanUrgency?: string | null;
   humanAffectedTeam?: string | null;
@@ -57,74 +50,20 @@ export type PainSignalForOpportunity = {
   humanNotes?: string | null;
   angleFeedback?: string | null;
   reviewedAt?: Date | string | null;
-  rawInput?: RawInputForOpportunity | null;
-  messages?: MessageDraftForOpportunity[] | null;
+  messages?: ReviewMessageRecord[] | null;
 };
 
-export type OpportunityDashboardItem = {
-  id: string;
-  rawSignalText: string;
-  filterStatus: string;
-  marketType: string;
-  confidence: string;
-  pain: string;
-  urgency: string;
-  affectedTeam: string;
-  existingWorkaround: string;
-  possibleIcp: string;
-  monetizationScore: number;
-  outreachAngle: string;
-  targetTitles: string[];
-  companySize: string;
-  industry: string;
-  buyer: string;
-  budgetOwner: string;
-  triggerEvent: string;
-  outreachAngleRefined: string;
-  reviewStatus: ReviewStatus;
-  icpGenerated: boolean;
-  hasHumanEdits: boolean;
-  latestDraft: {
-    id: string;
-    subject: string;
-    body: string;
-    status: string;
-    generatedAt: Date | string | null;
-  } | null;
-  opportunityScore: ReturnType<typeof calculateOpportunityScore>;
-};
-
-function getFilterRecord(metadata?: Prisma.JsonValue | null) {
-  if (!metadata || typeof metadata !== "object" || Array.isArray(metadata)) {
-    return {};
-  }
-
-  const filter = (metadata as Record<string, unknown>).filter;
-  if (!filter || typeof filter !== "object" || Array.isArray(filter)) {
-    return {};
-  }
-
-  return filter as Record<string, unknown>;
+function parseTitles(value?: Prisma.JsonValue | null) {
+  return Array.isArray(value) ? value.filter((title): title is string => typeof title === "string") : [];
 }
 
-function parseTargetTitles(targetTitles?: Prisma.JsonValue | null) {
-  if (!Array.isArray(targetTitles)) {
-    return [];
-  }
-
-  return targetTitles.filter((title): title is string => typeof title === "string");
-}
-
-export function shapeOpportunity(signal: PainSignalForOpportunity): OpportunityDashboardItem {
-  const filter = getFilterRecord(signal.rawInput?.metadata);
-  const reviewStatus = isReviewStatus(signal.status) ? signal.status : "new";
-  const generatedTargetTitles = parseTargetTitles(signal.targetTitles);
-  const humanTargetTitles = parseTargetTitles(signal.humanTargetTitles);
-  const targetTitles = humanTargetTitles.length ? humanTargetTitles : generatedTargetTitles;
-  const icpGenerated = Boolean(signal.icpGeneratedAt || targetTitles.length > 0);
-  const filterStatus = signal.rawInput?.status ?? "unknown";
+export function shapeReviewQueueItem(signal: PainSignalForReviewQueue) {
+  const generatedTitles = parseTitles(signal.targetTitles);
+  const humanTitles = parseTitles(signal.humanTargetTitles);
   const latestMessage = signal.messages?.[0] ?? null;
-  const hasHumanEdits = hasHumanEditedState({
+  const reviewStatus: ReviewStatus = isReviewStatus(signal.status) ? signal.status : "new";
+
+  const hasPainSignalEdits = hasHumanEditedState({
     humanPain: signal.humanPain,
     humanUrgency: signal.humanUrgency,
     humanAffectedTeam: signal.humanAffectedTeam,
@@ -132,7 +71,7 @@ export function shapeOpportunity(signal: PainSignalForOpportunity): OpportunityD
     humanPossibleIcp: signal.humanPossibleIcp,
     humanMonetizationScore: signal.humanMonetizationScore,
     humanOutreachAngle: signal.humanOutreachAngle,
-    humanTargetTitles,
+    humanTargetTitles: humanTitles,
     humanCompanySize: signal.humanCompanySize,
     humanIndustry: signal.humanIndustry,
     humanBuyer: signal.humanBuyer,
@@ -142,22 +81,25 @@ export function shapeOpportunity(signal: PainSignalForOpportunity): OpportunityD
     humanNotes: signal.humanNotes,
     angleFeedback: signal.angleFeedback,
     reviewedAt: signal.reviewedAt,
-    humanSubject: latestMessage?.humanSubject,
-    humanBody: latestMessage?.humanBody,
-    reviewNotes: latestMessage?.reviewNotes,
-    messageReviewedAt: latestMessage?.reviewedAt,
   });
-  const monetizationScore = preferHumanValue(
-    signal.humanMonetizationScore,
-    signal.monetizationScore ?? 0,
-  );
+  const hasMessageEdits = latestMessage
+    ? hasHumanEditedState({
+        humanSubject: latestMessage.humanSubject,
+        humanBody: latestMessage.humanBody,
+        reviewNotes: latestMessage.reviewNotes,
+        reviewedAt: latestMessage.reviewedAt,
+      })
+    : false;
+
+  const targetTitles = humanTitles.length ? humanTitles : generatedTitles;
+  const monetizationScore = preferHumanValue(signal.humanMonetizationScore, signal.monetizationScore ?? 0);
 
   return {
     id: signal.id,
-    rawSignalText: signal.rawInput?.rawText ?? "Raw input unavailable",
-    filterStatus,
-    marketType: typeof filter.marketType === "string" ? filter.marketType : "unknown",
-    confidence: typeof filter.confidence === "string" ? filter.confidence : "unknown",
+    painSignal: {
+      id: signal.id,
+    },
+    status: reviewStatus,
     pain: preferHumanValue(signal.humanPain, signal.pain ?? "No pain summary available"),
     urgency: preferHumanValue(signal.humanUrgency, signal.urgency ?? "unknown"),
     affectedTeam: preferHumanValue(signal.humanAffectedTeam, signal.affectedTeam ?? "Unknown"),
@@ -178,16 +120,20 @@ export function shapeOpportunity(signal: PainSignalForOpportunity): OpportunityD
       signal.humanOutreachAngleRefined,
       signal.outreachAngleRefined ?? "Unknown",
     ),
-    reviewStatus,
-    icpGenerated,
-    hasHumanEdits,
-    latestDraft: latestMessage
+    humanNotes: signal.humanNotes ?? "",
+    angleFeedback: signal.angleFeedback ?? "",
+    reviewedAt: signal.reviewedAt ?? null,
+    hasHumanEdits: hasPainSignalEdits || hasMessageEdits,
+    message: latestMessage
       ? {
           id: latestMessage.id,
+          status: latestMessage.status ?? "draft",
           subject: preferHumanValue(latestMessage.humanSubject, latestMessage.subject ?? "Untitled draft"),
           body: preferHumanValue(latestMessage.humanBody, latestMessage.body ?? ""),
-          status: latestMessage.status ?? "draft",
+          reviewNotes: latestMessage.reviewNotes ?? "",
+          reviewedAt: latestMessage.reviewedAt ?? null,
           generatedAt: latestMessage.generatedAt ?? null,
+          hasHumanEdits: hasMessageEdits,
         }
       : null,
     opportunityScore: calculateOpportunityScore({
@@ -195,21 +141,13 @@ export function shapeOpportunity(signal: PainSignalForOpportunity): OpportunityD
       monetizationScore,
       urgency: preferHumanValue(signal.humanUrgency, signal.urgency ?? "unknown"),
       targetTitles,
-      icpGeneratedAt: signal.icpGeneratedAt,
-      rawInputStatus: filterStatus,
       status: reviewStatus,
     }),
   };
 }
 
-export function getOpportunityMetrics(opportunities: OpportunityDashboardItem[]) {
-  return {
-    total: opportunities.length,
-    acceptedSignals: opportunities.filter((item) => item.filterStatus === "accepted").length,
-    needsReview: opportunities.filter(
-      (item) => item.filterStatus === "needs_review" || item.reviewStatus === "new",
-    ).length,
-    highUrgency: opportunities.filter((item) => item.urgency === "high").length,
-    icpGenerated: opportunities.filter((item) => item.icpGenerated).length,
-  };
+export type ReviewQueueItem = ReturnType<typeof shapeReviewQueueItem>;
+
+export function getReviewItemId(item: Pick<ReviewQueueItem, "painSignal">) {
+  return item.painSignal.id;
 }

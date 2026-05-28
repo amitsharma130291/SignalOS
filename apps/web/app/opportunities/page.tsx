@@ -55,12 +55,32 @@ async function getPainSignalsForDashboard() {
       },
     },
   } as const;
+  const reviewSelect = {
+    humanPain: true,
+    humanUrgency: true,
+    humanAffectedTeam: true,
+    humanExistingWorkaround: true,
+    humanPossibleIcp: true,
+    humanMonetizationScore: true,
+    humanOutreachAngle: true,
+    humanTargetTitles: true,
+    humanCompanySize: true,
+    humanIndustry: true,
+    humanBuyer: true,
+    humanBudgetOwner: true,
+    humanTriggerEvent: true,
+    humanOutreachAngleRefined: true,
+    humanNotes: true,
+    angleFeedback: true,
+    reviewedAt: true,
+  } as const;
 
   try {
     return await prisma.painSignal.findMany({
       orderBy: { createdAt: "desc" },
       select: {
         ...baseSelect,
+        ...reviewSelect,
         messages: {
           orderBy: { generatedAt: "desc" },
           take: 1,
@@ -69,6 +89,10 @@ async function getPainSignalsForDashboard() {
             subject: true,
             body: true,
             status: true,
+            humanSubject: true,
+            humanBody: true,
+            reviewNotes: true,
+            reviewedAt: true,
             generatedAt: true,
           },
         },
@@ -118,6 +142,12 @@ export default async function OpportunitiesPage() {
                 className="inline-flex w-fit rounded-xl border border-zinc-300 bg-white/90 px-4 py-2 text-sm font-medium text-zinc-700 shadow-sm transition-colors hover:border-zinc-400 hover:bg-white dark:border-zinc-700 dark:bg-zinc-950/90 dark:text-zinc-200 dark:hover:bg-zinc-900"
               >
                 Back to Signals
+              </Link>
+              <Link
+                href="/review"
+                className="inline-flex w-fit rounded-xl border border-indigo-200 bg-indigo-50/90 px-4 py-2 text-sm font-medium text-indigo-700 shadow-sm transition-colors hover:border-indigo-300 hover:bg-indigo-100 dark:border-indigo-500/30 dark:bg-indigo-950/50 dark:text-indigo-300 dark:hover:bg-indigo-950"
+              >
+                Review Queue
               </Link>
             </div>
           </div>

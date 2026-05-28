@@ -122,6 +122,11 @@ export function OpportunityDashboard({
                   <span className="rounded-full bg-zinc-100 px-2.5 py-1 font-medium text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
                     {item.reviewStatus.replaceAll("_", " ")}
                   </span>
+                  {item.hasHumanEdits ? (
+                    <span className="rounded-full bg-emerald-50 px-2.5 py-1 font-medium text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300">
+                      human edited
+                    </span>
+                  ) : null}
                 </div>
               </div>
 

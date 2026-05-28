@@ -51,6 +51,24 @@ model PainSignal {
   promptVersion String? @map("prompt_version")
   aiOutput      Json    @default("{}") @map("ai_output")
 
+  humanPain                 String?   @map("human_pain")
+  humanUrgency              String?   @map("human_urgency")
+  humanAffectedTeam         String?   @map("human_affected_team")
+  humanExistingWorkaround   String?   @map("human_existing_workaround")
+  humanPossibleIcp          String?   @map("human_possible_icp")
+  humanMonetizationScore    Float?    @map("human_monetization_score")
+  humanOutreachAngle        String?   @map("human_outreach_angle")
+  humanTargetTitles         Json?     @map("human_target_titles")
+  humanCompanySize          String?   @map("human_company_size")
+  humanIndustry             String?   @map("human_industry")
+  humanBuyer                String?   @map("human_buyer")
+  humanBudgetOwner          String?   @map("human_budget_owner")
+  humanTriggerEvent         String?   @map("human_trigger_event")
+  humanOutreachAngleRefined String?   @map("human_outreach_angle_refined")
+  humanNotes                String?   @map("human_notes")
+  angleFeedback             String?   @map("angle_feedback")
+  reviewedAt                DateTime? @map("reviewed_at")
+
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
@@ -182,6 +200,11 @@ model Message {
   errorMessage       String? @map("error_message")
   metadata           Json    @default("{}")
 
+  humanSubject String?   @map("human_subject")
+  humanBody    String?   @map("human_body")
+  reviewNotes  String?   @map("review_notes")
+  reviewedAt   DateTime? @map("reviewed_at")
+
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
@@ -192,6 +215,7 @@ model Message {
   replies  Reply[]
 
   @@index([status])
+  @@index([reviewedAt])
   @@index([campaignId])
   @@index([painSignalId])
   @@index([contactId])

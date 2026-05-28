@@ -16,6 +16,7 @@ const STATUS_LABELS: Record<ReviewStatus, string> = {
   rejected: "Reject",
   interesting: "Interesting",
   follow_up_later: "Follow Up Later",
+  bad_angle: "Bad Angle",
 };
 
 function ReviewButton({
