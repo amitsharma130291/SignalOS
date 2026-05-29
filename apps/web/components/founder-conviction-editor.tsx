@@ -4,6 +4,7 @@ import { useActionState, useEffect } from "react";
 import { useFormStatus } from "react-dom";
 import { useRouter } from "next/navigation";
 import { updateFounderConviction } from "@/app/actions/opportunities";
+import type { FounderConvictionResult } from "@/lib/founder-conviction";
 
 const initialState = {
   status: "idle",
@@ -26,9 +27,11 @@ function SaveButton() {
 export function FounderConvictionEditor({
   opportunityId,
   founderConviction,
+  recommendation,
 }: {
   opportunityId: string;
   founderConviction: number | null;
+  recommendation: FounderConvictionResult;
 }) {
   const [state, formAction] = useActionState(updateFounderConviction, initialState);
   const router = useRouter();
@@ -42,8 +45,57 @@ export function FounderConvictionEditor({
   return (
     <form action={formAction} className="space-y-2">
       <input type="hidden" name="painSignalId" value={opportunityId} />
+      <div className="space-y-2 rounded-xl border border-zinc-200 bg-white/70 p-2 text-xs dark:border-zinc-800 dark:bg-zinc-950/60">
+        <div className="space-y-1">
+          <p className="font-medium text-zinc-700 dark:text-zinc-200">Founder Conviction</p>
+          {founderConviction === null ? (
+            <p className="text-zinc-600 dark:text-zinc-300">
+              Recommended:{" "}
+              <span className="font-semibold text-zinc-900 dark:text-zinc-50">
+                {recommendation.score.toFixed(1)} / 10
+              </span>
+            </p>
+          ) : (
+            <div className="space-y-0.5 text-zinc-600 dark:text-zinc-300">
+              <p>
+                Human override:{" "}
+                <span className="font-semibold text-zinc-900 dark:text-zinc-50">
+                  {founderConviction}
+                </span>
+              </p>
+              <p>Recommended: {recommendation.score.toFixed(1)} / 10</p>
+            </div>
+          )}
+          <p className="capitalize text-zinc-600 dark:text-zinc-300">
+            Recommendation:{" "}
+            <span className="font-semibold text-zinc-900 dark:text-zinc-50">
+              {recommendation.recommendation}
+            </span>
+          </p>
+        </div>
+        {recommendation.reasons.length ? (
+          <div>
+            <p className="font-medium text-zinc-700 dark:text-zinc-200">Reasons</p>
+            <ul className="mt-1 list-disc space-y-0.5 pl-4 text-zinc-600 dark:text-zinc-300">
+              {recommendation.reasons.slice(0, 4).map((reason) => (
+                <li key={reason}>{reason}</li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
+        {recommendation.risks.length ? (
+          <div>
+            <p className="font-medium text-zinc-700 dark:text-zinc-200">Risks</p>
+            <ul className="mt-1 list-disc space-y-0.5 pl-4 text-zinc-600 dark:text-zinc-300">
+              {recommendation.risks.slice(0, 4).map((risk) => (
+                <li key={risk}>{risk}</li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
+      </div>
       <label className="block space-y-1 text-xs">
-        <span className="font-medium text-zinc-700 dark:text-zinc-200">Founder Conviction</span>
+        <span className="font-medium text-zinc-700 dark:text-zinc-200">Manual override</span>
         <div className="flex gap-2">
           <input
             name="founderConviction"

@@ -326,6 +326,13 @@ function generateTriggerEvent(teamKey: string, signalText: string) {
   }
 
   if (teamKey === "operations") {
+    if (
+      (signalText.includes("quarterly") || signalText.includes("every quarter")) &&
+      (signalText.includes("compliance") || signalText.includes("audit"))
+    ) {
+      return "Quarterly compliance reporting deadline";
+    }
+    if (signalText.includes("audit")) return "Audit preparation";
     if (signalText.includes("compliance")) return "Compliance reporting deadlines";
     return "Cross-system reporting complexity";
   }

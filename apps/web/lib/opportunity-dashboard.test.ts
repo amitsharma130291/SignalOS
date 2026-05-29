@@ -30,6 +30,7 @@ describe("shapeOpportunity", () => {
     assert.equal(opportunity.currentSolution, "Unknown");
     assert.equal(opportunity.solutionGap, "Unknown");
     assert.equal(opportunity.founderConviction, null);
+    assert.equal(opportunity.founderConvictionRecommendation.recommendation, "low");
     assert.equal(opportunity.interviewCount, 0);
   });
 
@@ -114,7 +115,35 @@ describe("shapeOpportunity", () => {
     assert.equal(opportunity.currentSolution, "spreadsheets");
     assert.equal(opportunity.solutionGap, "no owner");
     assert.equal(opportunity.founderConviction, 9);
+    assert.ok(opportunity.founderConvictionRecommendation.score >= 0);
     assert.equal(opportunity.interviewCount, 2);
+  });
+
+  it("computes recommended founder conviction without replacing human override", () => {
+    const opportunity = shapeOpportunity({
+      id: "pain-1",
+      pain: "Finance Ops manually reconciles Stripe payouts with NetSuite through spreadsheets.",
+      urgency: "high",
+      frequency: "daily",
+      currentSolution: "Stripe + NetSuite + Spreadsheets",
+      solutionGap:
+        "Manual reconciliation creates reporting delays and month-end close delays.",
+      affectedTeam: "Finance Ops",
+      monetizationScore: 8,
+      founderConviction: 6,
+      buyer: "Director Finance Operations",
+      budgetOwner: "VP Finance",
+      triggerEvent: "Month-end close delays",
+      targetTitles: ["Director Finance Operations"],
+      rawInput: {
+        rawText:
+          "Finance analysts download Stripe payouts every day and manually reconcile them against NetSuite.",
+      },
+    });
+
+    assert.equal(opportunity.founderConviction, 6);
+    assert.ok(opportunity.founderConvictionRecommendation.score >= 8);
+    assert.equal(opportunity.founderConvictionRecommendation.recommendation, "high");
   });
 
   it("handles missing frequency and solution gap", () => {

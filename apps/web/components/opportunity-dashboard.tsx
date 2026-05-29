@@ -307,6 +307,7 @@ export function OpportunityDashboard({
                     <FounderConvictionEditor
                       opportunityId={item.id}
                       founderConviction={item.founderConviction}
+                      recommendation={item.founderConvictionRecommendation}
                     />
                     <p className="mt-3 text-xs text-zinc-500 dark:text-zinc-400">
                       Interviews: {item.interviewCount}

@@ -1,0 +1,496 @@
+{
+  "generatedAt": "2026-05-29T23:41:15.397Z",
+  "pipeline": "generateFounderConviction",
+  "totals": {
+    "tests": 7,
+    "passedTests": 7,
+    "failedTests": 0,
+    "totalAssertions": 30,
+    "passedAssertions": 30,
+    "failedAssertions": 0,
+    "passPercentage": 100
+  },
+  "results": [
+    {
+      "name": "High finance reconciliation",
+      "inputSummary": {
+        "pain": "Finance Ops manually reconciles Stripe payouts with NetSuite through spreadsheets.",
+        "frequency": "daily",
+        "currentSolution": "Stripe + NetSuite + Spreadsheets",
+        "solutionGap": "Manual reconciliation and cross-checking create mismatches, exception tracking, reporting delays, and month-end close delays.",
+        "buyer": "Director Finance Operations",
+        "budgetOwner": "VP Finance"
+      },
+      "score": 10,
+      "recommendation": "high",
+      "reasons": [
+        "Daily workflow",
+        "Revenue or budget impact",
+        "Multi-system workflow",
+        "Spreadsheets plus SaaS tools",
+        "Clear buyer",
+        "Clear budget owner",
+        "Clear trigger event",
+        "Target titles identified",
+        "Pain severity is explicit",
+        "High urgency",
+        "Strong monetization score"
+      ],
+      "risks": [],
+      "assertions": [
+        {
+          "label": "score range",
+          "actual": 10,
+          "expected": "8 <= score <= 10",
+          "passed": true
+        },
+        {
+          "label": "recommendation",
+          "actual": "high",
+          "expected": "high",
+          "passed": true
+        },
+        {
+          "label": "score lower bound",
+          "actual": 10,
+          "expected": "0 <= score <= 10",
+          "passed": true
+        },
+        {
+          "label": "reason",
+          "actual": [
+            "Daily workflow",
+            "Revenue or budget impact",
+            "Multi-system workflow",
+            "Spreadsheets plus SaaS tools",
+            "Clear buyer",
+            "Clear budget owner",
+            "Clear trigger event",
+            "Target titles identified",
+            "Pain severity is explicit",
+            "High urgency",
+            "Strong monetization score"
+          ],
+          "expected": "includes Daily workflow",
+          "passed": true
+        },
+        {
+          "label": "reason",
+          "actual": [
+            "Daily workflow",
+            "Revenue or budget impact",
+            "Multi-system workflow",
+            "Spreadsheets plus SaaS tools",
+            "Clear buyer",
+            "Clear budget owner",
+            "Clear trigger event",
+            "Target titles identified",
+            "Pain severity is explicit",
+            "High urgency",
+            "Strong monetization score"
+          ],
+          "expected": "includes Revenue or budget impact",
+          "passed": true
+        },
+        {
+          "label": "reason",
+          "actual": [
+            "Daily workflow",
+            "Revenue or budget impact",
+            "Multi-system workflow",
+            "Spreadsheets plus SaaS tools",
+            "Clear buyer",
+            "Clear budget owner",
+            "Clear trigger event",
+            "Target titles identified",
+            "Pain severity is explicit",
+            "High urgency",
+            "Strong monetization score"
+          ],
+          "expected": "includes Multi-system workflow",
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "failedAssertions": []
+    },
+    {
+      "name": "High Sales Ops forecasting",
+      "inputSummary": {
+        "pain": "Sales Ops teams track CRM reporting updates across HubSpot and spreadsheets.",
+        "frequency": "weekly",
+        "currentSolution": "HubSpot + Spreadsheets",
+        "solutionGap": "Outdated CRM data and manual verification create forecasting delays and reporting accuracy issues.",
+        "buyer": "RevOps Manager",
+        "budgetOwner": "VP Revenue"
+      },
+      "score": 8,
+      "recommendation": "high",
+      "reasons": [
+        "Weekly workflow",
+        "Revenue or budget impact",
+        "Two-system workflow",
+        "Spreadsheets plus SaaS tools",
+        "Clear buyer",
+        "Clear budget owner",
+        "Clear trigger event",
+        "Target titles identified",
+        "Pain severity is explicit",
+        "Strong monetization score"
+      ],
+      "risks": [],
+      "assertions": [
+        {
+          "label": "score range",
+          "actual": 8,
+          "expected": "7.5 <= score <= 9",
+          "passed": true
+        },
+        {
+          "label": "recommendation",
+          "actual": "high",
+          "expected": "high",
+          "passed": true
+        },
+        {
+          "label": "score lower bound",
+          "actual": 8,
+          "expected": "0 <= score <= 10",
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "failedAssertions": []
+    },
+    {
+      "name": "Medium Customer Success renewals",
+      "inputSummary": {
+        "pain": "Customer Success teams review account health before renewal meetings.",
+        "frequency": "weekly",
+        "currentSolution": "Salesforce + Airtable",
+        "solutionGap": "Manual cleanup and health-score cross-checking create reporting delays and renewal visibility gaps.",
+        "buyer": "Head of Customer Success",
+        "budgetOwner": "VP Customer Success"
+      },
+      "score": 7.5,
+      "recommendation": "medium",
+      "reasons": [
+        "Weekly workflow",
+        "Revenue or budget impact",
+        "Two-system workflow",
+        "Clear buyer",
+        "Clear budget owner",
+        "Clear trigger event",
+        "Target titles identified",
+        "Pain severity is explicit"
+      ],
+      "risks": [],
+      "assertions": [
+        {
+          "label": "score range",
+          "actual": 7.5,
+          "expected": "5.5 <= score <= 7.5",
+          "passed": true
+        },
+        {
+          "label": "recommendation",
+          "actual": "medium",
+          "expected": "medium",
+          "passed": true
+        },
+        {
+          "label": "score lower bound",
+          "actual": 7.5,
+          "expected": "0 <= score <= 10",
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "failedAssertions": []
+    },
+    {
+      "name": "Medium Support escalations",
+      "inputSummary": {
+        "pain": "Support teams triage Zendesk tickets and Slack escalation handoffs.",
+        "frequency": "daily",
+        "currentSolution": "Zendesk + Slack + Spreadsheets",
+        "solutionGap": "Unclear ownership and manual escalation tracking create visibility gaps, missed escalations, and response delays.",
+        "buyer": "Support Manager",
+        "budgetOwner": "VP Customer Experience"
+      },
+      "score": 7.5,
+      "recommendation": "medium",
+      "reasons": [
+        "Daily workflow",
+        "Revenue or budget impact",
+        "Multi-system workflow",
+        "Spreadsheets plus SaaS tools",
+        "Clear buyer",
+        "Clear budget owner",
+        "Clear trigger event",
+        "Target titles identified",
+        "Pain severity is explicit"
+      ],
+      "risks": [],
+      "assertions": [
+        {
+          "label": "score range",
+          "actual": 7.5,
+          "expected": "5.5 <= score <= 7.5",
+          "passed": true
+        },
+        {
+          "label": "recommendation",
+          "actual": "medium",
+          "expected": "medium",
+          "passed": true
+        },
+        {
+          "label": "score lower bound",
+          "actual": 7.5,
+          "expected": "0 <= score <= 10",
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "failedAssertions": []
+    },
+    {
+      "name": "Low weak discussion",
+      "inputSummary": {
+        "pain": "Support leaders discuss ticket ownership.",
+        "frequency": "monthly",
+        "currentSolution": "Unknown",
+        "solutionGap": "Unknown",
+        "buyer": "Unknown",
+        "budgetOwner": "Unknown"
+      },
+      "score": 0,
+      "recommendation": "low",
+      "reasons": [
+        "Monthly workflow"
+      ],
+      "risks": [
+        "No clear monetization signal",
+        "Unknown current solution",
+        "Unknown buyer",
+        "Unknown budget owner",
+        "Low urgency",
+        "Sparse signal",
+        "No explicit operational consequence"
+      ],
+      "assertions": [
+        {
+          "label": "score range",
+          "actual": 0,
+          "expected": "0 <= score <= 3",
+          "passed": true
+        },
+        {
+          "label": "recommendation",
+          "actual": "low",
+          "expected": "low",
+          "passed": true
+        },
+        {
+          "label": "score lower bound",
+          "actual": 0,
+          "expected": "0 <= score <= 10",
+          "passed": true
+        },
+        {
+          "label": "risk",
+          "actual": [
+            "No clear monetization signal",
+            "Unknown current solution",
+            "Unknown buyer",
+            "Unknown budget owner",
+            "Low urgency",
+            "Sparse signal",
+            "No explicit operational consequence"
+          ],
+          "expected": "includes Unknown current solution",
+          "passed": true
+        },
+        {
+          "label": "risk",
+          "actual": [
+            "No clear monetization signal",
+            "Unknown current solution",
+            "Unknown buyer",
+            "Unknown budget owner",
+            "Low urgency",
+            "Sparse signal",
+            "No explicit operational consequence"
+          ],
+          "expected": "includes Unknown buyer",
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "failedAssertions": []
+    },
+    {
+      "name": "Medium Operations compliance audit",
+      "inputSummary": {
+        "pain": "Teams coordinate compliance reporting and spreadsheets manually.",
+        "frequency": "quarterly",
+        "currentSolution": "Spreadsheets + Internal systems",
+        "solutionGap": "Manual spreadsheet consolidation across several systems creates compliance reporting delays and audit-prep bottlenecks.",
+        "buyer": "Operations Manager",
+        "budgetOwner": "COO"
+      },
+      "score": 6.9,
+      "recommendation": "medium",
+      "reasons": [
+        "Quarterly workflow",
+        "Revenue or budget impact",
+        "Two-system workflow",
+        "Clear buyer",
+        "Clear budget owner",
+        "Clear trigger event",
+        "Target titles identified",
+        "Pain severity is explicit",
+        "High urgency",
+        "Strong monetization score"
+      ],
+      "risks": [],
+      "assertions": [
+        {
+          "label": "score range",
+          "actual": 6.9,
+          "expected": "5.5 <= score <= 7.5",
+          "passed": true
+        },
+        {
+          "label": "recommendation",
+          "actual": "medium",
+          "expected": "medium",
+          "passed": true
+        },
+        {
+          "label": "score lower bound",
+          "actual": 6.9,
+          "expected": "0 <= score <= 10",
+          "passed": true
+        },
+        {
+          "label": "reason",
+          "actual": [
+            "Quarterly workflow",
+            "Revenue or budget impact",
+            "Two-system workflow",
+            "Clear buyer",
+            "Clear budget owner",
+            "Clear trigger event",
+            "Target titles identified",
+            "Pain severity is explicit",
+            "High urgency",
+            "Strong monetization score"
+          ],
+          "expected": "includes Quarterly workflow",
+          "passed": true
+        },
+        {
+          "label": "reason",
+          "actual": [
+            "Quarterly workflow",
+            "Revenue or budget impact",
+            "Two-system workflow",
+            "Clear buyer",
+            "Clear budget owner",
+            "Clear trigger event",
+            "Target titles identified",
+            "Pain severity is explicit",
+            "High urgency",
+            "Strong monetization score"
+          ],
+          "expected": "includes Revenue or budget impact",
+          "passed": true
+        },
+        {
+          "label": "reason",
+          "actual": [
+            "Quarterly workflow",
+            "Revenue or budget impact",
+            "Two-system workflow",
+            "Clear buyer",
+            "Clear budget owner",
+            "Clear trigger event",
+            "Target titles identified",
+            "Pain severity is explicit",
+            "High urgency",
+            "Strong monetization score"
+          ],
+          "expected": "includes Two-system workflow",
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "failedAssertions": []
+    },
+    {
+      "name": "Low noise offsite",
+      "inputSummary": {
+        "pain": "No meaningful operational pain detected.",
+        "frequency": "unknown",
+        "currentSolution": "Unknown",
+        "solutionGap": "Unknown",
+        "buyer": "Unknown",
+        "budgetOwner": "Unknown"
+      },
+      "score": 0,
+      "recommendation": "low",
+      "reasons": [],
+      "risks": [
+        "Unknown frequency",
+        "No clear monetization signal",
+        "Unknown current solution",
+        "Unknown buyer",
+        "Unknown budget owner",
+        "Low urgency",
+        "Sparse signal",
+        "Generic pain wording",
+        "No explicit operational consequence"
+      ],
+      "assertions": [
+        {
+          "label": "score range",
+          "actual": 0,
+          "expected": "0 <= score <= 1",
+          "passed": true
+        },
+        {
+          "label": "recommendation",
+          "actual": "low",
+          "expected": "low",
+          "passed": true
+        },
+        {
+          "label": "score lower bound",
+          "actual": 0,
+          "expected": "0 <= score <= 10",
+          "passed": true
+        },
+        {
+          "label": "risk",
+          "actual": [
+            "Unknown frequency",
+            "No clear monetization signal",
+            "Unknown current solution",
+            "Unknown buyer",
+            "Unknown budget owner",
+            "Low urgency",
+            "Sparse signal",
+            "Generic pain wording",
+            "No explicit operational consequence"
+          ],
+          "expected": "includes Generic pain wording",
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "failedAssertions": []
+    }
+  ]
+}

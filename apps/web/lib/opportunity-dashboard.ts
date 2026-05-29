@@ -1,4 +1,8 @@
 import type { Prisma } from "@prisma/client";
+import {
+  generateFounderConviction,
+  type FounderConvictionResult,
+} from "./founder-conviction.ts";
 import { calculateOpportunityScore } from "./opportunity-score.ts";
 import { getInterviewCount } from "./opportunity-validation.ts";
 import { hasHumanEditedState, preferHumanValue } from "./review-overrides.ts";
@@ -86,6 +90,7 @@ export type OpportunityDashboardItem = {
   currentSolution: string;
   solutionGap: string;
   founderConviction: number | null;
+  founderConvictionRecommendation: FounderConvictionResult;
   interviewCount: number;
   targetTitles: string[];
   companySize: string;
@@ -164,6 +169,34 @@ export function shapeOpportunity(signal: PainSignalForOpportunity): OpportunityD
     signal.humanMonetizationScore,
     signal.monetizationScore ?? 0,
   );
+  const frequency = signal.frequency?.trim() || "Unknown";
+  const currentSolution = signal.currentSolution?.trim() || "Unknown";
+  const solutionGap = signal.solutionGap?.trim() || "Unknown";
+  const pain = preferHumanValue(signal.humanPain, signal.pain ?? "No pain summary available");
+  const urgency = preferHumanValue(signal.humanUrgency, signal.urgency ?? "unknown");
+  const affectedTeam = preferHumanValue(signal.humanAffectedTeam, signal.affectedTeam ?? "Unknown");
+  const buyer = preferHumanValue(signal.humanBuyer, signal.buyer ?? "Unknown");
+  const budgetOwner = preferHumanValue(signal.humanBudgetOwner, signal.budgetOwner ?? "Unknown");
+  const triggerEvent = preferHumanValue(signal.humanTriggerEvent, signal.triggerEvent ?? "Unknown");
+  const companySize = preferHumanValue(signal.humanCompanySize, signal.companySize ?? "Unknown");
+  const industry = preferHumanValue(signal.humanIndustry, signal.industry ?? "Unknown");
+  const founderConvictionRecommendation = generateFounderConviction({
+    pain,
+    rawText: signal.rawInput?.rawText,
+    urgency,
+    frequency,
+    currentSolution,
+    solutionGap,
+    affectedTeam,
+    monetizationScore,
+    filterScore: typeof filter.score === "number" ? filter.score : undefined,
+    buyer,
+    budgetOwner,
+    triggerEvent,
+    targetTitles,
+    companySize,
+    industry,
+  });
 
   return {
     id: signal.id,
@@ -171,9 +204,9 @@ export function shapeOpportunity(signal: PainSignalForOpportunity): OpportunityD
     filterStatus,
     marketType: typeof filter.marketType === "string" ? filter.marketType : "unknown",
     confidence: typeof filter.confidence === "string" ? filter.confidence : "unknown",
-    pain: preferHumanValue(signal.humanPain, signal.pain ?? "No pain summary available"),
-    urgency: preferHumanValue(signal.humanUrgency, signal.urgency ?? "unknown"),
-    affectedTeam: preferHumanValue(signal.humanAffectedTeam, signal.affectedTeam ?? "Unknown"),
+    pain,
+    urgency,
+    affectedTeam,
     existingWorkaround: preferHumanValue(
       signal.humanExistingWorkaround,
       signal.existingWorkaround ?? "Unknown",
@@ -181,17 +214,18 @@ export function shapeOpportunity(signal: PainSignalForOpportunity): OpportunityD
     possibleIcp: preferHumanValue(signal.humanPossibleIcp, signal.possibleIcp ?? "Unknown"),
     monetizationScore,
     outreachAngle: preferHumanValue(signal.humanOutreachAngle, signal.outreachAngle ?? "Unknown"),
-    frequency: signal.frequency?.trim() || "Unknown",
-    currentSolution: signal.currentSolution?.trim() || "Unknown",
-    solutionGap: signal.solutionGap?.trim() || "Unknown",
+    frequency,
+    currentSolution,
+    solutionGap,
     founderConviction: signal.founderConviction ?? null,
+    founderConvictionRecommendation,
     interviewCount: getInterviewCount(signal._count?.interviews),
     targetTitles,
-    companySize: preferHumanValue(signal.humanCompanySize, signal.companySize ?? "Unknown"),
-    industry: preferHumanValue(signal.humanIndustry, signal.industry ?? "Unknown"),
-    buyer: preferHumanValue(signal.humanBuyer, signal.buyer ?? "Unknown"),
-    budgetOwner: preferHumanValue(signal.humanBudgetOwner, signal.budgetOwner ?? "Unknown"),
-    triggerEvent: preferHumanValue(signal.humanTriggerEvent, signal.triggerEvent ?? "Unknown"),
+    companySize,
+    industry,
+    buyer,
+    budgetOwner,
+    triggerEvent,
     outreachAngleRefined: preferHumanValue(
       signal.humanOutreachAngleRefined,
       signal.outreachAngleRefined ?? "Unknown",
@@ -211,7 +245,13 @@ export function shapeOpportunity(signal: PainSignalForOpportunity): OpportunityD
     opportunityScore: calculateOpportunityScore({
       b2bScore: signal.b2bScore,
       monetizationScore,
-      urgency: preferHumanValue(signal.humanUrgency, signal.urgency ?? "unknown"),
+      urgency,
+      rawText: signal.rawInput?.rawText,
+      pain,
+      affectedTeam,
+      frequency,
+      currentSolution,
+      solutionGap,
       targetTitles,
       icpGeneratedAt: signal.icpGeneratedAt,
       rawInputStatus: filterStatus,

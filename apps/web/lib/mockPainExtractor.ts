@@ -155,6 +155,13 @@ function getCurrentSolution(rawText: string) {
   if (matchesKeyword(rawText, "spreadsheet") || matchesKeyword(rawText, "spreadsheets")) {
     solutions.push("Spreadsheets");
   }
+  if (
+    matchesKeyword(rawText, "internal systems") ||
+    matchesKeyword(rawText, "several systems") ||
+    matchesKeyword(rawText, "six internal systems")
+  ) {
+    solutions.push("Internal systems");
+  }
   if (matchesKeyword(rawText, "crm")) solutions.push("CRM");
 
   const uniqueSolutions = Array.from(new Set(solutions));
@@ -323,6 +330,17 @@ function getSolutionGap(rawText: string) {
     matchesKeyword(rawText, "coordination issues")
   ) {
     return "Unclear ownership and manual escalation tracking create visibility gaps, missed escalations, and response delays.";
+  }
+
+  if (
+    matchesKeyword(rawText, "compliance information") ||
+    matchesKeyword(rawText, "audit preparation") ||
+    matchesKeyword(rawText, "audits") ||
+    matchesKeyword(rawText, "spreadsheet consolidation") ||
+    ((matchesKeyword(rawText, "internal systems") || matchesKeyword(rawText, "six internal systems")) &&
+      (matchesKeyword(rawText, "compliance") || matchesKeyword(rawText, "audit")))
+  ) {
+    return "Manual spreadsheet consolidation across several systems creates compliance reporting delays and audit-prep bottlenecks.";
   }
 
   if (

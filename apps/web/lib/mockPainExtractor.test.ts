@@ -378,6 +378,21 @@ describe("mockPainExtractor v2 fields", () => {
     );
   });
 
+  it("extracts the exact quarterly Operations compliance audit signal", () => {
+    const signal =
+      "Operations managers collect compliance information from six internal systems at the end of every quarter. Reporting preparation requires manual spreadsheet consolidation before audits.";
+    const extraction = mockPainExtractor(signal);
+
+    assert.equal(extraction.affectedTeam, "Operations");
+    assert.equal(extraction.frequency, "quarterly");
+    assert.ok(extraction.currentSolution.includes("Spreadsheets"));
+    assert.ok(extraction.currentSolution.includes("Internal systems"));
+    assert.equal(
+      extraction.solutionGap,
+      "Manual spreadsheet consolidation across several systems creates compliance reporting delays and audit-prep bottlenecks.",
+    );
+  });
+
   it("validates the exact Day 12 quarterly Customer Success signal", () => {
     const signal =
       "Customer Success leadership performs a quarterly renewal risk review by exporting Salesforce data into spreadsheets and manually aggregating customer health metrics.";

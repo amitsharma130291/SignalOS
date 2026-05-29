@@ -140,6 +140,8 @@ export function shapeReviewQueueItem(signal: PainSignalForReviewQueue) {
       b2bScore: signal.b2bScore,
       monetizationScore,
       urgency: preferHumanValue(signal.humanUrgency, signal.urgency ?? "unknown"),
+      pain: preferHumanValue(signal.humanPain, signal.pain ?? "No pain summary available"),
+      affectedTeam: preferHumanValue(signal.humanAffectedTeam, signal.affectedTeam ?? "Unknown"),
       targetTitles,
       status: reviewStatus,
     }),

@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2026-05-29T22:03:30.750Z",
+  "generatedAt": "2026-05-29T23:41:15.206Z",
   "pipeline": "generateICPFromPainSignal",
   "totals": {
-    "tests": 7,
-    "passedTests": 7,
+    "tests": 8,
+    "passedTests": 8,
     "failedTests": 0,
-    "totalAssertions": 56,
-    "passedAssertions": 56,
+    "totalAssertions": 64,
+    "passedAssertions": 64,
     "failedAssertions": 0,
     "passPercentage": 100
   },
@@ -640,6 +640,108 @@
         {
           "label": "icp confidence",
           "actual": 100,
+          "expected": ">= 85",
+          "passed": true
+        },
+        {
+          "label": "why this buyer",
+          "actual": "Responsible for cross-functional reporting and compliance processes.",
+          "expected": "contains compliance processes",
+          "passed": true
+        },
+        {
+          "label": "top candidate",
+          "actual": "Operations Manager",
+          "expected": "Operations Manager",
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "failedAssertions": []
+    },
+    {
+      "name": "Operations quarterly compliance audit",
+      "signal": {
+        "affectedTeam": "Operations",
+        "rawText": "Operations managers collect compliance information from six internal systems at the end of every quarter. Reporting preparation requires manual spreadsheet consolidation before audits.",
+        "currentSolution": "Spreadsheets + Internal systems",
+        "solutionGap": "Manual spreadsheet consolidation across several systems creates compliance reporting delays and audit-prep bottlenecks."
+      },
+      "icp": {
+        "target_titles": [
+          "Operations Manager",
+          "Head of Operations",
+          "COO"
+        ],
+        "company_size": "50-500 employees",
+        "industry": "B2B",
+        "buyer": "Operations Manager",
+        "budget_owner": "COO",
+        "trigger_event": "Quarterly compliance reporting deadline",
+        "outreach_angle_refined": "Help operations manager teams reduce manual operational work.",
+        "icp_candidates": [
+          {
+            "title": "Operations Manager",
+            "confidence": 88
+          },
+          {
+            "title": "Head of Operations",
+            "confidence": 78
+          },
+          {
+            "title": "COO",
+            "confidence": 68
+          }
+        ],
+        "ranked_industries": [
+          {
+            "industry": "B2B",
+            "confidence": 58
+          }
+        ],
+        "company_size_confidence": 45,
+        "company_size_signals": [],
+        "icp_confidence": 98,
+        "why_this_buyer": "Responsible for cross-functional reporting and compliance processes."
+      },
+      "assertions": [
+        {
+          "label": "buyer",
+          "actual": "Operations Manager",
+          "expected": "Operations Manager",
+          "passed": true
+        },
+        {
+          "label": "budget owner",
+          "actual": "COO",
+          "expected": "COO",
+          "passed": true
+        },
+        {
+          "label": "trigger event",
+          "actual": "Quarterly compliance reporting deadline",
+          "expected": "Quarterly compliance reporting deadline",
+          "passed": true
+        },
+        {
+          "label": "company size",
+          "actual": "50-500 employees",
+          "expected": "50-500 employees",
+          "passed": true
+        },
+        {
+          "label": "ranked industries",
+          "actual": [
+            "B2B"
+          ],
+          "expected": [
+            "B2B"
+          ],
+          "passed": true
+        },
+        {
+          "label": "icp confidence",
+          "actual": 98,
           "expected": ">= 85",
           "passed": true
         },

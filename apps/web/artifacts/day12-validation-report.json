@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-29T21:28:09.089Z",
+  "generatedAt": "2026-05-29T23:41:15.026Z",
   "pipeline": "filterRawInput -> mockPainExtractor",
   "totals": {
     "tests": 10,
@@ -439,7 +439,7 @@
         "pain": "Teams coordinate spreadsheets manually.",
         "affectedTeam": "Operations",
         "frequency": "monthly",
-        "currentSolution": "Spreadsheets",
+        "currentSolution": "Spreadsheets + Internal systems",
         "solutionGap": "Manual compliance reporting across several systems creates reporting delays and coordination work.",
         "urgency": "high",
         "b2bScore": 9,
@@ -479,7 +479,7 @@
         },
         {
           "label": "currentSolution",
-          "actual": "Spreadsheets",
+          "actual": "Spreadsheets + Internal systems",
           "expected": "contains Spreadsheets",
           "passed": true
         },

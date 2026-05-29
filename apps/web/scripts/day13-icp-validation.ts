@@ -141,6 +141,27 @@ const CASES: ValidationCase[] = [
     },
   },
   {
+    name: "Operations quarterly compliance audit",
+    signal: {
+      affectedTeam: "Operations",
+      rawText:
+        "Operations managers collect compliance information from six internal systems at the end of every quarter. Reporting preparation requires manual spreadsheet consolidation before audits.",
+      currentSolution: "Spreadsheets + Internal systems",
+      solutionGap:
+        "Manual spreadsheet consolidation across several systems creates compliance reporting delays and audit-prep bottlenecks.",
+    },
+    expected: {
+      buyer: "Operations Manager",
+      budgetOwner: "COO",
+      triggerEvent: "Quarterly compliance reporting deadline",
+      companySize: "50-500 employees",
+      industryIncludes: ["B2B"],
+      minConfidence: 85,
+      whyThisBuyerIncludes: "compliance processes",
+      topCandidate: "Operations Manager",
+    },
+  },
+  {
     name: "Sparse unknown team",
     signal: {
       affectedTeam: "Unknown",

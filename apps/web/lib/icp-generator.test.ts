@@ -132,6 +132,21 @@ describe("generateICPFromPainSignal", () => {
     assert.ok(icp.icp_confidence >= 90);
   });
 
+  it("generates quarterly compliance trigger for Operations audit signals", () => {
+    const icp = generateICPFromPainSignal({
+      affectedTeam: "Operations",
+      rawText:
+        "Operations managers collect compliance information from six internal systems at the end of every quarter. Reporting preparation requires manual spreadsheet consolidation before audits.",
+      currentSolution: "Spreadsheets + Internal systems",
+      solutionGap:
+        "Manual spreadsheet consolidation across several systems creates compliance reporting delays and audit-prep bottlenecks.",
+    });
+
+    assert.equal(icp.buyer, "Operations Manager");
+    assert.equal(icp.budget_owner, "COO");
+    assert.equal(icp.trigger_event, "Quarterly compliance reporting deadline");
+  });
+
   it("uses fallback logic when fields are missing", () => {
     const icp = generateICPFromPainSignal({});
 
