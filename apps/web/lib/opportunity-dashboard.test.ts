@@ -26,6 +26,11 @@ describe("shapeOpportunity", () => {
     assert.equal(opportunity.icpGenerated, false);
     assert.equal(opportunity.latestDraft, null);
     assert.equal(opportunity.rawSignalText, "Manual spreadsheet reporting handoffs");
+    assert.equal(opportunity.frequency, "Unknown");
+    assert.equal(opportunity.currentSolution, "Unknown");
+    assert.equal(opportunity.solutionGap, "Unknown");
+    assert.equal(opportunity.founderConviction, null);
+    assert.equal(opportunity.interviewCount, 0);
   });
 
   it("handles missing raw input gracefully", () => {
@@ -91,5 +96,39 @@ describe("shapeOpportunity", () => {
     });
 
     assert.equal(opportunity.hasHumanEdits, false);
+  });
+
+  it("shapes opportunity discovery fields and interview count", () => {
+    const opportunity = shapeOpportunity({
+      id: "pain-1",
+      frequency: "weekly",
+      currentSolution: "spreadsheets",
+      solutionGap: "no owner",
+      founderConviction: 9,
+      _count: {
+        interviews: 2,
+      },
+    });
+
+    assert.equal(opportunity.frequency, "weekly");
+    assert.equal(opportunity.currentSolution, "spreadsheets");
+    assert.equal(opportunity.solutionGap, "no owner");
+    assert.equal(opportunity.founderConviction, 9);
+    assert.equal(opportunity.interviewCount, 2);
+  });
+
+  it("handles missing frequency and solution gap", () => {
+    const opportunity = shapeOpportunity({
+      id: "pain-1",
+      frequency: null,
+      solutionGap: null,
+      _count: {
+        interviews: 0,
+      },
+    });
+
+    assert.equal(opportunity.frequency, "Unknown");
+    assert.equal(opportunity.solutionGap, "Unknown");
+    assert.equal(opportunity.interviewCount, 0);
   });
 });

@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { FounderConvictionEditor } from "@/components/founder-conviction-editor";
 import { GenerateDraftButton } from "@/components/message-draft-actions";
 import { OpportunityReviewActions } from "@/components/opportunity-review-actions";
 import {
@@ -172,6 +173,37 @@ export function OpportunityDashboard({
                       </dt>
                       <dd>{item.monetizationScore}</dd>
                     </div>
+                    <div>
+                      <dt className="font-medium uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
+                        Interviews
+                      </dt>
+                      <dd>{item.interviewCount}</dd>
+                    </div>
+                  </dl>
+
+                  <dl className="grid grid-cols-1 gap-2 rounded-xl border border-zinc-200 bg-zinc-50/80 p-3 text-xs text-zinc-500 dark:border-zinc-800 dark:bg-zinc-900/60 dark:text-zinc-400 sm:grid-cols-2">
+                    <div>
+                      <dt className="font-medium text-zinc-700 dark:text-zinc-200">Frequency</dt>
+                      <dd>{item.frequency}</dd>
+                    </div>
+                    <div>
+                      <dt className="font-medium text-zinc-700 dark:text-zinc-200">
+                        Current Solution
+                      </dt>
+                      <dd>{item.currentSolution}</dd>
+                    </div>
+                    <div className="sm:col-span-2">
+                      <dt className="font-medium text-zinc-700 dark:text-zinc-200">
+                        Solution Gap
+                      </dt>
+                      <dd>{item.solutionGap}</dd>
+                    </div>
+                    <div className="sm:col-span-2">
+                      <dt className="font-medium text-zinc-700 dark:text-zinc-200">
+                        Founder Conviction
+                      </dt>
+                      <dd>{item.founderConviction ?? "Not scored"}</dd>
+                    </div>
                   </dl>
 
                   <p className="rounded-xl border border-zinc-200 bg-white/70 px-3 py-2 text-xs leading-relaxed text-zinc-600 dark:border-zinc-800 dark:bg-zinc-950/60 dark:text-zinc-300">
@@ -248,6 +280,15 @@ export function OpportunityDashboard({
                     opportunityId={item.id}
                     currentStatus={item.reviewStatus}
                   />
+                  <div className="mt-3 rounded-2xl border border-zinc-200 bg-zinc-50/80 p-3 dark:border-zinc-800 dark:bg-zinc-900/60">
+                    <FounderConvictionEditor
+                      opportunityId={item.id}
+                      founderConviction={item.founderConviction}
+                    />
+                    <p className="mt-3 text-xs text-zinc-500 dark:text-zinc-400">
+                      Interviews: {item.interviewCount}
+                    </p>
+                  </div>
                   <div className="mt-3 rounded-2xl border border-zinc-200 bg-zinc-50/80 p-3 text-xs text-zinc-500 dark:border-zinc-800 dark:bg-zinc-900/60 dark:text-zinc-400">
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <p className="font-semibold text-zinc-700 dark:text-zinc-200">

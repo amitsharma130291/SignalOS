@@ -37,6 +37,10 @@ async function getPainSignalsForDashboard() {
     possibleIcp: true,
     monetizationScore: true,
     outreachAngle: true,
+    frequency: true,
+    currentSolution: true,
+    solutionGap: true,
+    founderConviction: true,
     b2bScore: true,
     status: true,
     targetTitles: true,
@@ -94,6 +98,11 @@ async function getPainSignalsForDashboard() {
             reviewNotes: true,
             reviewedAt: true,
             generatedAt: true,
+          },
+        },
+        _count: {
+          select: {
+            interviews: true,
           },
         },
       },

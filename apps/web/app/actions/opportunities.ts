@@ -2,9 +2,15 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
+import { parseFounderConviction } from "@/lib/opportunity-validation";
 import { isReviewStatus } from "@/lib/review-status";
 
 type ReviewStatusActionState = {
+  status: "idle" | "success" | "error";
+  message?: string;
+};
+
+type FounderConvictionActionState = {
   status: "idle" | "success" | "error";
   message?: string;
 };
@@ -31,4 +37,33 @@ export async function updateOpportunityReviewStatus(
 
   revalidatePath("/opportunities");
   return { status: "success", message: "Review status updated." };
+}
+
+export async function updateFounderConviction(
+  _prevState: FounderConvictionActionState,
+  formData: FormData,
+): Promise<FounderConvictionActionState> {
+  const painSignalId = String(formData.get("painSignalId") ?? "").trim();
+
+  if (!painSignalId) {
+    return { status: "error", message: "Pain signal id is required." };
+  }
+
+  let founderConviction: number | null;
+  try {
+    founderConviction = parseFounderConviction(formData.get("founderConviction"));
+  } catch (error) {
+    return {
+      status: "error",
+      message: error instanceof Error ? error.message : "Invalid founder conviction.",
+    };
+  }
+
+  await prisma.painSignal.update({
+    where: { id: painSignalId },
+    data: { founderConviction },
+  });
+
+  revalidatePath("/opportunities");
+  return { status: "success", message: "Founder conviction saved." };
 }

@@ -7,15 +7,14 @@ datasource db {
 }
 
 model RawInput {
-  id         String   @id @default(uuid()) @db.Uuid
-  inputType  String   @default("manual_note") @map("input_type")
-  sourceUrl  String?  @map("source_url")
-  sourceName String?  @map("source_name")
-  rawText    String   @map("raw_text")
-  status     String   @default("new")
-  metadata   Json     @default("{}")
-  createdAt  DateTime @default(now()) @map("created_at")
-
+  id          String       @id @default(uuid()) @db.Uuid
+  inputType   String       @default("manual_note") @map("input_type")
+  sourceUrl   String?      @map("source_url")
+  sourceName  String?      @map("source_name")
+  rawText     String       @map("raw_text")
+  status      String       @default("new")
+  metadata    Json         @default("{}")
+  createdAt   DateTime     @default(now()) @map("created_at")
   painSignals PainSignal[]
 
   @@index([inputType])
@@ -25,57 +24,56 @@ model RawInput {
 }
 
 model PainSignal {
-  id         String  @id @default(uuid()) @db.Uuid
-  rawInputId String? @map("raw_input_id") @db.Uuid
-
-  pain               String
-  b2bScore           Float?  @map("b2b_score")
-  urgency            String?
-  affectedTeam       String? @map("affected_team")
-  existingWorkaround String? @map("existing_workaround")
-  possibleIcp        String? @map("possible_icp")
-  monetizationScore  Float?  @map("monetization_score")
-  outreachAngle      String? @map("outreach_angle")
-
-  targetTitles        Json?     @map("target_titles")
-  companySize         String?   @map("company_size")
-  industry            String?
-  buyer               String?
-  budgetOwner         String?   @map("budget_owner")
-  triggerEvent        String?   @map("trigger_event")
-  outreachAngleRefined String?  @map("outreach_angle_refined")
-  icpGeneratedAt      DateTime? @map("icp_generated_at")
-
-  status        String  @default("new")
-  aiModel       String? @map("ai_model")
-  promptVersion String? @map("prompt_version")
-  aiOutput      Json    @default("{}") @map("ai_output")
-
-  humanPain                 String?   @map("human_pain")
-  humanUrgency              String?   @map("human_urgency")
-  humanAffectedTeam         String?   @map("human_affected_team")
-  humanExistingWorkaround   String?   @map("human_existing_workaround")
-  humanPossibleIcp          String?   @map("human_possible_icp")
-  humanMonetizationScore    Float?    @map("human_monetization_score")
-  humanOutreachAngle        String?   @map("human_outreach_angle")
-  humanTargetTitles         Json?     @map("human_target_titles")
-  humanCompanySize          String?   @map("human_company_size")
-  humanIndustry             String?   @map("human_industry")
-  humanBuyer                String?   @map("human_buyer")
-  humanBudgetOwner          String?   @map("human_budget_owner")
-  humanTriggerEvent         String?   @map("human_trigger_event")
-  humanOutreachAngleRefined String?   @map("human_outreach_angle_refined")
-  humanNotes                String?   @map("human_notes")
-  angleFeedback             String?   @map("angle_feedback")
-  reviewedAt                DateTime? @map("reviewed_at")
-
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  rawInput  RawInput?  @relation(fields: [rawInputId], references: [id], onDelete: SetNull)
-  campaigns Campaign[]
-  messages  Message[]
-  outreachDraft OutreachDraft?
+  id                        String         @id @default(uuid()) @db.Uuid
+  rawInputId                String?        @map("raw_input_id") @db.Uuid
+  pain                      String
+  b2bScore                  Float?         @map("b2b_score")
+  urgency                   String?
+  affectedTeam              String?        @map("affected_team")
+  existingWorkaround        String?        @map("existing_workaround")
+  possibleIcp               String?        @map("possible_icp")
+  monetizationScore         Float?         @map("monetization_score")
+  outreachAngle             String?        @map("outreach_angle")
+  status                    String         @default("new")
+  aiModel                   String?        @map("ai_model")
+  promptVersion             String?        @map("prompt_version")
+  aiOutput                  Json           @default("{}") @map("ai_output")
+  createdAt                 DateTime       @default(now()) @map("created_at")
+  updatedAt                 DateTime       @updatedAt @map("updated_at")
+  targetTitles              Json?          @map("target_titles")
+  companySize               String?        @map("company_size")
+  industry                  String?
+  buyer                     String?
+  budgetOwner               String?        @map("budget_owner")
+  triggerEvent              String?        @map("trigger_event")
+  outreachAngleRefined      String?        @map("outreach_angle_refined")
+  icpGeneratedAt            DateTime?      @map("icp_generated_at") @db.Timestamptz(6)
+  humanPain                 String?        @map("human_pain")
+  humanUrgency              String?        @map("human_urgency")
+  humanAffectedTeam         String?        @map("human_affected_team")
+  humanExistingWorkaround   String?        @map("human_existing_workaround")
+  humanPossibleIcp          String?        @map("human_possible_icp")
+  humanMonetizationScore    Float?         @map("human_monetization_score")
+  humanOutreachAngle        String?        @map("human_outreach_angle")
+  humanTargetTitles         Json?          @map("human_target_titles")
+  humanCompanySize          String?        @map("human_company_size")
+  humanIndustry             String?        @map("human_industry")
+  humanBuyer                String?        @map("human_buyer")
+  humanBudgetOwner          String?        @map("human_budget_owner")
+  humanTriggerEvent         String?        @map("human_trigger_event")
+  humanOutreachAngleRefined String?        @map("human_outreach_angle_refined")
+  humanNotes                String?        @map("human_notes")
+  angleFeedback             String?        @map("angle_feedback")
+  reviewedAt                DateTime?      @map("reviewed_at")
+  frequency                 String?
+  currentSolution           String?        @map("current_solution")
+  solutionGap               String?        @map("solution_gap")
+  founderConviction         Int?           @map("founder_conviction")
+  campaigns                 Campaign[]
+  interviews                Interview[]
+  messages                  Message[]
+  outreachDraft             OutreachDraft?
+  rawInput                  RawInput?      @relation(fields: [rawInputId], references: [id])
 
   @@index([status])
   @@index([b2bScore])
@@ -84,29 +82,43 @@ model PainSignal {
   @@map("pain_signals")
 }
 
+model Interview {
+  id            String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  opportunityId String     @map("opportunity_id") @db.Uuid
+  contactName   String?    @map("contact_name")
+  company       String?
+  title         String?
+  status        String     @default("scheduled")
+  notes         String?
+  createdAt     DateTime   @default(now()) @map("created_at")
+  updatedAt     DateTime   @updatedAt @map("updated_at")
+  opportunity   PainSignal @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+
+  @@index([opportunityId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("interviews")
+}
+
 model OutreachDraft {
-  id           String @id @default(uuid()) @db.Uuid
-  painSignalId String @unique @map("pain_signal_id") @db.Uuid
-
-  generatedDraft  Json   @map("generated_draft")
-  qualityScore    Float  @default(0) @map("quality_score")
-  qualityWarnings Json   @default("[]") @map("quality_warnings")
-  status          String @default("draft_pending")
-
-  humanSubject         String? @map("human_subject")
-  humanColdEmail       String? @map("human_cold_email")
-  humanLinkedinMessage String? @map("human_linkedin_message")
-  humanCta             String? @map("human_cta")
-  humanHook            String? @map("human_hook")
-  humanNotes           String? @map("human_notes")
-  humanEditedAt        DateTime? @map("human_edited_at")
-  reviewedAt           DateTime? @map("reviewed_at")
-
-  generatedAt DateTime @default(now()) @map("generated_at")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
-
-  painSignal PainSignal @relation(fields: [painSignalId], references: [id], onDelete: Cascade)
+  id                   String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  painSignalId         String     @unique @map("pain_signal_id") @db.Uuid
+  generatedDraft       Json       @map("generated_draft")
+  qualityScore         Float      @default(0) @map("quality_score")
+  qualityWarnings      Json       @default("[]") @map("quality_warnings")
+  status               String     @default("draft_pending")
+  humanSubject         String?    @map("human_subject")
+  humanColdEmail       String?    @map("human_cold_email")
+  humanLinkedinMessage String?    @map("human_linkedin_message")
+  humanCta             String?    @map("human_cta")
+  humanHook            String?    @map("human_hook")
+  humanNotes           String?    @map("human_notes")
+  humanEditedAt        DateTime?  @map("human_edited_at")
+  reviewedAt           DateTime?  @map("reviewed_at")
+  generatedAt          DateTime   @default(now()) @map("generated_at")
+  createdAt            DateTime   @default(now()) @map("created_at")
+  updatedAt            DateTime   @updatedAt @map("updated_at")
+  painSignal           PainSignal @relation(fields: [painSignalId], references: [id], onDelete: Cascade)
 
   @@index([status])
   @@index([generatedAt])
@@ -128,9 +140,8 @@ model Company {
   metadata        Json      @default("{}")
   createdAt       DateTime  @default(now()) @map("created_at")
   updatedAt       DateTime  @updatedAt @map("updated_at")
-
-  contacts Contact[]
-  messages Message[]
+  contacts        Contact[]
+  messages        Message[]
 
   @@index([domain])
   @@index([doNotContact])
@@ -138,16 +149,14 @@ model Company {
 }
 
 model Contact {
-  id        String  @id @default(uuid()) @db.Uuid
-  companyId String? @map("company_id") @db.Uuid
-
-  firstName   String? @map("first_name")
-  lastName    String? @map("last_name")
-  fullName    String? @map("full_name")
-  email       String? @unique
-  title       String?
-  linkedinUrl String? @map("linkedin_url")
-
+  id                   String    @id @default(uuid()) @db.Uuid
+  companyId            String?   @map("company_id") @db.Uuid
+  firstName            String?   @map("first_name")
+  lastName             String?   @map("last_name")
+  fullName             String?   @map("full_name")
+  email                String?   @unique
+  title                String?
+  linkedinUrl          String?   @map("linkedin_url")
   status               String    @default("new")
   emailVerified        Boolean   @default(false) @map("email_verified")
   verificationProvider String?   @map("verification_provider")
@@ -155,15 +164,13 @@ model Contact {
   verifiedAt           DateTime? @map("verified_at")
   lastContactedAt      DateTime? @map("last_contacted_at")
   unsubscribedAt       DateTime? @map("unsubscribed_at")
-
-  source    String?
-  metadata  Json     @default("{}")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  company  Company?  @relation(fields: [companyId], references: [id], onDelete: SetNull)
-  messages Message[]
-  replies  Reply[]
+  source               String?
+  metadata             Json      @default("{}")
+  createdAt            DateTime  @default(now()) @map("created_at")
+  updatedAt            DateTime  @updatedAt @map("updated_at")
+  company              Company?  @relation(fields: [companyId], references: [id])
+  messages             Message[]
+  replies              Reply[]
 
   @@index([email])
   @@index([status])
@@ -172,36 +179,29 @@ model Contact {
 }
 
 model Campaign {
-  id           String  @id @default(uuid()) @db.Uuid
-  painSignalId String? @map("pain_signal_id") @db.Uuid
-
-  name   String
-  status String @default("draft")
-
-  icpDescription   String?  @map("icp_description")
-  targetTitles     String[] @default([]) @map("target_titles")
-  targetIndustries String[] @default([]) @map("target_industries")
-  companySizeRange String?  @map("company_size_range")
-  outreachAngle    String?  @map("outreach_angle")
-
-  smartleadCampaignId String? @map("smartlead_campaign_id")
-
-  emailsSent           Int @default(0) @map("emails_sent")
-  repliesCount         Int @default(0) @map("replies_count")
-  positiveRepliesCount Int @default(0) @map("positive_replies_count")
-  bouncesCount         Int @default(0) @map("bounces_count")
-
-  startedAt   DateTime? @map("started_at")
-  pausedAt    DateTime? @map("paused_at")
-  completedAt DateTime? @map("completed_at")
-  metadata    Json      @default("{}")
-
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  painSignal PainSignal? @relation(fields: [painSignalId], references: [id], onDelete: SetNull)
-  messages   Message[]
-  replies    Reply[]
+  id                   String      @id @default(uuid()) @db.Uuid
+  painSignalId         String?     @map("pain_signal_id") @db.Uuid
+  name                 String
+  status               String      @default("draft")
+  icpDescription       String?     @map("icp_description")
+  targetTitles         String[]    @default([]) @map("target_titles")
+  targetIndustries     String[]    @default([]) @map("target_industries")
+  companySizeRange     String?     @map("company_size_range")
+  outreachAngle        String?     @map("outreach_angle")
+  smartleadCampaignId  String?     @map("smartlead_campaign_id")
+  emailsSent           Int         @default(0) @map("emails_sent")
+  repliesCount         Int         @default(0) @map("replies_count")
+  positiveRepliesCount Int         @default(0) @map("positive_replies_count")
+  bouncesCount         Int         @default(0) @map("bounces_count")
+  startedAt            DateTime?   @map("started_at")
+  pausedAt             DateTime?   @map("paused_at")
+  completedAt          DateTime?   @map("completed_at")
+  metadata             Json        @default("{}")
+  createdAt            DateTime    @default(now()) @map("created_at")
+  updatedAt            DateTime    @updatedAt @map("updated_at")
+  painSignal           PainSignal? @relation(fields: [painSignalId], references: [id])
+  messages             Message[]
+  replies              Reply[]
 
   @@index([status])
   @@index([painSignalId])
@@ -209,41 +209,35 @@ model Campaign {
 }
 
 model Message {
-  id         String  @id @default(uuid()) @db.Uuid
-  campaignId String? @map("campaign_id") @db.Uuid
-  painSignalId String? @map("pain_signal_id") @db.Uuid
-  contactId  String? @map("contact_id") @db.Uuid
-  companyId  String? @map("company_id") @db.Uuid
-
-  subject      String?
-  body         String
-  status       String  @default("draft")
-  generatedAt  DateTime @default(now()) @map("generated_at")
-  sequenceStep Int     @default(1) @map("sequence_step")
-
-  requiresHumanReview Boolean   @default(true) @map("requires_human_review")
-  approvedAt          DateTime? @map("approved_at")
-  rejectedAt          DateTime? @map("rejected_at")
-  queuedAt            DateTime? @map("queued_at")
-  sentAt              DateTime? @map("sent_at")
-
-  smartleadMessageId String? @map("smartlead_message_id")
-  errorMessage       String? @map("error_message")
-  metadata           Json    @default("{}")
-
-  humanSubject String?   @map("human_subject")
-  humanBody    String?   @map("human_body")
-  reviewNotes  String?   @map("review_notes")
-  reviewedAt   DateTime? @map("reviewed_at")
-
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  campaign Campaign? @relation(fields: [campaignId], references: [id], onDelete: Cascade)
-  painSignal PainSignal? @relation(fields: [painSignalId], references: [id], onDelete: SetNull)
-  contact  Contact?  @relation(fields: [contactId], references: [id], onDelete: Cascade)
-  company  Company?  @relation(fields: [companyId], references: [id], onDelete: SetNull)
-  replies  Reply[]
+  id                  String      @id @default(uuid()) @db.Uuid
+  campaignId          String?     @map("campaign_id") @db.Uuid
+  contactId           String?     @map("contact_id") @db.Uuid
+  companyId           String?     @map("company_id") @db.Uuid
+  subject             String?
+  body                String
+  status              String      @default("draft")
+  sequenceStep        Int         @default(1) @map("sequence_step")
+  requiresHumanReview Boolean     @default(true) @map("requires_human_review")
+  approvedAt          DateTime?   @map("approved_at")
+  rejectedAt          DateTime?   @map("rejected_at")
+  queuedAt            DateTime?   @map("queued_at")
+  sentAt              DateTime?   @map("sent_at")
+  smartleadMessageId  String?     @map("smartlead_message_id")
+  errorMessage        String?     @map("error_message")
+  metadata            Json        @default("{}")
+  createdAt           DateTime    @default(now()) @map("created_at")
+  updatedAt           DateTime    @updatedAt @map("updated_at")
+  painSignalId        String?     @map("pain_signal_id") @db.Uuid
+  generatedAt         DateTime    @default(now()) @map("generated_at")
+  humanSubject        String?     @map("human_subject")
+  humanBody           String?     @map("human_body")
+  reviewNotes         String?     @map("review_notes")
+  reviewedAt          DateTime?   @map("reviewed_at")
+  campaign            Campaign?   @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  company             Company?    @relation(fields: [companyId], references: [id])
+  contact             Contact?    @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  painSignal          PainSignal? @relation(fields: [painSignalId], references: [id])
+  replies             Reply[]
 
   @@index([status])
   @@index([reviewedAt])
@@ -257,27 +251,23 @@ model Message {
 }
 
 model Reply {
-  id         String  @id @default(uuid()) @db.Uuid
-  messageId  String? @map("message_id") @db.Uuid
-  campaignId String? @map("campaign_id") @db.Uuid
-  contactId  String? @map("contact_id") @db.Uuid
-
-  rawBody          String  @map("raw_body")
-  cleanedBody      String? @map("cleaned_body")
-  category         String  @default("unknown")
+  id               String    @id @default(uuid()) @db.Uuid
+  messageId        String?   @map("message_id") @db.Uuid
+  campaignId       String?   @map("campaign_id") @db.Uuid
+  contactId        String?   @map("contact_id") @db.Uuid
+  rawBody          String    @map("raw_body")
+  cleanedBody      String?   @map("cleaned_body")
+  category         String    @default("unknown")
   confidence       Float?
-  needsHumanReview Boolean @default(true) @map("needs_human_review")
-
-  calendarLinkSent Boolean @default(false) @map("calendar_link_sent")
-  demoBooked       Boolean @default(false) @map("demo_booked")
-
-  receivedAt DateTime @default(now()) @map("received_at")
-  metadata   Json     @default("{}")
-  createdAt  DateTime @default(now()) @map("created_at")
-
-  message  Message?  @relation(fields: [messageId], references: [id], onDelete: SetNull)
-  campaign Campaign? @relation(fields: [campaignId], references: [id], onDelete: SetNull)
-  contact  Contact?  @relation(fields: [contactId], references: [id], onDelete: SetNull)
+  needsHumanReview Boolean   @default(true) @map("needs_human_review")
+  calendarLinkSent Boolean   @default(false) @map("calendar_link_sent")
+  demoBooked       Boolean   @default(false) @map("demo_booked")
+  receivedAt       DateTime  @default(now()) @map("received_at")
+  metadata         Json      @default("{}")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  campaign         Campaign? @relation(fields: [campaignId], references: [id])
+  contact          Contact?  @relation(fields: [contactId], references: [id])
+  message          Message?  @relation(fields: [messageId], references: [id])
 
   @@index([category])
   @@index([campaignId])

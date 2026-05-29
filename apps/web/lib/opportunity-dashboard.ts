@@ -1,5 +1,6 @@
 import type { Prisma } from "@prisma/client";
 import { calculateOpportunityScore } from "./opportunity-score.ts";
+import { getInterviewCount } from "./opportunity-validation.ts";
 import { hasHumanEditedState, preferHumanValue } from "./review-overrides.ts";
 import { isReviewStatus, type ReviewStatus } from "./review-status.ts";
 
@@ -30,6 +31,10 @@ export type PainSignalForOpportunity = {
   possibleIcp?: string | null;
   monetizationScore?: number | null;
   outreachAngle?: string | null;
+  frequency?: string | null;
+  currentSolution?: string | null;
+  solutionGap?: string | null;
+  founderConviction?: number | null;
   b2bScore?: number | null;
   status?: string | null;
   targetTitles?: Prisma.JsonValue | null;
@@ -59,6 +64,9 @@ export type PainSignalForOpportunity = {
   reviewedAt?: Date | string | null;
   rawInput?: RawInputForOpportunity | null;
   messages?: MessageDraftForOpportunity[] | null;
+  _count?: {
+    interviews?: number | null;
+  } | null;
 };
 
 export type OpportunityDashboardItem = {
@@ -74,6 +82,11 @@ export type OpportunityDashboardItem = {
   possibleIcp: string;
   monetizationScore: number;
   outreachAngle: string;
+  frequency: string;
+  currentSolution: string;
+  solutionGap: string;
+  founderConviction: number | null;
+  interviewCount: number;
   targetTitles: string[];
   companySize: string;
   industry: string;
@@ -168,6 +181,11 @@ export function shapeOpportunity(signal: PainSignalForOpportunity): OpportunityD
     possibleIcp: preferHumanValue(signal.humanPossibleIcp, signal.possibleIcp ?? "Unknown"),
     monetizationScore,
     outreachAngle: preferHumanValue(signal.humanOutreachAngle, signal.outreachAngle ?? "Unknown"),
+    frequency: signal.frequency?.trim() || "Unknown",
+    currentSolution: signal.currentSolution?.trim() || "Unknown",
+    solutionGap: signal.solutionGap?.trim() || "Unknown",
+    founderConviction: signal.founderConviction ?? null,
+    interviewCount: getInterviewCount(signal._count?.interviews),
     targetTitles,
     companySize: preferHumanValue(signal.humanCompanySize, signal.companySize ?? "Unknown"),
     industry: preferHumanValue(signal.humanIndustry, signal.industry ?? "Unknown"),
