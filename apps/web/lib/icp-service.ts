@@ -4,6 +4,9 @@ export type ICPPainSignalRecord = ICPPainSignalInput & {
   id: string;
   targetTitles?: unknown;
   icpGeneratedAt?: Date | string | null;
+  rawInput?: {
+    rawText?: string | null;
+  } | null;
 };
 
 export type ICPPainSignalUpdate = GeneratedICP & {
@@ -44,7 +47,10 @@ export async function generateICPForPainSignal(
     };
   }
 
-  const icp = generateICPFromPainSignal(painSignal);
+  const icp = generateICPFromPainSignal({
+    ...painSignal,
+    rawText: painSignal.rawText ?? painSignal.rawInput?.rawText,
+  });
   const updatedPainSignal = await repository.updatePainSignalICP(painSignalId, {
     ...icp,
     icp_generated_at: new Date(),

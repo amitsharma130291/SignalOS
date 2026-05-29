@@ -15,6 +15,13 @@ function createPrismaICPRepository(): ICPRepository {
           possibleIcp: true,
           outreachAngle: true,
           monetizationScore: true,
+          currentSolution: true,
+          solutionGap: true,
+          rawInput: {
+            select: {
+              rawText: true,
+            },
+          },
           targetTitles: true,
           icpGeneratedAt: true,
         },

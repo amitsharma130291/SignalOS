@@ -1,0 +1,763 @@
+{
+  "generatedAt": "2026-05-29T22:03:30.750Z",
+  "pipeline": "generateICPFromPainSignal",
+  "totals": {
+    "tests": 7,
+    "passedTests": 7,
+    "failedTests": 0,
+    "totalAssertions": 56,
+    "passedAssertions": 56,
+    "failedAssertions": 0,
+    "passPercentage": 100
+  },
+  "results": [
+    {
+      "name": "Finance Ops reconciliation",
+      "signal": {
+        "affectedTeam": "Finance Ops",
+        "pain": "Finance Ops manually reconciles Stripe payouts with NetSuite through spreadsheets.",
+        "currentSolution": "Stripe + NetSuite + Spreadsheets",
+        "solutionGap": "Manual reconciliation creates exception tracking and month-end close delays."
+      },
+      "icp": {
+        "target_titles": [
+          "Director Finance Operations",
+          "Controller",
+          "VP Finance"
+        ],
+        "company_size": "500+ employees",
+        "industry": "SaaS",
+        "buyer": "Director Finance Operations",
+        "budget_owner": "VP Finance",
+        "trigger_event": "Month-end close delays",
+        "outreach_angle_refined": "Help director finance operations teams reduce finance ops manually reconciles stripe payouts with netsuite through spreadsheets.",
+        "icp_candidates": [
+          {
+            "title": "Director Finance Operations",
+            "confidence": 93
+          },
+          {
+            "title": "Controller",
+            "confidence": 82
+          },
+          {
+            "title": "VP Finance",
+            "confidence": 73
+          }
+        ],
+        "ranked_industries": [
+          {
+            "industry": "SaaS",
+            "confidence": 90
+          },
+          {
+            "industry": "Fintech",
+            "confidence": 82
+          },
+          {
+            "industry": "Marketplace",
+            "confidence": 74
+          }
+        ],
+        "company_size_confidence": 84,
+        "company_size_signals": [
+          "NetSuite"
+        ],
+        "icp_confidence": 100,
+        "why_this_buyer": "Owns reconciliation accuracy and month-end close."
+      },
+      "assertions": [
+        {
+          "label": "buyer",
+          "actual": "Director Finance Operations",
+          "expected": "Director Finance Operations",
+          "passed": true
+        },
+        {
+          "label": "budget owner",
+          "actual": "VP Finance",
+          "expected": "VP Finance",
+          "passed": true
+        },
+        {
+          "label": "trigger event",
+          "actual": "Month-end close delays",
+          "expected": "Month-end close delays",
+          "passed": true
+        },
+        {
+          "label": "company size",
+          "actual": "500+ employees",
+          "expected": "500+ employees",
+          "passed": true
+        },
+        {
+          "label": "ranked industries",
+          "actual": [
+            "SaaS",
+            "Fintech",
+            "Marketplace"
+          ],
+          "expected": [
+            "SaaS",
+            "Fintech",
+            "Marketplace"
+          ],
+          "passed": true
+        },
+        {
+          "label": "icp confidence",
+          "actual": 100,
+          "expected": ">= 90",
+          "passed": true
+        },
+        {
+          "label": "why this buyer",
+          "actual": "Owns reconciliation accuracy and month-end close.",
+          "expected": "contains month-end close",
+          "passed": true
+        },
+        {
+          "label": "top candidate",
+          "actual": "Director Finance Operations",
+          "expected": "Director Finance Operations",
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "failedAssertions": []
+    },
+    {
+      "name": "Sales Ops forecasting",
+      "signal": {
+        "affectedTeam": "Sales Ops",
+        "pain": "Sales Ops teams track CRM reporting updates across HubSpot and Salesforce.",
+        "currentSolution": "HubSpot + Salesforce + Spreadsheets",
+        "solutionGap": "Outdated CRM data creates forecasting delays and reporting accuracy issues."
+      },
+      "icp": {
+        "target_titles": [
+          "RevOps Manager",
+          "Sales Operations Lead",
+          "VP Revenue Operations"
+        ],
+        "company_size": "500+ employees",
+        "industry": "B2B SaaS",
+        "buyer": "RevOps Manager",
+        "budget_owner": "VP Revenue",
+        "trigger_event": "Forecast accuracy concerns",
+        "outreach_angle_refined": "Help revops manager teams reduce sales ops teams track crm reporting updates across hubspot and salesforce.",
+        "icp_candidates": [
+          {
+            "title": "RevOps Manager",
+            "confidence": 92
+          },
+          {
+            "title": "Sales Operations Lead",
+            "confidence": 82
+          },
+          {
+            "title": "VP Revenue Operations",
+            "confidence": 72
+          }
+        ],
+        "ranked_industries": [
+          {
+            "industry": "B2B SaaS",
+            "confidence": 76
+          }
+        ],
+        "company_size_confidence": 84,
+        "company_size_signals": [
+          "Salesforce"
+        ],
+        "icp_confidence": 100,
+        "why_this_buyer": "Owns forecast accuracy and pipeline reporting."
+      },
+      "assertions": [
+        {
+          "label": "buyer",
+          "actual": "RevOps Manager",
+          "expected": "RevOps Manager",
+          "passed": true
+        },
+        {
+          "label": "budget owner",
+          "actual": "VP Revenue",
+          "expected": "VP Revenue",
+          "passed": true
+        },
+        {
+          "label": "trigger event",
+          "actual": "Forecast accuracy concerns",
+          "expected": "Forecast accuracy concerns",
+          "passed": true
+        },
+        {
+          "label": "company size",
+          "actual": "500+ employees",
+          "expected": "500+ employees",
+          "passed": true
+        },
+        {
+          "label": "ranked industries",
+          "actual": [
+            "B2B SaaS"
+          ],
+          "expected": [
+            "B2B SaaS"
+          ],
+          "passed": true
+        },
+        {
+          "label": "icp confidence",
+          "actual": 100,
+          "expected": ">= 90",
+          "passed": true
+        },
+        {
+          "label": "why this buyer",
+          "actual": "Owns forecast accuracy and pipeline reporting.",
+          "expected": "contains forecast accuracy",
+          "passed": true
+        },
+        {
+          "label": "top candidate",
+          "actual": "RevOps Manager",
+          "expected": "RevOps Manager",
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "failedAssertions": []
+    },
+    {
+      "name": "Customer Success renewals",
+      "signal": {
+        "affectedTeam": "Customer Success",
+        "pain": "Customer Success teams review Salesforce account health before renewal meetings.",
+        "currentSolution": "Salesforce + Airtable",
+        "solutionGap": "Manual cleanup creates reporting delays and renewal visibility gaps."
+      },
+      "icp": {
+        "target_titles": [
+          "Head of Customer Success",
+          "Customer Success Operations Lead",
+          "VP Customer Success"
+        ],
+        "company_size": "500+ employees",
+        "industry": "SaaS",
+        "buyer": "Head of Customer Success",
+        "budget_owner": "VP Customer Success",
+        "trigger_event": "Renewal visibility problems",
+        "outreach_angle_refined": "Help head of customer success teams reduce customer success teams review salesforce account health before renewal meetings.",
+        "icp_candidates": [
+          {
+            "title": "Head of Customer Success",
+            "confidence": 92
+          },
+          {
+            "title": "Customer Success Operations Lead",
+            "confidence": 81
+          },
+          {
+            "title": "VP Customer Success",
+            "confidence": 70
+          }
+        ],
+        "ranked_industries": [
+          {
+            "industry": "SaaS",
+            "confidence": 88
+          },
+          {
+            "industry": "B2B SaaS",
+            "confidence": 76
+          }
+        ],
+        "company_size_confidence": 84,
+        "company_size_signals": [
+          "Salesforce"
+        ],
+        "icp_confidence": 100,
+        "why_this_buyer": "Responsible for renewal visibility and customer health."
+      },
+      "assertions": [
+        {
+          "label": "buyer",
+          "actual": "Head of Customer Success",
+          "expected": "Head of Customer Success",
+          "passed": true
+        },
+        {
+          "label": "budget owner",
+          "actual": "VP Customer Success",
+          "expected": "VP Customer Success",
+          "passed": true
+        },
+        {
+          "label": "trigger event",
+          "actual": "Renewal visibility problems",
+          "expected": "Renewal visibility problems",
+          "passed": true
+        },
+        {
+          "label": "company size",
+          "actual": "500+ employees",
+          "expected": "500+ employees",
+          "passed": true
+        },
+        {
+          "label": "ranked industries",
+          "actual": [
+            "SaaS",
+            "B2B SaaS"
+          ],
+          "expected": [
+            "SaaS"
+          ],
+          "passed": true
+        },
+        {
+          "label": "icp confidence",
+          "actual": 100,
+          "expected": ">= 90",
+          "passed": true
+        },
+        {
+          "label": "why this buyer",
+          "actual": "Responsible for renewal visibility and customer health.",
+          "expected": "contains renewal visibility",
+          "passed": true
+        },
+        {
+          "label": "top candidate",
+          "actual": "Head of Customer Success",
+          "expected": "Head of Customer Success",
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "failedAssertions": []
+    },
+    {
+      "name": "Recruiting bottlenecks",
+      "signal": {
+        "affectedTeam": "Recruiting",
+        "pain": "Recruiting coordinators track candidate status across LinkedIn, Greenhouse, and Slack.",
+        "currentSolution": "LinkedIn + Greenhouse + Slack",
+        "solutionGap": "Scattered interview feedback creates scheduling delays and recruiting coordination bottlenecks."
+      },
+      "icp": {
+        "target_titles": [
+          "Recruiting Operations Lead",
+          "Head of Talent Acquisition",
+          "VP Talent"
+        ],
+        "company_size": "100-1000 employees",
+        "industry": "Technology companies",
+        "buyer": "Recruiting Operations Lead",
+        "budget_owner": "VP Talent",
+        "trigger_event": "Recruiting bottlenecks",
+        "outreach_angle_refined": "Help recruiting operations lead teams reduce recruiting coordinators track candidate status across linkedin, greenhouse, and slack.",
+        "icp_candidates": [
+          {
+            "title": "Recruiting Operations Lead",
+            "confidence": 91
+          },
+          {
+            "title": "Head of Talent Acquisition",
+            "confidence": 80
+          },
+          {
+            "title": "VP Talent",
+            "confidence": 69
+          }
+        ],
+        "ranked_industries": [
+          {
+            "industry": "Technology companies",
+            "confidence": 86
+          },
+          {
+            "industry": "Recruiting-intensive businesses",
+            "confidence": 78
+          }
+        ],
+        "company_size_confidence": 79,
+        "company_size_signals": [
+          "Greenhouse"
+        ],
+        "icp_confidence": 100,
+        "why_this_buyer": "Owns recruiting operations and hiring process efficiency."
+      },
+      "assertions": [
+        {
+          "label": "buyer",
+          "actual": "Recruiting Operations Lead",
+          "expected": "Recruiting Operations Lead",
+          "passed": true
+        },
+        {
+          "label": "budget owner",
+          "actual": "VP Talent",
+          "expected": "VP Talent",
+          "passed": true
+        },
+        {
+          "label": "trigger event",
+          "actual": "Recruiting bottlenecks",
+          "expected": "Recruiting bottlenecks",
+          "passed": true
+        },
+        {
+          "label": "company size",
+          "actual": "100-1000 employees",
+          "expected": "100-1000 employees",
+          "passed": true
+        },
+        {
+          "label": "ranked industries",
+          "actual": [
+            "Technology companies",
+            "Recruiting-intensive businesses"
+          ],
+          "expected": [
+            "Technology companies",
+            "Recruiting-intensive businesses"
+          ],
+          "passed": true
+        },
+        {
+          "label": "icp confidence",
+          "actual": 100,
+          "expected": ">= 90",
+          "passed": true
+        },
+        {
+          "label": "why this buyer",
+          "actual": "Owns recruiting operations and hiring process efficiency.",
+          "expected": "contains recruiting operations",
+          "passed": true
+        },
+        {
+          "label": "top candidate",
+          "actual": "Recruiting Operations Lead",
+          "expected": "Recruiting Operations Lead",
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "failedAssertions": []
+    },
+    {
+      "name": "Support escalations",
+      "signal": {
+        "affectedTeam": "Support",
+        "pain": "Support teams triage Zendesk tickets and Slack escalation handoffs.",
+        "currentSolution": "Zendesk + Slack + Spreadsheets",
+        "solutionGap": "Unclear ownership creates visibility gaps, missed escalations, and response delays."
+      },
+      "icp": {
+        "target_titles": [
+          "Head of Support",
+          "Director of Customer Support",
+          "VP Customer Experience"
+        ],
+        "company_size": "100-1000 employees",
+        "industry": "Customer-support-heavy businesses",
+        "buyer": "Support Manager",
+        "budget_owner": "VP Customer Experience",
+        "trigger_event": "Escalation backlog",
+        "outreach_angle_refined": "Help support manager teams reduce support teams triage zendesk tickets and slack escalation handoffs.",
+        "icp_candidates": [
+          {
+            "title": "Head of Support",
+            "confidence": 92
+          },
+          {
+            "title": "Director of Customer Support",
+            "confidence": 81
+          },
+          {
+            "title": "VP Customer Experience",
+            "confidence": 67
+          }
+        ],
+        "ranked_industries": [
+          {
+            "industry": "Customer-support-heavy businesses",
+            "confidence": 84
+          }
+        ],
+        "company_size_confidence": 79,
+        "company_size_signals": [
+          "Zendesk"
+        ],
+        "icp_confidence": 100,
+        "why_this_buyer": "Responsible for ticket escalation workflows."
+      },
+      "assertions": [
+        {
+          "label": "buyer",
+          "actual": "Support Manager",
+          "expected": "Support Manager",
+          "passed": true
+        },
+        {
+          "label": "budget owner",
+          "actual": "VP Customer Experience",
+          "expected": "VP Customer Experience",
+          "passed": true
+        },
+        {
+          "label": "trigger event",
+          "actual": "Escalation backlog",
+          "expected": "Escalation backlog",
+          "passed": true
+        },
+        {
+          "label": "company size",
+          "actual": "100-1000 employees",
+          "expected": "100-1000 employees",
+          "passed": true
+        },
+        {
+          "label": "ranked industries",
+          "actual": [
+            "Customer-support-heavy businesses"
+          ],
+          "expected": [
+            "Customer-support-heavy businesses"
+          ],
+          "passed": true
+        },
+        {
+          "label": "icp confidence",
+          "actual": 100,
+          "expected": ">= 90",
+          "passed": true
+        },
+        {
+          "label": "why this buyer",
+          "actual": "Responsible for ticket escalation workflows.",
+          "expected": "contains ticket escalation",
+          "passed": true
+        },
+        {
+          "label": "top candidate",
+          "actual": "Head of Support",
+          "expected": "Head of Support",
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "failedAssertions": []
+    },
+    {
+      "name": "Operations compliance",
+      "signal": {
+        "affectedTeam": "Operations",
+        "pain": "Operations managers prepare compliance reports from spreadsheets.",
+        "currentSolution": "Google Sheets + Slack",
+        "solutionGap": "Manual compliance reporting across several systems creates reporting delays."
+      },
+      "icp": {
+        "target_titles": [
+          "Operations Manager",
+          "Head of Operations",
+          "COO"
+        ],
+        "company_size": "50-500 employees",
+        "industry": "B2B",
+        "buyer": "Operations Manager",
+        "budget_owner": "COO",
+        "trigger_event": "Compliance reporting deadlines",
+        "outreach_angle_refined": "Help operations manager teams reduce operations managers prepare compliance reports from spreadsheets.",
+        "icp_candidates": [
+          {
+            "title": "Operations Manager",
+            "confidence": 88
+          },
+          {
+            "title": "Head of Operations",
+            "confidence": 78
+          },
+          {
+            "title": "COO",
+            "confidence": 68
+          }
+        ],
+        "ranked_industries": [
+          {
+            "industry": "B2B",
+            "confidence": 58
+          }
+        ],
+        "company_size_confidence": 76,
+        "company_size_signals": [
+          "Google Sheets",
+          "Slack"
+        ],
+        "icp_confidence": 100,
+        "why_this_buyer": "Responsible for cross-functional reporting and compliance processes."
+      },
+      "assertions": [
+        {
+          "label": "buyer",
+          "actual": "Operations Manager",
+          "expected": "Operations Manager",
+          "passed": true
+        },
+        {
+          "label": "budget owner",
+          "actual": "COO",
+          "expected": "COO",
+          "passed": true
+        },
+        {
+          "label": "trigger event",
+          "actual": "Compliance reporting deadlines",
+          "expected": "Compliance reporting deadlines",
+          "passed": true
+        },
+        {
+          "label": "company size",
+          "actual": "50-500 employees",
+          "expected": "50-500 employees",
+          "passed": true
+        },
+        {
+          "label": "ranked industries",
+          "actual": [
+            "B2B"
+          ],
+          "expected": [
+            "B2B"
+          ],
+          "passed": true
+        },
+        {
+          "label": "icp confidence",
+          "actual": 100,
+          "expected": ">= 85",
+          "passed": true
+        },
+        {
+          "label": "why this buyer",
+          "actual": "Responsible for cross-functional reporting and compliance processes.",
+          "expected": "contains compliance processes",
+          "passed": true
+        },
+        {
+          "label": "top candidate",
+          "actual": "Operations Manager",
+          "expected": "Operations Manager",
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "failedAssertions": []
+    },
+    {
+      "name": "Sparse unknown team",
+      "signal": {
+        "affectedTeam": "Unknown",
+        "pain": "Teams coordinate reporting manually."
+      },
+      "icp": {
+        "target_titles": [
+          "Operations Manager",
+          "Head of Operations",
+          "COO"
+        ],
+        "company_size": "50-500 employees",
+        "industry": "B2B",
+        "buyer": "Operations Manager",
+        "budget_owner": "COO",
+        "trigger_event": "Cross-system reporting complexity",
+        "outreach_angle_refined": "Help operations manager teams reduce teams coordinate reporting manually.",
+        "icp_candidates": [
+          {
+            "title": "Operations Manager",
+            "confidence": 68
+          },
+          {
+            "title": "Head of Operations",
+            "confidence": 61
+          },
+          {
+            "title": "COO",
+            "confidence": 54
+          }
+        ],
+        "ranked_industries": [
+          {
+            "industry": "B2B",
+            "confidence": 58
+          }
+        ],
+        "company_size_confidence": 45,
+        "company_size_signals": [],
+        "icp_confidence": 68,
+        "why_this_buyer": "Responsible for cross-functional reporting and compliance processes."
+      },
+      "assertions": [
+        {
+          "label": "buyer",
+          "actual": "Operations Manager",
+          "expected": "Operations Manager",
+          "passed": true
+        },
+        {
+          "label": "budget owner",
+          "actual": "COO",
+          "expected": "COO",
+          "passed": true
+        },
+        {
+          "label": "trigger event",
+          "actual": "Cross-system reporting complexity",
+          "expected": "Cross-system reporting complexity",
+          "passed": true
+        },
+        {
+          "label": "company size",
+          "actual": "50-500 employees",
+          "expected": "50-500 employees",
+          "passed": true
+        },
+        {
+          "label": "ranked industries",
+          "actual": [
+            "B2B"
+          ],
+          "expected": [
+            "B2B"
+          ],
+          "passed": true
+        },
+        {
+          "label": "icp confidence",
+          "actual": 68,
+          "expected": ">= 40",
+          "passed": true
+        },
+        {
+          "label": "why this buyer",
+          "actual": "Responsible for cross-functional reporting and compliance processes.",
+          "expected": "contains cross-functional reporting",
+          "passed": true
+        },
+        {
+          "label": "top candidate",
+          "actual": "Operations Manager",
+          "expected": "Operations Manager",
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "failedAssertions": []
+    }
+  ]
+}

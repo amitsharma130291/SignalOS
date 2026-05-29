@@ -5,9 +5,11 @@ import { buildICPGenerateHandler } from "./icp-api.ts";
 import { generateICPForPainSignal, type ICPRepository } from "./icp-service.ts";
 
 describe("generateICPFromPainSignal", () => {
-  it("maps Sales Ops pain to revenue operations ICP", () => {
+  it("maps Sales Ops pain to ranked revenue operations ICP", () => {
     const icp = generateICPFromPainSignal({
       affectedTeam: "Sales Ops",
+      currentSolution: "HubSpot + Salesforce + Spreadsheets",
+      solutionGap: "Outdated CRM data and manual verification create forecasting delays.",
       outreachAngle: "Reduce manual reporting handoffs for sales operations teams.",
     });
 
@@ -16,9 +18,13 @@ describe("generateICPFromPainSignal", () => {
       "Sales Operations Lead",
       "VP Revenue Operations",
     ]);
-    assert.equal(icp.buyer, "Revenue Operations");
-    assert.equal(icp.trigger_event, "Rapid sales growth creating reporting bottlenecks");
+    assert.equal(icp.buyer, "RevOps Manager");
+    assert.equal(icp.budget_owner, "VP Revenue");
+    assert.equal(icp.trigger_event, "Forecast accuracy concerns");
     assert.equal(icp.industry, "B2B SaaS");
+    assert.equal(icp.why_this_buyer, "Owns forecast accuracy and pipeline reporting.");
+    assert.ok(icp.icp_confidence >= 90);
+    assert.deepEqual(icp.icp_candidates.map((candidate) => candidate.title), icp.target_titles);
     assert.ok(Object.values(icp).every((value) => value !== undefined && value !== null));
   });
 
@@ -27,21 +33,19 @@ describe("generateICPFromPainSignal", () => {
 
     assert.deepEqual(icp.target_titles, [
       "Head of Customer Success",
-      "Customer Success Operations",
-      "VP Customer Experience",
+      "Customer Success Operations Lead",
+      "VP Customer Success",
     ]);
-    assert.equal(icp.buyer, "Customer Success");
-    assert.equal(
-      icp.trigger_event,
-      "Customer growth creating onboarding and retention workflow friction",
-    );
+    assert.equal(icp.buyer, "Head of Customer Success");
+    assert.equal(icp.budget_owner, "VP Customer Success");
+    assert.equal(icp.trigger_event, "Renewal visibility problems");
   });
 
   it("maps Finance Ops pain", () => {
     const icp = generateICPFromPainSignal({ affectedTeam: "Finance Ops" });
 
-    assert.deepEqual(icp.target_titles, ["Finance Operations Manager", "Controller", "VP Finance"]);
-    assert.equal(icp.buyer, "Finance Operations");
+    assert.deepEqual(icp.target_titles, ["Director Finance Operations", "Controller", "VP Finance"]);
+    assert.equal(icp.buyer, "Director Finance Operations");
     assert.equal(icp.budget_owner, "VP Finance");
   });
 
@@ -49,12 +53,12 @@ describe("generateICPFromPainSignal", () => {
     const icp = generateICPFromPainSignal({ affectedTeam: "Support" });
 
     assert.deepEqual(icp.target_titles, [
-      "Support Operations Manager",
       "Head of Support",
-      "Customer Support Director",
+      "Director of Customer Support",
+      "VP Customer Experience",
     ]);
-    assert.equal(icp.buyer, "Support Operations");
-    assert.equal(icp.trigger_event, "Support volume increasing repetitive operational work");
+    assert.equal(icp.buyer, "Support Manager");
+    assert.equal(icp.trigger_event, "Escalation backlog");
   });
 
   it("keeps finance ICP separate from support ICP", () => {
@@ -63,10 +67,10 @@ describe("generateICPFromPainSignal", () => {
       pain: "Finance ops manually reconciles Stripe payouts with NetSuite.",
     });
 
-    assert.equal(icp.buyer, "Finance Operations");
+    assert.equal(icp.buyer, "Director Finance Operations");
     assert.equal(icp.budget_owner, "VP Finance");
     assert.equal(icp.target_titles.includes("Head of Support"), false);
-    assert.equal(icp.trigger_event.includes("Support volume"), false);
+    assert.equal(icp.trigger_event.includes("Escalation backlog"), false);
   });
 
   it("keeps support ICP separate from finance ICP", () => {
@@ -75,10 +79,10 @@ describe("generateICPFromPainSignal", () => {
       pain: "Support team manually triages tickets.",
     });
 
-    assert.equal(icp.buyer, "Support Operations");
+    assert.equal(icp.buyer, "Support Manager");
     assert.equal(icp.budget_owner, "VP Customer Experience");
     assert.equal(icp.target_titles.includes("Controller"), false);
-    assert.equal(icp.trigger_event.includes("Finance workflows"), false);
+    assert.equal(icp.trigger_event.includes("Month-end"), false);
   });
 
   it("keeps customer success ICP mapped to CS ownership", () => {
@@ -87,13 +91,45 @@ describe("generateICPFromPainSignal", () => {
       pain: "Customer success has onboarding coordination issues.",
     });
 
-    assert.equal(icp.buyer, "Customer Success");
+    assert.equal(icp.buyer, "Head of Customer Success");
     assert.equal(icp.budget_owner, "VP Customer Success");
     assert.deepEqual(icp.target_titles, [
       "Head of Customer Success",
-      "Customer Success Operations",
-      "VP Customer Experience",
+      "Customer Success Operations Lead",
+      "VP Customer Success",
     ]);
+  });
+
+  it("maps Recruiting pain to talent operations ICP", () => {
+    const icp = generateICPFromPainSignal({
+      affectedTeam: "Recruiting",
+      currentSolution: "LinkedIn + Greenhouse + Slack",
+      solutionGap: "Manual status updates create recruiting coordination bottlenecks.",
+    });
+
+    assert.equal(icp.buyer, "Recruiting Operations Lead");
+    assert.equal(icp.budget_owner, "VP Talent");
+    assert.equal(icp.trigger_event, "Recruiting bottlenecks");
+    assert.equal(icp.why_this_buyer, "Owns recruiting operations and hiring process efficiency.");
+    assert.ok(icp.ranked_industries.some((industry) => industry.industry === "Technology companies"));
+    assert.equal(icp.company_size, "100-1000 employees");
+  });
+
+  it("infers enterprise size and ranked finance industries from tool stack", () => {
+    const icp = generateICPFromPainSignal({
+      affectedTeam: "Finance Ops",
+      currentSolution: "Stripe + NetSuite + Spreadsheets",
+      solutionGap: "Month-end close delays and reconciliation issues.",
+    });
+
+    assert.equal(icp.company_size, "500+ employees");
+    assert.ok(icp.company_size_confidence >= 80);
+    assert.equal(icp.industry, "SaaS");
+    assert.deepEqual(
+      icp.ranked_industries.slice(0, 3).map((industry) => industry.industry),
+      ["SaaS", "Fintech", "Marketplace"],
+    );
+    assert.ok(icp.icp_confidence >= 90);
   });
 
   it("uses fallback logic when fields are missing", () => {
@@ -102,7 +138,8 @@ describe("generateICPFromPainSignal", () => {
     assert.deepEqual(icp.target_titles, ["Operations Manager", "Head of Operations", "COO"]);
     assert.equal(icp.industry, "B2B");
     assert.equal(icp.company_size, "50-500 employees");
-    assert.equal(icp.buyer, "Operations");
+    assert.equal(icp.buyer, "Operations Manager");
+    assert.equal(icp.budget_owner, "COO");
     assert.ok(Object.values(icp).every((value) => value !== undefined && value !== null));
   });
 });
@@ -188,9 +225,9 @@ describe("ICP generation service and API handler", () => {
     assert.equal(response.status, 200);
     assert.equal(body.generated, true);
     assert.deepEqual(body.painSignal.target_titles, [
-      "Support Operations Manager",
       "Head of Support",
-      "Customer Support Director",
+      "Director of Customer Support",
+      "VP Customer Experience",
     ]);
   });
 });
