@@ -2,6 +2,7 @@
 
 import type { Prisma } from "@prisma/client";
 import { revalidatePath } from "next/cache";
+import { buildPainSignalExtractionWrite } from "@/lib/pain-extraction-persistence";
 import { mockPainExtractor } from "@/lib/mockPainExtractor";
 import { prisma } from "@/lib/prisma";
 
@@ -59,30 +60,43 @@ export async function extractPainAction(
     return { status: "error", message: "Run filtering before extracting pain." };
   }
 
-  if (rawInput.painSignals.length > 0) {
-    return { status: "success", message: "Pain already extracted." };
-  }
-
   const extraction = mockPainExtractor(rawInput.rawText, getFilterMetadata(rawInput.metadata));
+  console.log("EXTRACTION_RESULT", {
+    frequency: extraction.frequency,
+    currentSolution: extraction.currentSolution,
+    solutionGap: extraction.solutionGap,
+    affectedTeam: extraction.affectedTeam,
+    pain: extraction.pain,
+  });
+  const extractionWrite = buildPainSignalExtractionWrite(extraction);
+
+  if (rawInput.painSignals.length > 0) {
+    const updateData = {
+      ...extractionWrite,
+      aiOutput: extractionWrite.aiOutput as Prisma.InputJsonObject,
+    };
+    console.log("UPDATE_PAYLOAD", updateData);
+
+    await prisma.painSignal.update({
+      where: { id: rawInput.painSignals[0].id },
+      data: updateData,
+    });
+
+    revalidatePath("/");
+    revalidatePath("/opportunities");
+    return { status: "success", message: "Pain extraction updated." };
+  }
 
   await prisma.painSignal.create({
     data: {
       rawInputId: rawInput.id,
-      pain: extraction.pain,
-      b2bScore: extraction.b2bScore,
-      urgency: extraction.urgency,
-      affectedTeam: extraction.affectedTeam,
-      existingWorkaround: extraction.existingWorkaround,
-      possibleIcp: extraction.possibleIcp,
-      monetizationScore: extraction.monetizationScore,
-      outreachAngle: extraction.outreachAngle,
-      aiModel: extraction.aiModel,
-      promptVersion: extraction.promptVersion,
-      aiOutput: extraction.aiOutput as Prisma.InputJsonObject,
+      ...extractionWrite,
+      aiOutput: extractionWrite.aiOutput as Prisma.InputJsonObject,
       status: "new",
     },
   });
 
   revalidatePath("/");
+  revalidatePath("/opportunities");
   return { status: "success", message: "Pain extracted." };
 }

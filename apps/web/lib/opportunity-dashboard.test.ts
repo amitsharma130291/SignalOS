@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { shapeOpportunity } from "./opportunity-dashboard.ts";
+import { matchesOpportunitySearch, shapeOpportunity } from "./opportunity-dashboard.ts";
 
 describe("shapeOpportunity", () => {
   it("handles missing ICP fields gracefully", () => {
@@ -130,5 +130,42 @@ describe("shapeOpportunity", () => {
     assert.equal(opportunity.frequency, "Unknown");
     assert.equal(opportunity.solutionGap, "Unknown");
     assert.equal(opportunity.interviewCount, 0);
+  });
+});
+
+describe("matchesOpportunitySearch", () => {
+  const opportunity = shapeOpportunity({
+    id: "pain-1",
+    pain: "Support teams triage Zendesk tickets manually",
+    affectedTeam: "Support",
+    currentSolution: "Zendesk + spreadsheets",
+    solutionGap: "Manual handoffs create escalation visibility gaps.",
+    possibleIcp: "Support operations teams",
+    outreachAngle: "Reduce ticket escalation follow-up",
+    rawInput: {
+      rawText: "Support team uses Zendesk and spreadsheets for escalations.",
+    },
+  });
+
+  it("matches raw signal text case-insensitively", () => {
+    assert.equal(matchesOpportunitySearch(opportunity, "zendesk"), true);
+    assert.equal(matchesOpportunitySearch(opportunity, "ZENDESK"), true);
+  });
+
+  it("matches shaped opportunity fields", () => {
+    assert.equal(matchesOpportunitySearch(opportunity, "support"), true);
+    assert.equal(matchesOpportunitySearch(opportunity, "spreadsheets"), true);
+    assert.equal(matchesOpportunitySearch(opportunity, "visibility gaps"), true);
+    assert.equal(matchesOpportunitySearch(opportunity, "operations teams"), true);
+    assert.equal(matchesOpportunitySearch(opportunity, "escalation"), true);
+  });
+
+  it("returns all results for blank search", () => {
+    assert.equal(matchesOpportunitySearch(opportunity, ""), true);
+    assert.equal(matchesOpportunitySearch(opportunity, "   "), true);
+  });
+
+  it("rejects non-matching searches", () => {
+    assert.equal(matchesOpportunitySearch(opportunity, "Greenhouse"), false);
   });
 });

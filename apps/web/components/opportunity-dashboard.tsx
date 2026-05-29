@@ -13,7 +13,10 @@ import {
   getVisibleScoreReasons,
   shouldShowScoreDetailsToggle,
 } from "@/lib/dashboard-score-details";
-import type { OpportunityDashboardItem } from "@/lib/opportunity-dashboard";
+import {
+  matchesOpportunitySearch,
+  type OpportunityDashboardItem,
+} from "@/lib/opportunity-dashboard";
 import type { ReviewStatus } from "@/lib/review-status";
 
 type OpportunityFilter =
@@ -65,11 +68,16 @@ export function OpportunityDashboard({
   opportunities: OpportunityDashboardItem[];
 }) {
   const [filter, setFilter] = useState<OpportunityFilter>("all");
+  const [searchQuery, setSearchQuery] = useState("");
   const [expandedSections, setExpandedSections] = useState<Set<string>>(() => new Set());
   const filteredOpportunities = useMemo(
-    () => opportunities.filter((item) => matchesFilter(item, filter)),
-    [filter, opportunities],
+    () =>
+      opportunities.filter(
+        (item) => matchesFilter(item, filter) && matchesOpportunitySearch(item, searchQuery),
+      ),
+    [filter, opportunities, searchQuery],
   );
+  const hasSearch = searchQuery.trim().length > 0;
 
   function toggleSection(opportunityId: string, sectionId: OpportunitySectionId) {
     setExpandedSections((current) => toggleOpportunitySection(current, opportunityId, sectionId));
@@ -94,12 +102,27 @@ export function OpportunityDashboard({
             </button>
           ))}
         </div>
+        <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <label className="min-w-0 flex-1">
+            <span className="sr-only">Search opportunities</span>
+            <input
+              type="search"
+              value={searchQuery}
+              onChange={(event) => setSearchQuery(event.target.value)}
+              placeholder="Search raw signal, pain, team, solution, gap, ICP, or angle..."
+              className="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-800 outline-none transition-colors placeholder:text-zinc-400 focus:border-indigo-400 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100 dark:placeholder:text-zinc-500"
+            />
+          </label>
+          <p className="text-xs text-zinc-500 dark:text-zinc-400">
+            Showing {filteredOpportunities.length} of {opportunities.length} opportunities
+          </p>
+        </div>
       </div>
 
       {filteredOpportunities.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-zinc-300 bg-white/70 p-8 text-center dark:border-zinc-700 dark:bg-zinc-950/60">
           <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-            No opportunities match this filter.
+            {hasSearch ? "No opportunities match this search." : "No opportunities match this filter."}
           </p>
         </div>
       ) : (

@@ -24,6 +24,10 @@ export const POSITIVE_KEYWORD_WEIGHTS: Record<string, number> = {
   revops: 3,
   "finance ops": 3,
   "hr ops": 3,
+  "candidate status": 2,
+  "interview feedback": 2,
+  "hiring managers": 2,
+  scheduling: 1,
   coordination: 2,
   "admin work": 2,
   "back office": 2,
@@ -33,6 +37,10 @@ export const POSITIVE_KEYWORD_WEIGHTS: Record<string, number> = {
 };
 
 export const NEGATIVE_KEYWORD_WEIGHTS: Record<string, number> = {
+  occasionally: -2,
+  discuss: -1,
+  discussed: -1,
+  "monthly meetings": -2,
   gaming: -3,
   dating: -3,
   fitness: -3,

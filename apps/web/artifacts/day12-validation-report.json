@@ -1,0 +1,785 @@
+{
+  "generatedAt": "2026-05-29T21:28:09.089Z",
+  "pipeline": "filterRawInput -> mockPainExtractor",
+  "totals": {
+    "tests": 10,
+    "passedTests": 10,
+    "failedTests": 0,
+    "totalAssertions": 66,
+    "passedAssertions": 66,
+    "failedAssertions": 0,
+    "passPercentage": 100
+  },
+  "suggestedRules": [],
+  "results": [
+    {
+      "name": "TEST 1 - DAILY FINANCE",
+      "signal": "Finance analysts download Stripe payouts every day and manually reconcile them against NetSuite. Exceptions are tracked in spreadsheets and month-end close is delayed whenever transaction volume increases.",
+      "extracted": {
+        "pain": "Finance Ops manually reconciles Stripe payouts with NetSuite through spreadsheets.",
+        "affectedTeam": "Finance Ops",
+        "frequency": "daily",
+        "currentSolution": "NetSuite + Stripe + Spreadsheets",
+        "solutionGap": "Manual reconciliation and cross-checking create mismatches, exception tracking, reporting delays, and month-end close delays.",
+        "urgency": "high",
+        "b2bScore": 3,
+        "monetizationScore": 3,
+        "filterScore": 5,
+        "validationScore": 100,
+        "confidence": "high",
+        "filterStatus": "accepted",
+        "marketType": "b2b",
+        "classifier": {
+          "team": "Finance Ops",
+          "confidence": 0.9,
+          "matchedKeywords": [
+            "reconcile",
+            "netsuite",
+            "finance",
+            "stripe"
+          ],
+          "reasoning": [
+            "Finance Ops selected because 21 points outweighed Operations at 3 points.",
+            "Matched keywords: reconcile, netsuite, finance, stripe."
+          ]
+        }
+      },
+      "assertions": [
+        {
+          "label": "affectedTeam",
+          "actual": "Finance Ops",
+          "expected": "Finance Ops",
+          "passed": true
+        },
+        {
+          "label": "frequency",
+          "actual": "daily",
+          "expected": "daily",
+          "passed": true
+        },
+        {
+          "label": "currentSolution",
+          "actual": "NetSuite + Stripe + Spreadsheets",
+          "expected": "contains Stripe",
+          "passed": true
+        },
+        {
+          "label": "currentSolution",
+          "actual": "NetSuite + Stripe + Spreadsheets",
+          "expected": "contains NetSuite",
+          "passed": true
+        },
+        {
+          "label": "currentSolution",
+          "actual": "NetSuite + Stripe + Spreadsheets",
+          "expected": "contains Spreadsheets",
+          "passed": true
+        },
+        {
+          "label": "solutionGap",
+          "actual": "Manual reconciliation and cross-checking create mismatches, exception tracking, reporting delays, and month-end close delays.",
+          "expected": "not Unknown",
+          "passed": true
+        },
+        {
+          "label": "solutionGap",
+          "actual": "Manual reconciliation and cross-checking create mismatches, exception tracking, reporting delays, and month-end close delays.",
+          "expected": "contains any of: reconciliation, exception tracking, reporting delays, month-end close",
+          "passed": true
+        },
+        {
+          "label": "validationScore",
+          "actual": 100,
+          "expected": "> 50",
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "failedAssertions": []
+    },
+    {
+      "name": "TEST 2 - WEEKLY SALES OPS",
+      "signal": "Revenue managers export HubSpot opportunities into spreadsheets every Monday before forecast calls. Team leads manually verify pipeline numbers because CRM data is often outdated.",
+      "extracted": {
+        "pain": "Sales Ops teams track CRM reporting updates across HubSpot, CRM, and spreadsheets.",
+        "affectedTeam": "Sales Ops",
+        "frequency": "weekly",
+        "currentSolution": "HubSpot + Spreadsheets + CRM",
+        "solutionGap": "Outdated CRM data and manual verification create forecasting delays and reporting accuracy issues.",
+        "urgency": "high",
+        "b2bScore": 7,
+        "monetizationScore": 5,
+        "filterScore": 9,
+        "validationScore": 100,
+        "confidence": "high",
+        "filterStatus": "accepted",
+        "marketType": "b2b",
+        "classifier": {
+          "team": "Sales Ops",
+          "confidence": 0.9,
+          "matchedKeywords": [
+            "pipeline",
+            "forecast",
+            "hubspot",
+            "crm"
+          ],
+          "reasoning": [
+            "Sales Ops selected because 21 points outweighed Operations at 3 points.",
+            "Matched keywords: pipeline, forecast, hubspot, crm."
+          ]
+        }
+      },
+      "assertions": [
+        {
+          "label": "affectedTeam",
+          "actual": "Sales Ops",
+          "expected": "Sales Ops",
+          "passed": true
+        },
+        {
+          "label": "frequency",
+          "actual": "weekly",
+          "expected": "weekly",
+          "passed": true
+        },
+        {
+          "label": "currentSolution",
+          "actual": "HubSpot + Spreadsheets + CRM",
+          "expected": "contains HubSpot",
+          "passed": true
+        },
+        {
+          "label": "currentSolution",
+          "actual": "HubSpot + Spreadsheets + CRM",
+          "expected": "contains Spreadsheets",
+          "passed": true
+        },
+        {
+          "label": "solutionGap",
+          "actual": "Outdated CRM data and manual verification create forecasting delays and reporting accuracy issues.",
+          "expected": "not Unknown",
+          "passed": true
+        },
+        {
+          "label": "solutionGap",
+          "actual": "Outdated CRM data and manual verification create forecasting delays and reporting accuracy issues.",
+          "expected": "contains any of: outdated CRM data, manual verification, forecasting delays, reporting accuracy, visibility",
+          "passed": true
+        },
+        {
+          "label": "validationScore",
+          "actual": 100,
+          "expected": "> 70",
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "failedAssertions": []
+    },
+    {
+      "name": "TEST 3 - CUSTOMER SUCCESS",
+      "signal": "Customer Success managers export Salesforce account data into Airtable every Monday before renewal meetings. Teams manually clean customer records and cross-check health scores.",
+      "extracted": {
+        "pain": "Customer onboarding relies on manual tracking across teams.",
+        "affectedTeam": "Customer Success",
+        "frequency": "weekly",
+        "currentSolution": "Salesforce + Airtable",
+        "solutionGap": "Manual cleanup and health-score cross-checking create reporting delays and renewal visibility gaps.",
+        "urgency": "medium",
+        "b2bScore": 3,
+        "monetizationScore": 2,
+        "filterScore": 2,
+        "validationScore": 69,
+        "confidence": "medium",
+        "filterStatus": "needs_review",
+        "marketType": "b2b",
+        "classifier": {
+          "team": "Customer Success",
+          "confidence": 0.9,
+          "matchedKeywords": [
+            "customer success",
+            "renewal"
+          ],
+          "reasoning": [
+            "Customer Success selected because 10 points outweighed Sales Ops at 6 points.",
+            "Matched keywords: customer success, renewal."
+          ]
+        }
+      },
+      "assertions": [
+        {
+          "label": "affectedTeam",
+          "actual": "Customer Success",
+          "expected": "Customer Success",
+          "passed": true
+        },
+        {
+          "label": "frequency",
+          "actual": "weekly",
+          "expected": "weekly",
+          "passed": true
+        },
+        {
+          "label": "currentSolution",
+          "actual": "Salesforce + Airtable",
+          "expected": "contains Salesforce",
+          "passed": true
+        },
+        {
+          "label": "currentSolution",
+          "actual": "Salesforce + Airtable",
+          "expected": "contains Airtable",
+          "passed": true
+        },
+        {
+          "label": "solutionGap",
+          "actual": "Manual cleanup and health-score cross-checking create reporting delays and renewal visibility gaps.",
+          "expected": "not Unknown",
+          "passed": true
+        },
+        {
+          "label": "solutionGap",
+          "actual": "Manual cleanup and health-score cross-checking create reporting delays and renewal visibility gaps.",
+          "expected": "contains any of: manual cleanup, cross-checking, reporting delays, renewal visibility, health score visibility",
+          "passed": true
+        },
+        {
+          "label": "validationScore",
+          "actual": 69,
+          "expected": "> 40",
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "failedAssertions": []
+    },
+    {
+      "name": "TEST 4 - RECRUITING",
+      "signal": "Recruiters move candidate information from LinkedIn into Greenhouse several times per day. Interview feedback arrives through Slack and email, forcing coordinators to manually update candidate status.",
+      "extracted": {
+        "pain": "Teams coordinate Slack manually.",
+        "affectedTeam": "Recruiting",
+        "frequency": "daily",
+        "currentSolution": "LinkedIn + Greenhouse + Slack + Email",
+        "solutionGap": "Manual status updates and scattered interview feedback create scheduling delays and recruiting coordination bottlenecks.",
+        "urgency": "high",
+        "b2bScore": 0,
+        "monetizationScore": 2,
+        "filterScore": 6,
+        "validationScore": 83,
+        "confidence": "medium",
+        "filterStatus": "needs_review",
+        "marketType": "unknown",
+        "classifier": {
+          "team": "Recruiting",
+          "confidence": 0.9,
+          "matchedKeywords": [
+            "interview feedback",
+            "candidate status",
+            "recruiters",
+            "greenhouse",
+            "candidate",
+            "interview",
+            "linkedin"
+          ],
+          "reasoning": [
+            "Recruiting selected because 37 points outweighed Operations at 1 points.",
+            "Matched keywords: interview feedback, candidate status, recruiters, greenhouse, candidate, interview, linkedin."
+          ]
+        }
+      },
+      "assertions": [
+        {
+          "label": "affectedTeam",
+          "actual": "Recruiting",
+          "expected": "Recruiting",
+          "passed": true
+        },
+        {
+          "label": "frequency",
+          "actual": "daily",
+          "expected": "daily",
+          "passed": true
+        },
+        {
+          "label": "currentSolution",
+          "actual": "LinkedIn + Greenhouse + Slack + Email",
+          "expected": "contains LinkedIn",
+          "passed": true
+        },
+        {
+          "label": "currentSolution",
+          "actual": "LinkedIn + Greenhouse + Slack + Email",
+          "expected": "contains Greenhouse",
+          "passed": true
+        },
+        {
+          "label": "currentSolution",
+          "actual": "LinkedIn + Greenhouse + Slack + Email",
+          "expected": "contains Slack",
+          "passed": true
+        },
+        {
+          "label": "currentSolution",
+          "actual": "LinkedIn + Greenhouse + Slack + Email",
+          "expected": "contains Email",
+          "passed": true
+        },
+        {
+          "label": "solutionGap",
+          "actual": "Manual status updates and scattered interview feedback create scheduling delays and recruiting coordination bottlenecks.",
+          "expected": "not Unknown",
+          "passed": true
+        },
+        {
+          "label": "solutionGap",
+          "actual": "Manual status updates and scattered interview feedback create scheduling delays and recruiting coordination bottlenecks.",
+          "expected": "contains any of: manual status updates, scheduling delays, feedback bottlenecks, candidate tracking, coordination work",
+          "passed": true
+        },
+        {
+          "label": "validationScore",
+          "actual": 83,
+          "expected": "> 20",
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "failedAssertions": []
+    },
+    {
+      "name": "TEST 5 - SUPPORT",
+      "signal": "Support agents copy Zendesk tickets into Slack channels throughout the day to coordinate escalations. Team leads maintain escalation spreadsheets because ownership is unclear.",
+      "extracted": {
+        "pain": "Support teams triage customer requests across Slack, spreadsheets, and Zendesk.",
+        "affectedTeam": "Support",
+        "frequency": "daily",
+        "currentSolution": "Zendesk + Slack + Spreadsheets",
+        "solutionGap": "Unclear ownership and manual escalation tracking create visibility gaps, missed escalations, and response delays.",
+        "urgency": "medium",
+        "b2bScore": 3,
+        "monetizationScore": 3,
+        "filterScore": 6,
+        "validationScore": 100,
+        "confidence": "high",
+        "filterStatus": "accepted",
+        "marketType": "b2b",
+        "classifier": {
+          "team": "Support",
+          "confidence": 0.9,
+          "matchedKeywords": [
+            "zendesk",
+            "tickets",
+            "support",
+            "ticket"
+          ],
+          "reasoning": [
+            "Support selected because 19 points outweighed Operations at 2 points.",
+            "Matched keywords: zendesk, tickets, support, ticket."
+          ]
+        }
+      },
+      "assertions": [
+        {
+          "label": "affectedTeam",
+          "actual": "Support",
+          "expected": "Support",
+          "passed": true
+        },
+        {
+          "label": "frequency",
+          "actual": "daily",
+          "expected": "daily",
+          "passed": true
+        },
+        {
+          "label": "currentSolution",
+          "actual": "Zendesk + Slack + Spreadsheets",
+          "expected": "contains Zendesk",
+          "passed": true
+        },
+        {
+          "label": "currentSolution",
+          "actual": "Zendesk + Slack + Spreadsheets",
+          "expected": "contains Slack",
+          "passed": true
+        },
+        {
+          "label": "currentSolution",
+          "actual": "Zendesk + Slack + Spreadsheets",
+          "expected": "contains Spreadsheets",
+          "passed": true
+        },
+        {
+          "label": "solutionGap",
+          "actual": "Unclear ownership and manual escalation tracking create visibility gaps, missed escalations, and response delays.",
+          "expected": "not Unknown",
+          "passed": true
+        },
+        {
+          "label": "solutionGap",
+          "actual": "Unclear ownership and manual escalation tracking create visibility gaps, missed escalations, and response delays.",
+          "expected": "contains any of: ownership ambiguity, missed escalations, visibility gaps, response delays, escalation tracking",
+          "passed": true
+        },
+        {
+          "label": "validationScore",
+          "actual": 100,
+          "expected": "> 40",
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "failedAssertions": []
+    },
+    {
+      "name": "TEST 6 - MONTHLY OPS",
+      "signal": "Operations managers prepare compliance reports at the end of every month using spreadsheets and manually collected data from several systems.",
+      "extracted": {
+        "pain": "Teams coordinate spreadsheets manually.",
+        "affectedTeam": "Operations",
+        "frequency": "monthly",
+        "currentSolution": "Spreadsheets",
+        "solutionGap": "Manual compliance reporting across several systems creates reporting delays and coordination work.",
+        "urgency": "high",
+        "b2bScore": 9,
+        "monetizationScore": 6,
+        "filterScore": 10,
+        "validationScore": 100,
+        "confidence": "high",
+        "filterStatus": "accepted",
+        "marketType": "b2b",
+        "classifier": {
+          "team": "Operations",
+          "confidence": 0.6,
+          "matchedKeywords": [
+            "spreadsheets",
+            "spreadsheet",
+            "operations",
+            "manually"
+          ],
+          "reasoning": [
+            "Operations selected because matched keywords reached 5 points.",
+            "Matched keywords: spreadsheets, spreadsheet, operations, manually."
+          ]
+        }
+      },
+      "assertions": [
+        {
+          "label": "affectedTeam",
+          "actual": "Operations",
+          "expected": "Operations",
+          "passed": true
+        },
+        {
+          "label": "frequency",
+          "actual": "monthly",
+          "expected": "monthly",
+          "passed": true
+        },
+        {
+          "label": "currentSolution",
+          "actual": "Spreadsheets",
+          "expected": "contains Spreadsheets",
+          "passed": true
+        },
+        {
+          "label": "solutionGap",
+          "actual": "Manual compliance reporting across several systems creates reporting delays and coordination work.",
+          "expected": "not Unknown",
+          "passed": true
+        },
+        {
+          "label": "solutionGap",
+          "actual": "Manual compliance reporting across several systems creates reporting delays and coordination work.",
+          "expected": "contains any of: manual reporting, compliance reporting, collected data, reporting delays, coordination work",
+          "passed": true
+        },
+        {
+          "label": "validationScore",
+          "actual": 100,
+          "expected": "> 50",
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "failedAssertions": []
+    },
+    {
+      "name": "TEST 7 - QUARTERLY CUSTOMER SUCCESS",
+      "signal": "Customer Success leadership performs a quarterly renewal risk review by exporting Salesforce data into spreadsheets and manually aggregating customer health metrics.",
+      "extracted": {
+        "pain": "Customer onboarding relies on spreadsheet tracking across teams.",
+        "affectedTeam": "Customer Success",
+        "frequency": "quarterly",
+        "currentSolution": "Salesforce + Spreadsheets",
+        "solutionGap": "Manual cleanup and health-score cross-checking create reporting delays and renewal visibility gaps.",
+        "urgency": "high",
+        "b2bScore": 6,
+        "monetizationScore": 4,
+        "filterScore": 5,
+        "validationScore": 100,
+        "confidence": "high",
+        "filterStatus": "accepted",
+        "marketType": "b2b",
+        "classifier": {
+          "team": "Customer Success",
+          "confidence": 0.9,
+          "matchedKeywords": [
+            "customer success",
+            "renewal"
+          ],
+          "reasoning": [
+            "Customer Success selected because 10 points outweighed Sales Ops at 6 points.",
+            "Matched keywords: customer success, renewal."
+          ]
+        }
+      },
+      "assertions": [
+        {
+          "label": "affectedTeam",
+          "actual": "Customer Success",
+          "expected": "Customer Success",
+          "passed": true
+        },
+        {
+          "label": "frequency",
+          "actual": "quarterly",
+          "expected": "quarterly",
+          "passed": true
+        },
+        {
+          "label": "currentSolution",
+          "actual": "Salesforce + Spreadsheets",
+          "expected": "contains Salesforce",
+          "passed": true
+        },
+        {
+          "label": "currentSolution",
+          "actual": "Salesforce + Spreadsheets",
+          "expected": "contains Spreadsheets",
+          "passed": true
+        },
+        {
+          "label": "solutionGap",
+          "actual": "Manual cleanup and health-score cross-checking create reporting delays and renewal visibility gaps.",
+          "expected": "not Unknown",
+          "passed": true
+        },
+        {
+          "label": "solutionGap",
+          "actual": "Manual cleanup and health-score cross-checking create reporting delays and renewal visibility gaps.",
+          "expected": "contains any of: renewal risk, customer health metrics, manual aggregation, visibility gaps, reporting delays",
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "failedAssertions": []
+    },
+    {
+      "name": "TEST 8 - MULTI TOOL SPRAWL",
+      "signal": "Sales Operations exports HubSpot data into Airtable, reviews updates in Slack, validates numbers in spreadsheets, and updates Salesforce records before every forecast meeting.",
+      "extracted": {
+        "pain": "Sales Ops teams coordinate Salesforce, HubSpot, Slack, spreadsheets, and Airtable manually.",
+        "affectedTeam": "Sales Ops",
+        "frequency": "unknown",
+        "currentSolution": "Salesforce + HubSpot + Airtable + Slack + Spreadsheets",
+        "solutionGap": "Manual validation across multiple sales tools creates forecasting delays, reporting accuracy issues, and visibility gaps.",
+        "urgency": "medium",
+        "b2bScore": 6,
+        "monetizationScore": 4,
+        "filterScore": 6,
+        "validationScore": 100,
+        "confidence": "high",
+        "filterStatus": "accepted",
+        "marketType": "b2b",
+        "classifier": {
+          "team": "Sales Ops",
+          "confidence": 0.9,
+          "matchedKeywords": [
+            "sales operations",
+            "forecast meeting",
+            "salesforce",
+            "forecast",
+            "hubspot"
+          ],
+          "reasoning": [
+            "Sales Ops selected because 30 points outweighed Operations at 4 points.",
+            "Matched keywords: sales operations, forecast meeting, salesforce, forecast, hubspot."
+          ]
+        }
+      },
+      "assertions": [
+        {
+          "label": "affectedTeam",
+          "actual": "Sales Ops",
+          "expected": "Sales Ops",
+          "passed": true
+        },
+        {
+          "label": "currentSolution",
+          "actual": "Salesforce + HubSpot + Airtable + Slack + Spreadsheets",
+          "expected": "contains HubSpot",
+          "passed": true
+        },
+        {
+          "label": "currentSolution",
+          "actual": "Salesforce + HubSpot + Airtable + Slack + Spreadsheets",
+          "expected": "contains Airtable",
+          "passed": true
+        },
+        {
+          "label": "currentSolution",
+          "actual": "Salesforce + HubSpot + Airtable + Slack + Spreadsheets",
+          "expected": "contains Slack",
+          "passed": true
+        },
+        {
+          "label": "currentSolution",
+          "actual": "Salesforce + HubSpot + Airtable + Slack + Spreadsheets",
+          "expected": "contains Salesforce",
+          "passed": true
+        },
+        {
+          "label": "currentSolution",
+          "actual": "Salesforce + HubSpot + Airtable + Slack + Spreadsheets",
+          "expected": "contains Spreadsheets",
+          "passed": true
+        },
+        {
+          "label": "solutionGap",
+          "actual": "Manual validation across multiple sales tools creates forecasting delays, reporting accuracy issues, and visibility gaps.",
+          "expected": "not Unknown",
+          "passed": true
+        },
+        {
+          "label": "solutionGap",
+          "actual": "Manual validation across multiple sales tools creates forecasting delays, reporting accuracy issues, and visibility gaps.",
+          "expected": "contains any of: forecasting delays, reporting accuracy, visibility, manual validation",
+          "passed": true
+        },
+        {
+          "label": "toolCount",
+          "actual": 5,
+          "expected": "> 4",
+          "passed": true
+        },
+        {
+          "label": "validationScore",
+          "actual": 100,
+          "expected": "> 70",
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "failedAssertions": []
+    },
+    {
+      "name": "TEST 9 - LOW VALUE SIGNAL",
+      "signal": "Support leaders occasionally discuss ticket ownership during monthly meetings.",
+      "extracted": {
+        "pain": "No meaningful operational pain detected.",
+        "affectedTeam": "Support",
+        "frequency": "monthly",
+        "currentSolution": "Unknown",
+        "solutionGap": "Unknown",
+        "urgency": "low",
+        "b2bScore": 0,
+        "monetizationScore": 1,
+        "filterScore": -2,
+        "validationScore": 0,
+        "confidence": "low",
+        "filterStatus": "filtered_out",
+        "marketType": "unknown",
+        "classifier": {
+          "team": "Support",
+          "confidence": 0.75,
+          "matchedKeywords": [
+            "support",
+            "ticket"
+          ],
+          "reasoning": [
+            "Support selected because matched keywords reached 8 points.",
+            "Matched keywords: support, ticket."
+          ]
+        }
+      },
+      "assertions": [
+        {
+          "label": "validationScore",
+          "actual": 0,
+          "expected": "< 20",
+          "passed": true
+        },
+        {
+          "label": "confidence",
+          "actual": "low",
+          "expected": [
+            "low",
+            "medium"
+          ],
+          "passed": true
+        },
+        {
+          "label": "not high opportunity",
+          "actual": {
+            "validationScore": 0,
+            "confidence": "low",
+            "status": "filtered_out"
+          },
+          "expected": "validationScore < 70 or confidence is not high",
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "failedAssertions": []
+    },
+    {
+      "name": "TEST 10 - NOISE FILTER",
+      "signal": "Our company had a team lunch on Friday and everyone discussed future plans.",
+      "extracted": {
+        "pain": "No meaningful operational pain detected.",
+        "affectedTeam": "Operations",
+        "frequency": "unknown",
+        "currentSolution": "Unknown",
+        "solutionGap": "Unknown",
+        "urgency": "low",
+        "b2bScore": 0,
+        "monetizationScore": 1,
+        "filterScore": -1,
+        "validationScore": 0,
+        "confidence": "low",
+        "filterStatus": "filtered_out",
+        "marketType": "unknown",
+        "classifier": {
+          "team": "Operations",
+          "confidence": 0.35,
+          "matchedKeywords": [],
+          "reasoning": [
+            "Operations selected because no team-specific keywords had enough evidence."
+          ]
+        }
+      },
+      "assertions": [
+        {
+          "label": "validationScore",
+          "actual": 0,
+          "expected": "< 10",
+          "passed": true
+        },
+        {
+          "label": "no meaningful opportunity",
+          "actual": {
+            "validationScore": 0,
+            "confidence": "low",
+            "status": "filtered_out"
+          },
+          "expected": "filtered_out, low confidence, or validationScore < 10",
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "failedAssertions": []
+    }
+  ]
+}

@@ -23,6 +23,8 @@ export const BANNED_GENERIC_PHRASES = [
 const TOOL_PATTERNS: Record<string, string> = {
   stripe: "Stripe",
   netsuite: "NetSuite",
+  excel: "Excel",
+  "google sheets": "Google Sheets",
   salesforce: "Salesforce",
   hubspot: "HubSpot",
   slack: "Slack",
@@ -39,11 +41,13 @@ const WORKFLOW_PATTERNS: Record<string, string> = {
   reconciliation: "reconciliation",
   reconcile: "reconciliation",
   "interview scheduling": "interview scheduling",
+  "crm updates": "CRM updates",
   approval: "approvals",
   approvals: "approvals",
   handoff: "handoffs",
   handoffs: "handoffs",
   invoice: "invoices",
+  "invoice processing": "invoice processing",
   invoices: "invoices",
   procurement: "procurement",
   pipeline: "pipeline",
@@ -175,6 +179,12 @@ export function generatePainSummary({
       `Sales Ops teams track CRM reporting updates${
         toolPhrase ? ` across ${toolPhrase}` : ""
       }.`,
+    );
+  }
+
+  if (affectedTeam === "Sales Ops" && workflows.includes("CRM updates")) {
+    return finishSummary(
+      `Sales Ops teams update CRM fields${toolPhrase ? ` across ${toolPhrase}` : ""}.`,
     );
   }
 

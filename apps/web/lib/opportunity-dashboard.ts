@@ -220,6 +220,21 @@ export function shapeOpportunity(signal: PainSignalForOpportunity): OpportunityD
   };
 }
 
+export function matchesOpportunitySearch(item: OpportunityDashboardItem, query: string) {
+  const normalizedQuery = query.trim().toLowerCase();
+  if (!normalizedQuery) return true;
+
+  return [
+    item.rawSignalText,
+    item.pain,
+    item.affectedTeam,
+    item.currentSolution,
+    item.solutionGap,
+    item.possibleIcp,
+    item.outreachAngle,
+  ].some((value) => value.toLowerCase().includes(normalizedQuery));
+}
+
 export function getOpportunityMetrics(opportunities: OpportunityDashboardItem[]) {
   return {
     total: opportunities.length,
