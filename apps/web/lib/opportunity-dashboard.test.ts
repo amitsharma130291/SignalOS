@@ -30,6 +30,7 @@ describe("shapeOpportunity", () => {
     assert.equal(opportunity.currentSolution, "Unknown");
     assert.equal(opportunity.solutionGap, "Unknown");
     assert.equal(opportunity.solutionGapAnalysis.automationPotential, "High");
+    assert.ok(opportunity.buyerMapping.buyerClarityScore >= 0);
     assert.equal(opportunity.founderConviction, null);
     assert.equal(opportunity.founderConvictionRecommendation.recommendation, "low");
     assert.equal(opportunity.interviewCount, 0);
@@ -168,6 +169,8 @@ describe("shapeOpportunity", () => {
       "Escalation ownership is not tracked in a single system.",
     );
     assert.equal(opportunity.evidenceAnalysis.evidenceStrength, "medium");
+    assert.equal(opportunity.buyerMapping.user, "Support Manager");
+    assert.equal(opportunity.buyerMapping.buyer, "Unknown");
     assert.ok(
       opportunity.opportunityScore.reasons.includes("Medium automation potential added 2 points."),
     );

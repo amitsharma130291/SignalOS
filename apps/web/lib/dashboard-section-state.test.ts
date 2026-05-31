@@ -12,6 +12,8 @@ describe("opportunity dashboard section state", () => {
 
     assert.equal(isOpportunitySectionExpanded(expandedSections, "pain-1", "icp"), false);
     assert.equal(isOpportunitySectionExpanded(expandedSections, "pain-1", "score"), false);
+    assert.equal(isOpportunitySectionExpanded(expandedSections, "pain-1", "evidence"), false);
+    assert.equal(isOpportunitySectionExpanded(expandedSections, "pain-1", "buyer_mapping"), false);
   });
 
   it("toggles expansion state", () => {

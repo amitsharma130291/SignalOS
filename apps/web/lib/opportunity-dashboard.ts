@@ -1,5 +1,9 @@
 import type { Prisma } from "@prisma/client";
 import {
+  generateBuyerMapping,
+  type BuyerMapping,
+} from "./buyer-mapping-engine.ts";
+import {
   generateEvidenceStrength,
   type EvidenceAnalysis,
 } from "./evidence-strength.ts";
@@ -99,6 +103,7 @@ export type OpportunityDashboardItem = {
   solutionGap: string;
   solutionGapAnalysis: SolutionGapAnalysis;
   evidenceAnalysis: EvidenceAnalysis;
+  buyerMapping: BuyerMapping;
   founderConviction: number | null;
   founderConvictionRecommendation: FounderConvictionResult;
   interviewCount: number;
@@ -223,6 +228,14 @@ export function shapeOpportunity(signal: PainSignalForOpportunity): OpportunityD
     urgency,
     affected_team: affectedTeam,
   });
+  const buyerMapping = generateBuyerMapping({
+    narrative: signal.rawInput?.rawText,
+    pain,
+    affectedTeam,
+    currentSolution,
+    solutionGap,
+    businessImpact: solutionGapAnalysis.businessImpact,
+  });
 
   return {
     id: signal.id,
@@ -245,6 +258,7 @@ export function shapeOpportunity(signal: PainSignalForOpportunity): OpportunityD
     solutionGap,
     solutionGapAnalysis,
     evidenceAnalysis,
+    buyerMapping,
     founderConviction: signal.founderConviction ?? null,
     founderConvictionRecommendation,
     interviewCount: getInterviewCount(signal._count?.interviews),

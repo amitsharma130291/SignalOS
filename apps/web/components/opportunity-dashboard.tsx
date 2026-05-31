@@ -327,37 +327,187 @@ export function OpportunityDashboard({
 
                   <div className="rounded-2xl border border-zinc-200 bg-zinc-50/80 p-3 dark:border-zinc-800 dark:bg-zinc-900/60">
                     <div className="space-y-2 text-xs text-zinc-500 dark:text-zinc-400">
-                      <div>
-                        <p className="font-semibold text-zinc-700 dark:text-zinc-200">
-                          Evidence Strength
-                        </p>
-                        <span
-                          className={`mt-1 inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase ${getEvidenceStrengthBadgeClassName(
-                            item.evidenceAnalysis.evidenceStrength,
-                          )}`}
-                        >
-                          {item.evidenceAnalysis.evidenceStrength}
-                        </span>
-                      </div>
-                      <div>
-                        <p className="font-medium text-zinc-700 dark:text-zinc-200">
-                          Evidence Score
-                        </p>
-                        <p className="mt-1 text-zinc-600 dark:text-zinc-300">
-                          {item.evidenceAnalysis.evidenceScore} / 10
-                        </p>
-                      </div>
-                      {item.evidenceAnalysis.evidenceReasons.length ? (
+                      <div className="flex flex-wrap items-start justify-between gap-2">
                         <div>
-                          <p className="font-medium text-zinc-700 dark:text-zinc-200">
-                            Reasons
+                          <p className="font-semibold text-zinc-700 dark:text-zinc-200">
+                            Evidence Strength
                           </p>
-                          <ul className="mt-1 list-disc space-y-0.5 pl-4">
-                            {item.evidenceAnalysis.evidenceReasons.slice(0, 4).map((reason) => (
-                              <li key={reason}>{reason}</li>
-                            ))}
-                          </ul>
+                          <div className="mt-1 flex flex-wrap items-center gap-2">
+                            <span
+                              className={`inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase ${getEvidenceStrengthBadgeClassName(
+                                item.evidenceAnalysis.evidenceStrength,
+                              )}`}
+                            >
+                              {item.evidenceAnalysis.evidenceStrength}
+                            </span>
+                            <span className="text-zinc-600 dark:text-zinc-300">
+                              {item.evidenceAnalysis.evidenceScore} / 10
+                            </span>
+                          </div>
                         </div>
+                        <button
+                          type="button"
+                          onClick={() => toggleSection(item.id, "evidence")}
+                          className="rounded-full bg-white px-2.5 py-1 text-[11px] font-medium text-zinc-600 transition-colors hover:bg-zinc-100 dark:bg-zinc-950 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                        >
+                          {isOpportunitySectionExpanded(expandedSections, item.id, "evidence")
+                            ? "Hide Evidence"
+                            : "View Evidence"}
+                        </button>
+                      </div>
+                      {isOpportunitySectionExpanded(expandedSections, item.id, "evidence") ? (
+                        <>
+                          <div>
+                            <p className="font-medium text-zinc-700 dark:text-zinc-200">
+                              Evidence Score
+                            </p>
+                            <p className="mt-1 text-zinc-600 dark:text-zinc-300">
+                              {item.evidenceAnalysis.evidenceScore} / 10
+                            </p>
+                          </div>
+                          {item.evidenceAnalysis.evidenceReasons.length ? (
+                            <div>
+                              <p className="font-medium text-zinc-700 dark:text-zinc-200">
+                                Reasons
+                              </p>
+                              <ul className="mt-1 list-disc space-y-0.5 pl-4">
+                                {item.evidenceAnalysis.evidenceReasons.slice(0, 4).map((reason) => (
+                                  <li key={reason}>{reason}</li>
+                                ))}
+                              </ul>
+                            </div>
+                          ) : null}
+                        </>
+                      ) : null}
+                    </div>
+                  </div>
+
+                  <div className="rounded-2xl border border-zinc-200 bg-zinc-50/80 p-3 dark:border-zinc-800 dark:bg-zinc-900/60">
+                    <div className="space-y-2 text-xs text-zinc-500 dark:text-zinc-400">
+                      <div className="flex flex-wrap items-start justify-between gap-2">
+                        <div>
+                          <h3 className="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+                            Buyer Mapping
+                          </h3>
+                          <p className="mt-1 text-zinc-600 dark:text-zinc-300">
+                            Buyer Clarity {item.buyerMapping.buyerClarityScore}/10
+                          </p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => toggleSection(item.id, "buyer_mapping")}
+                          className="rounded-full bg-white px-2.5 py-1 text-[11px] font-medium text-zinc-600 transition-colors hover:bg-zinc-100 dark:bg-zinc-950 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                        >
+                          {isOpportunitySectionExpanded(expandedSections, item.id, "buyer_mapping")
+                            ? "Hide Mapping"
+                            : "View Mapping"}
+                        </button>
+                      </div>
+                      {isOpportunitySectionExpanded(expandedSections, item.id, "buyer_mapping") ? (
+                        <>
+                          <dl className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                            <div>
+                              <dt className="font-medium text-zinc-700 dark:text-zinc-200">User</dt>
+                              <dd>{item.buyerMapping.user}</dd>
+                            </div>
+                            <div>
+                              <dt className="font-medium text-zinc-700 dark:text-zinc-200">Buyer</dt>
+                              <dd>{item.buyerMapping.buyer}</dd>
+                            </div>
+                            <div>
+                              <dt className="font-medium text-zinc-700 dark:text-zinc-200">
+                                Champion
+                              </dt>
+                              <dd>{item.buyerMapping.champion}</dd>
+                            </div>
+                            <div>
+                              <dt className="font-medium text-zinc-700 dark:text-zinc-200">
+                                Economic Owner
+                              </dt>
+                              <dd>{item.buyerMapping.economicOwner}</dd>
+                            </div>
+                            <div>
+                              <dt className="font-medium text-zinc-700 dark:text-zinc-200">
+                                Department
+                              </dt>
+                              <dd>{item.buyerMapping.department}</dd>
+                            </div>
+                            <div>
+                              <dt className="font-medium text-zinc-700 dark:text-zinc-200">
+                                Company Size Fit
+                              </dt>
+                              <dd>{item.buyerMapping.companySizeFit.join(", ")}</dd>
+                            </div>
+                            <div className="sm:col-span-2">
+                              <dt className="font-medium text-zinc-700 dark:text-zinc-200">
+                                Buying Committee
+                              </dt>
+                              {item.buyerMapping.buyingCommittee.length ? (
+                                <dd className="mt-1 flex flex-wrap gap-1.5">
+                                  {item.buyerMapping.buyingCommittee.map((role) => (
+                                    <span
+                                      key={role}
+                                      className="rounded-full bg-white px-2.5 py-1 text-[11px] font-medium text-zinc-600 dark:bg-zinc-950 dark:text-zinc-300"
+                                    >
+                                      {role}
+                                    </span>
+                                  ))}
+                                </dd>
+                              ) : (
+                                <dd>Unknown</dd>
+                              )}
+                            </div>
+                          </dl>
+                          <div>
+                            <p className="font-medium text-zinc-700 dark:text-zinc-200">
+                              Decision Map
+                            </p>
+                            <dl className="mt-1 grid grid-cols-1 gap-2 sm:grid-cols-2">
+                              <div>
+                                <dt className="text-[11px] font-medium uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
+                                  Who Suffers
+                                </dt>
+                                <dd>{item.buyerMapping.decisionMap.suffers ?? "Unknown"}</dd>
+                              </div>
+                              <div>
+                                <dt className="text-[11px] font-medium uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
+                                  Who Champions
+                                </dt>
+                                <dd>{item.buyerMapping.decisionMap.champion ?? "Unknown"}</dd>
+                              </div>
+                              <div>
+                                <dt className="text-[11px] font-medium uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
+                                  Who Buys
+                                </dt>
+                                <dd>{item.buyerMapping.decisionMap.buyer ?? "Unknown"}</dd>
+                              </div>
+                              <div>
+                                <dt className="text-[11px] font-medium uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
+                                  Who Pays
+                                </dt>
+                                <dd>{item.buyerMapping.decisionMap.pays ?? "Unknown"}</dd>
+                              </div>
+                              <div>
+                                <dt className="text-[11px] font-medium uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
+                                  Economic Buyer
+                                </dt>
+                                <dd>{item.buyerMapping.decisionMap.economicBuyer ?? "Unknown"}</dd>
+                              </div>
+                            </dl>
+                          </div>
+                          {item.buyerMapping.buyerClarityReasons.length ? (
+                            <div>
+                              <p className="font-medium text-zinc-700 dark:text-zinc-200">
+                                Reasons
+                              </p>
+                              <ul className="mt-1 list-disc space-y-0.5 pl-4">
+                                {item.buyerMapping.buyerClarityReasons.map((reason) => (
+                                  <li key={reason}>{reason}</li>
+                                ))}
+                              </ul>
+                            </div>
+                          ) : null}
+                        </>
                       ) : null}
                     </div>
                   </div>
