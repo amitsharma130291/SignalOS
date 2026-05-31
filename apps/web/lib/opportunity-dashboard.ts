@@ -1,5 +1,9 @@
 import type { Prisma } from "@prisma/client";
 import {
+  generateEvidenceStrength,
+  type EvidenceAnalysis,
+} from "./evidence-strength.ts";
+import {
   generateFounderConviction,
   type FounderConvictionResult,
 } from "./founder-conviction.ts";
@@ -7,6 +11,10 @@ import { calculateOpportunityScore } from "./opportunity-score.ts";
 import { getInterviewCount } from "./opportunity-validation.ts";
 import { hasHumanEditedState, preferHumanValue } from "./review-overrides.ts";
 import { isReviewStatus, type ReviewStatus } from "./review-status.ts";
+import {
+  generateSolutionGapAnalysis,
+  type SolutionGapAnalysis,
+} from "./solution-gap-engine.ts";
 
 type RawInputForOpportunity = {
   rawText?: string | null;
@@ -89,6 +97,8 @@ export type OpportunityDashboardItem = {
   frequency: string;
   currentSolution: string;
   solutionGap: string;
+  solutionGapAnalysis: SolutionGapAnalysis;
+  evidenceAnalysis: EvidenceAnalysis;
   founderConviction: number | null;
   founderConvictionRecommendation: FounderConvictionResult;
   interviewCount: number;
@@ -197,6 +207,22 @@ export function shapeOpportunity(signal: PainSignalForOpportunity): OpportunityD
     companySize,
     industry,
   });
+  const solutionGapAnalysis = generateSolutionGapAnalysis({
+    rawText: signal.rawInput?.rawText,
+    pain,
+    affectedTeam,
+    currentSolution,
+    solutionGap,
+  });
+  const evidenceAnalysis = generateEvidenceStrength({
+    title: pain,
+    summary: signal.rawInput?.rawText,
+    current_solution: currentSolution,
+    solution_gap: solutionGap,
+    frequency,
+    urgency,
+    affected_team: affectedTeam,
+  });
 
   return {
     id: signal.id,
@@ -217,6 +243,8 @@ export function shapeOpportunity(signal: PainSignalForOpportunity): OpportunityD
     frequency,
     currentSolution,
     solutionGap,
+    solutionGapAnalysis,
+    evidenceAnalysis,
     founderConviction: signal.founderConviction ?? null,
     founderConvictionRecommendation,
     interviewCount: getInterviewCount(signal._count?.interviews),
@@ -252,6 +280,8 @@ export function shapeOpportunity(signal: PainSignalForOpportunity): OpportunityD
       frequency,
       currentSolution,
       solutionGap,
+      automationPotential: solutionGapAnalysis.automationPotential,
+      evidenceStrength: evidenceAnalysis.evidenceStrength,
       targetTitles,
       icpGeneratedAt: signal.icpGeneratedAt,
       rawInputStatus: filterStatus,

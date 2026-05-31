@@ -1,0 +1,333 @@
+{
+  "generatedAt": "2026-05-31T12:01:28.322Z",
+  "pipeline": "generateSolutionGapAnalysis -> calculateOpportunityScore",
+  "totals": {
+    "tests": 5,
+    "totalAssertions": 23,
+    "passedAssertions": 23,
+    "failedAssertions": 0,
+    "passPercentage": 100
+  },
+  "rankingAssertions": [
+    {
+      "label": "Finance >= Sales Ops",
+      "actual": "91 >= 91",
+      "expected": true,
+      "passed": true
+    },
+    {
+      "label": "Finance >= Operations",
+      "actual": "91 >= 87",
+      "expected": true,
+      "passed": true
+    },
+    {
+      "label": "Support lowest",
+      "actual": 36,
+      "expected": "less than every other canonical score",
+      "passed": true
+    }
+  ],
+  "ranking": [
+    {
+      "rank": 1,
+      "name": "Finance Stripe + NetSuite reconciliation",
+      "score": 91,
+      "label": "high",
+      "automationPotential": "High",
+      "bonus": 5
+    },
+    {
+      "rank": 2,
+      "name": "Sales Ops forecast reconciliation",
+      "score": 91,
+      "label": "high",
+      "automationPotential": "High",
+      "bonus": 5
+    },
+    {
+      "rank": 3,
+      "name": "Operations quarterly compliance",
+      "score": 87,
+      "label": "high",
+      "automationPotential": "High",
+      "bonus": 5
+    },
+    {
+      "rank": 4,
+      "name": "Customer Success renewal workflow",
+      "score": 73,
+      "label": "high",
+      "automationPotential": "Medium",
+      "bonus": 2
+    },
+    {
+      "rank": 5,
+      "name": "Support escalation workflow",
+      "score": 36,
+      "label": "low",
+      "automationPotential": "Medium",
+      "bonus": 2
+    }
+  ],
+  "results": [
+    {
+      "name": "Finance Stripe + NetSuite reconciliation",
+      "automationPotential": "High",
+      "bonus": 5,
+      "score": 91,
+      "label": "high",
+      "reasons": [
+        "B2B signal strength added 15 points.",
+        "Monetization potential added 8 points.",
+        "High urgency added 20 points.",
+        "Accepted filter status added 10 points.",
+        "Finance reconciliation workflow added 25 points.",
+        "Multi-tool workflow added 8 points.",
+        "High automation potential added 5 points."
+      ],
+      "assertions": [
+        {
+          "label": "automation potential",
+          "actual": "High",
+          "expected": "High",
+          "passed": true
+        },
+        {
+          "label": "automation bonus",
+          "actual": 5,
+          "expected": 5,
+          "passed": true
+        },
+        {
+          "label": "final score",
+          "actual": 91,
+          "expected": "0 <= score <= 100",
+          "passed": true
+        },
+        {
+          "label": "score reasons",
+          "actual": [
+            "B2B signal strength added 15 points.",
+            "Monetization potential added 8 points.",
+            "High urgency added 20 points.",
+            "Accepted filter status added 10 points.",
+            "Finance reconciliation workflow added 25 points.",
+            "Multi-tool workflow added 8 points.",
+            "High automation potential added 5 points."
+          ],
+          "expected": "includes High automation potential added 5 points.",
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "failedAssertions": []
+    },
+    {
+      "name": "Sales Ops forecast reconciliation",
+      "automationPotential": "High",
+      "bonus": 5,
+      "score": 91,
+      "label": "high",
+      "reasons": [
+        "B2B signal strength added 25 points.",
+        "Monetization potential added 18 points.",
+        "Medium urgency added 10 points.",
+        "Generated ICP added 15 points.",
+        "Accepted filter status added 10 points.",
+        "Multi-tool workflow added 8 points.",
+        "High automation potential added 5 points."
+      ],
+      "assertions": [
+        {
+          "label": "automation potential",
+          "actual": "High",
+          "expected": "High",
+          "passed": true
+        },
+        {
+          "label": "automation bonus",
+          "actual": 5,
+          "expected": 5,
+          "passed": true
+        },
+        {
+          "label": "final score",
+          "actual": 91,
+          "expected": "0 <= score <= 100",
+          "passed": true
+        },
+        {
+          "label": "score reasons",
+          "actual": [
+            "B2B signal strength added 25 points.",
+            "Monetization potential added 18 points.",
+            "Medium urgency added 10 points.",
+            "Generated ICP added 15 points.",
+            "Accepted filter status added 10 points.",
+            "Multi-tool workflow added 8 points.",
+            "High automation potential added 5 points."
+          ],
+          "expected": "includes High automation potential added 5 points.",
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "failedAssertions": []
+    },
+    {
+      "name": "Operations quarterly compliance",
+      "automationPotential": "High",
+      "bonus": 5,
+      "score": 87,
+      "label": "high",
+      "reasons": [
+        "B2B signal strength added 30 points.",
+        "Monetization potential added 23 points.",
+        "High urgency added 20 points.",
+        "Generated ICP added 15 points.",
+        "Accepted filter status added 10 points.",
+        "Two-tool workflow added 4 points.",
+        "Quarterly compliance workflow reduced score by 20 points.",
+        "High automation potential added 5 points."
+      ],
+      "assertions": [
+        {
+          "label": "automation potential",
+          "actual": "High",
+          "expected": "High",
+          "passed": true
+        },
+        {
+          "label": "automation bonus",
+          "actual": 5,
+          "expected": 5,
+          "passed": true
+        },
+        {
+          "label": "final score",
+          "actual": 87,
+          "expected": "0 <= score <= 100",
+          "passed": true
+        },
+        {
+          "label": "score reasons",
+          "actual": [
+            "B2B signal strength added 30 points.",
+            "Monetization potential added 23 points.",
+            "High urgency added 20 points.",
+            "Generated ICP added 15 points.",
+            "Accepted filter status added 10 points.",
+            "Two-tool workflow added 4 points.",
+            "Quarterly compliance workflow reduced score by 20 points.",
+            "High automation potential added 5 points."
+          ],
+          "expected": "includes High automation potential added 5 points.",
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "failedAssertions": []
+    },
+    {
+      "name": "Customer Success renewal workflow",
+      "automationPotential": "Medium",
+      "bonus": 2,
+      "score": 73,
+      "label": "high",
+      "reasons": [
+        "B2B signal strength added 15 points.",
+        "Monetization potential added 13 points.",
+        "Medium urgency added 10 points.",
+        "Generated ICP added 15 points.",
+        "Accepted filter status added 10 points.",
+        "Multi-tool workflow added 8 points.",
+        "Medium automation potential added 2 points."
+      ],
+      "assertions": [
+        {
+          "label": "automation potential",
+          "actual": "Medium",
+          "expected": "Medium",
+          "passed": true
+        },
+        {
+          "label": "automation bonus",
+          "actual": 2,
+          "expected": 2,
+          "passed": true
+        },
+        {
+          "label": "final score",
+          "actual": 73,
+          "expected": "0 <= score <= 100",
+          "passed": true
+        },
+        {
+          "label": "score reasons",
+          "actual": [
+            "B2B signal strength added 15 points.",
+            "Monetization potential added 13 points.",
+            "Medium urgency added 10 points.",
+            "Generated ICP added 15 points.",
+            "Accepted filter status added 10 points.",
+            "Multi-tool workflow added 8 points.",
+            "Medium automation potential added 2 points."
+          ],
+          "expected": "includes Medium automation potential added 2 points.",
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "failedAssertions": []
+    },
+    {
+      "name": "Support escalation workflow",
+      "automationPotential": "Medium",
+      "bonus": 2,
+      "score": 36,
+      "label": "low",
+      "reasons": [
+        "B2B signal strength added 10 points.",
+        "Monetization potential added 10 points.",
+        "Accepted filter status added 10 points.",
+        "Two-tool workflow added 4 points.",
+        "Medium automation potential added 2 points."
+      ],
+      "assertions": [
+        {
+          "label": "automation potential",
+          "actual": "Medium",
+          "expected": "Medium",
+          "passed": true
+        },
+        {
+          "label": "automation bonus",
+          "actual": 2,
+          "expected": 2,
+          "passed": true
+        },
+        {
+          "label": "final score",
+          "actual": 36,
+          "expected": "0 <= score <= 100",
+          "passed": true
+        },
+        {
+          "label": "score reasons",
+          "actual": [
+            "B2B signal strength added 10 points.",
+            "Monetization potential added 10 points.",
+            "Accepted filter status added 10 points.",
+            "Two-tool workflow added 4 points.",
+            "Medium automation potential added 2 points."
+          ],
+          "expected": "includes Medium automation potential added 2 points.",
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "failedAssertions": []
+    }
+  ]
+}

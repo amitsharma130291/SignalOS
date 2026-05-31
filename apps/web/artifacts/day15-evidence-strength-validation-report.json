@@ -1,0 +1,320 @@
+{
+  "generatedAt": "2026-05-31T12:16:33.710Z",
+  "pipeline": "generateEvidenceStrength -> calculateOpportunityScore",
+  "totals": {
+    "tests": 5,
+    "totalAssertions": 33,
+    "passedAssertions": 33,
+    "failedAssertions": 0,
+    "passPercentage": 100
+  },
+  "rankingAssertions": [
+    {
+      "label": "Finance remains above Operations",
+      "actual": "96 >= 87",
+      "expected": true,
+      "passed": true
+    },
+    {
+      "label": "Support remains lowest",
+      "actual": 31,
+      "expected": "less than every other canonical score",
+      "passed": true
+    }
+  ],
+  "results": [
+    {
+      "name": "Finance reconciliation",
+      "beforeScore": 91,
+      "afterScore": 96,
+      "evidenceStrength": "high",
+      "evidenceScore": 10,
+      "evidenceReasons": [
+        "explicit frequency",
+        "explicit workflow",
+        "explicit tools",
+        "explicit business impact",
+        "explicit team",
+        "concrete operational consequence"
+      ],
+      "modifier": 5,
+      "assertions": [
+        {
+          "label": "evidence strength",
+          "actual": "high",
+          "expected": "high",
+          "passed": true
+        },
+        {
+          "label": "evidence score",
+          "actual": 10,
+          "expected": "8 <= score <= 10",
+          "passed": true
+        },
+        {
+          "label": "evidence score bounds",
+          "actual": 10,
+          "expected": "0 <= score <= 10",
+          "passed": true
+        },
+        {
+          "label": "evidence modifier",
+          "actual": 5,
+          "expected": 5,
+          "passed": true
+        },
+        {
+          "label": "score delta",
+          "actual": 5,
+          "expected": 5,
+          "passed": true
+        },
+        {
+          "label": "final score",
+          "actual": 96,
+          "expected": "0 <= score <= 100",
+          "passed": true
+        },
+        {
+          "label": "evidence reasons",
+          "actual": [
+            "explicit frequency",
+            "explicit workflow",
+            "explicit tools",
+            "explicit business impact",
+            "explicit team",
+            "concrete operational consequence"
+          ],
+          "expected": "includes explicit business impact",
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "failedAssertions": []
+    },
+    {
+      "name": "Operations compliance",
+      "beforeScore": 87,
+      "afterScore": 87,
+      "evidenceStrength": "medium",
+      "evidenceScore": 7,
+      "evidenceReasons": [
+        "explicit frequency",
+        "explicit workflow",
+        "explicit tools",
+        "business impact partially inferred",
+        "explicit team",
+        "concrete operational consequence"
+      ],
+      "modifier": 0,
+      "assertions": [
+        {
+          "label": "evidence strength",
+          "actual": "medium",
+          "expected": "medium",
+          "passed": true
+        },
+        {
+          "label": "evidence score",
+          "actual": 7,
+          "expected": "5 <= score <= 7",
+          "passed": true
+        },
+        {
+          "label": "evidence score bounds",
+          "actual": 7,
+          "expected": "0 <= score <= 10",
+          "passed": true
+        },
+        {
+          "label": "evidence modifier",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "label": "score delta",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "label": "final score",
+          "actual": 87,
+          "expected": "0 <= score <= 100",
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "failedAssertions": []
+    },
+    {
+      "name": "Sales Ops forecasting",
+      "beforeScore": 91,
+      "afterScore": 91,
+      "evidenceStrength": "medium",
+      "evidenceScore": 6,
+      "evidenceReasons": [
+        "frequency unknown",
+        "explicit workflow",
+        "explicit tools",
+        "explicit business impact",
+        "explicit team",
+        "concrete operational consequence"
+      ],
+      "modifier": 0,
+      "assertions": [
+        {
+          "label": "evidence strength",
+          "actual": "medium",
+          "expected": "medium",
+          "passed": true
+        },
+        {
+          "label": "evidence score",
+          "actual": 6,
+          "expected": "5 <= score <= 8",
+          "passed": true
+        },
+        {
+          "label": "evidence score bounds",
+          "actual": 6,
+          "expected": "0 <= score <= 10",
+          "passed": true
+        },
+        {
+          "label": "evidence modifier",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "label": "score delta",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "label": "final score",
+          "actual": 91,
+          "expected": "0 <= score <= 100",
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "failedAssertions": []
+    },
+    {
+      "name": "Customer Success renewal workflow",
+      "beforeScore": 73,
+      "afterScore": 73,
+      "evidenceStrength": "medium",
+      "evidenceScore": 7,
+      "evidenceReasons": [
+        "explicit frequency",
+        "explicit workflow",
+        "explicit tools",
+        "business impact partially inferred",
+        "explicit team",
+        "concrete operational consequence"
+      ],
+      "modifier": 0,
+      "assertions": [
+        {
+          "label": "evidence strength",
+          "actual": "medium",
+          "expected": "medium",
+          "passed": true
+        },
+        {
+          "label": "evidence score",
+          "actual": 7,
+          "expected": "5 <= score <= 7",
+          "passed": true
+        },
+        {
+          "label": "evidence score bounds",
+          "actual": 7,
+          "expected": "0 <= score <= 10",
+          "passed": true
+        },
+        {
+          "label": "evidence modifier",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "label": "score delta",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "label": "final score",
+          "actual": 73,
+          "expected": "0 <= score <= 100",
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "failedAssertions": []
+    },
+    {
+      "name": "Support escalation spreadsheet",
+      "beforeScore": 36,
+      "afterScore": 31,
+      "evidenceStrength": "low",
+      "evidenceScore": 4,
+      "evidenceReasons": [
+        "frequency unknown",
+        "explicit workflow",
+        "explicit tools",
+        "business impact partially inferred",
+        "explicit team",
+        "concrete operational consequence"
+      ],
+      "modifier": -5,
+      "assertions": [
+        {
+          "label": "evidence strength",
+          "actual": "low",
+          "expected": "low",
+          "passed": true
+        },
+        {
+          "label": "evidence score",
+          "actual": 4,
+          "expected": "0 <= score <= 4",
+          "passed": true
+        },
+        {
+          "label": "evidence score bounds",
+          "actual": 4,
+          "expected": "0 <= score <= 10",
+          "passed": true
+        },
+        {
+          "label": "evidence modifier",
+          "actual": -5,
+          "expected": -5,
+          "passed": true
+        },
+        {
+          "label": "score delta",
+          "actual": -5,
+          "expected": -5,
+          "passed": true
+        },
+        {
+          "label": "final score",
+          "actual": 31,
+          "expected": "0 <= score <= 100",
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "failedAssertions": []
+    }
+  ]
+}

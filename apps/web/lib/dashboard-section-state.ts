@@ -1,4 +1,4 @@
-export type OpportunitySectionId = "icp" | "score";
+export type OpportunitySectionId = "icp" | "score" | "solution_gap";
 
 export function getOpportunitySectionKey(opportunityId: string, sectionId: OpportunitySectionId) {
   return `${opportunityId}:${sectionId}`;

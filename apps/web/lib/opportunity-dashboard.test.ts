@@ -29,6 +29,7 @@ describe("shapeOpportunity", () => {
     assert.equal(opportunity.frequency, "Unknown");
     assert.equal(opportunity.currentSolution, "Unknown");
     assert.equal(opportunity.solutionGap, "Unknown");
+    assert.equal(opportunity.solutionGapAnalysis.automationPotential, "High");
     assert.equal(opportunity.founderConviction, null);
     assert.equal(opportunity.founderConvictionRecommendation.recommendation, "low");
     assert.equal(opportunity.interviewCount, 0);
@@ -144,6 +145,32 @@ describe("shapeOpportunity", () => {
     assert.equal(opportunity.founderConviction, 6);
     assert.ok(opportunity.founderConvictionRecommendation.score >= 8);
     assert.equal(opportunity.founderConvictionRecommendation.recommendation, "high");
+  });
+
+  it("computes solution gap analysis from shaped opportunity fields", () => {
+    const opportunity = shapeOpportunity({
+      id: "pain-1",
+      pain: "Support teams triage Zendesk tickets manually",
+      affectedTeam: "Support",
+      currentSolution: "Zendesk + Slack + Spreadsheets",
+      solutionGap:
+        "Unclear ownership and manual escalation tracking create visibility gaps, missed escalations, and response delays.",
+      rawInput: {
+        rawText:
+          "Support managers maintain a spreadsheet of critical Zendesk escalations because ownership isn't clear once engineering gets involved.",
+      },
+    });
+
+    assert.equal(opportunity.solutionGapAnalysis.automationPotential, "Medium");
+    assert.ok(opportunity.solutionGapAnalysis.failureModes.includes("ownership ambiguity"));
+    assert.equal(
+      opportunity.solutionGapAnalysis.rootCause,
+      "Escalation ownership is not tracked in a single system.",
+    );
+    assert.equal(opportunity.evidenceAnalysis.evidenceStrength, "medium");
+    assert.ok(
+      opportunity.opportunityScore.reasons.includes("Medium automation potential added 2 points."),
+    );
   });
 
   it("handles missing frequency and solution gap", () => {

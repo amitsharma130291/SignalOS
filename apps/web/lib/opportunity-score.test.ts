@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { calculateOpportunityScore } from "./opportunity-score.ts";
+import { calculateOpportunityScore, getAutomationPotentialBonus } from "./opportunity-score.ts";
 
 describe("calculateOpportunityScore", () => {
   it("returns a high score for strong B2B, high monetization, high urgency opportunities", () => {
@@ -137,5 +137,93 @@ describe("calculateOpportunityScore", () => {
     });
 
     assert.equal(high.score, 100);
+  });
+
+  it("maps automation potential to score bonuses", () => {
+    assert.equal(getAutomationPotentialBonus("High"), 5);
+    assert.equal(getAutomationPotentialBonus("Medium"), 2);
+    assert.equal(getAutomationPotentialBonus("Low"), 0);
+    assert.equal(getAutomationPotentialBonus("Unknown"), 0);
+  });
+
+  it("adds high automation potential bonus and reason", () => {
+    const result = calculateOpportunityScore({
+      b2bScore: 3,
+      monetizationScore: 3,
+      urgency: "high",
+      rawInputStatus: "accepted",
+      automationPotential: "High",
+    });
+
+    assert.ok(result.reasons.includes("High automation potential added 5 points."));
+  });
+
+  it("adds medium automation potential bonus and reason", () => {
+    const medium = calculateOpportunityScore({
+      b2bScore: 3,
+      monetizationScore: 3,
+      urgency: "medium",
+      rawInputStatus: "accepted",
+      automationPotential: "Medium",
+    });
+    const low = calculateOpportunityScore({
+      b2bScore: 3,
+      monetizationScore: 3,
+      urgency: "medium",
+      rawInputStatus: "accepted",
+      automationPotential: "Low",
+    });
+
+    assert.equal(medium.score, low.score + 2);
+    assert.ok(medium.reasons.includes("Medium automation potential added 2 points."));
+  });
+
+  it("applies evidence strength modifiers after existing score logic", () => {
+    const base = calculateOpportunityScore({
+      b2bScore: 3,
+      monetizationScore: 3,
+      urgency: "medium",
+      rawInputStatus: "accepted",
+    });
+    const high = calculateOpportunityScore({
+      b2bScore: 3,
+      monetizationScore: 3,
+      urgency: "medium",
+      rawInputStatus: "accepted",
+      evidenceStrength: "high",
+    });
+    const medium = calculateOpportunityScore({
+      b2bScore: 3,
+      monetizationScore: 3,
+      urgency: "medium",
+      rawInputStatus: "accepted",
+      evidenceStrength: "medium",
+    });
+    const low = calculateOpportunityScore({
+      b2bScore: 3,
+      monetizationScore: 3,
+      urgency: "medium",
+      rawInputStatus: "accepted",
+      evidenceStrength: "low",
+    });
+
+    assert.equal(high.score, base.score + 5);
+    assert.equal(medium.score, base.score);
+    assert.equal(low.score, base.score - 5);
+    assert.ok(high.reasons.includes("High evidence strength added 5 points."));
+    assert.ok(low.reasons.includes("Low evidence strength reduced score by 5 points."));
+  });
+
+  it("clamps high evidence modifier at 100", () => {
+    const result = calculateOpportunityScore({
+      b2bScore: 999,
+      monetizationScore: 999,
+      urgency: "high",
+      rawInputStatus: "accepted",
+      targetTitles: ["VP Finance"],
+      evidenceStrength: "high",
+    });
+
+    assert.equal(result.score, 100);
   });
 });

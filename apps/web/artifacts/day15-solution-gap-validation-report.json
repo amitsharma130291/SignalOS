@@ -1,0 +1,518 @@
+{
+  "generatedAt": "2026-05-31T12:16:33.597Z",
+  "pipeline": "generateSolutionGapAnalysis",
+  "totals": {
+    "tests": 6,
+    "passedTests": 6,
+    "failedTests": 0,
+    "totalAssertions": 49,
+    "passedAssertions": 49,
+    "failedAssertions": 0,
+    "passPercentage": 100
+  },
+  "results": [
+    {
+      "name": "Finance reconciliation",
+      "input": {
+        "rawText": "Every Friday our finance team exports Stripe payouts into NetSuite and then manually updates a spreadsheet to investigate mismatches. The process takes half a day and month-end close keeps slipping.",
+        "affectedTeam": "Finance Ops",
+        "currentSolution": "Stripe + NetSuite + Spreadsheets"
+      },
+      "analysis": {
+        "currentSolution": "Stripe + NetSuite + Spreadsheets",
+        "failureModes": [
+          "reconciliation mismatches",
+          "exception tracking work",
+          "reporting delays"
+        ],
+        "rootCause": "Data spread across finance systems and spreadsheets.",
+        "businessImpact": "Month-end close delays and reporting risk.",
+        "automationPotential": "High"
+      },
+      "assertions": [
+        {
+          "label": "currentSolution",
+          "actual": "Stripe + NetSuite + Spreadsheets",
+          "expected": "not Unknown",
+          "passed": true
+        },
+        {
+          "label": "failureModes",
+          "actual": [
+            "reconciliation mismatches",
+            "exception tracking work",
+            "reporting delays"
+          ],
+          "expected": "exists",
+          "passed": true
+        },
+        {
+          "label": "rootCause",
+          "actual": "Data spread across finance systems and spreadsheets.",
+          "expected": "not Unknown",
+          "passed": true
+        },
+        {
+          "label": "businessImpact",
+          "actual": "Month-end close delays and reporting risk.",
+          "expected": "not Unknown",
+          "passed": true
+        },
+        {
+          "label": "automationPotential",
+          "actual": "High",
+          "expected": "exists",
+          "passed": true
+        },
+        {
+          "label": "automationPotential",
+          "actual": "High",
+          "expected": "High",
+          "passed": true
+        },
+        {
+          "label": "failureModes",
+          "actual": [
+            "reconciliation mismatches",
+            "exception tracking work",
+            "reporting delays"
+          ],
+          "expected": "includes reconciliation mismatches",
+          "passed": true
+        },
+        {
+          "label": "failureModes",
+          "actual": [
+            "reconciliation mismatches",
+            "exception tracking work",
+            "reporting delays"
+          ],
+          "expected": "includes exception tracking work",
+          "passed": true
+        },
+        {
+          "label": "failureModes",
+          "actual": [
+            "reconciliation mismatches",
+            "exception tracking work",
+            "reporting delays"
+          ],
+          "expected": "includes reporting delays",
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "failedAssertions": []
+    },
+    {
+      "name": "Sales Ops forecasting",
+      "input": {
+        "rawText": "Sales Operations reviews HubSpot opportunities, Airtable forecasts, Salesforce records, and Slack updates before every leadership forecast meeting. Numbers rarely match and managers manually reconcile the differences.",
+        "affectedTeam": "Sales Ops"
+      },
+      "analysis": {
+        "currentSolution": "Salesforce + HubSpot + Airtable + Slack",
+        "failureModes": [
+          "forecast inaccuracies",
+          "manual reconciliation",
+          "inconsistent reporting"
+        ],
+        "rootCause": "Forecast data lives across multiple sales systems.",
+        "businessImpact": "Reduced forecast accuracy and slower decision making.",
+        "automationPotential": "High"
+      },
+      "assertions": [
+        {
+          "label": "currentSolution",
+          "actual": "Salesforce + HubSpot + Airtable + Slack",
+          "expected": "not Unknown",
+          "passed": true
+        },
+        {
+          "label": "failureModes",
+          "actual": [
+            "forecast inaccuracies",
+            "manual reconciliation",
+            "inconsistent reporting"
+          ],
+          "expected": "exists",
+          "passed": true
+        },
+        {
+          "label": "rootCause",
+          "actual": "Forecast data lives across multiple sales systems.",
+          "expected": "not Unknown",
+          "passed": true
+        },
+        {
+          "label": "businessImpact",
+          "actual": "Reduced forecast accuracy and slower decision making.",
+          "expected": "not Unknown",
+          "passed": true
+        },
+        {
+          "label": "automationPotential",
+          "actual": "High",
+          "expected": "exists",
+          "passed": true
+        },
+        {
+          "label": "automationPotential",
+          "actual": "High",
+          "expected": "High",
+          "passed": true
+        },
+        {
+          "label": "failureModes",
+          "actual": [
+            "forecast inaccuracies",
+            "manual reconciliation",
+            "inconsistent reporting"
+          ],
+          "expected": "includes forecast inaccuracies",
+          "passed": true
+        },
+        {
+          "label": "failureModes",
+          "actual": [
+            "forecast inaccuracies",
+            "manual reconciliation",
+            "inconsistent reporting"
+          ],
+          "expected": "includes manual reconciliation",
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "failedAssertions": []
+    },
+    {
+      "name": "Customer Success renewals",
+      "input": {
+        "rawText": "Our customer success managers keep a renewal spreadsheet because Salesforce doesn't capture all of the context they need. Before renewal meetings they spend hours cross-checking notes from Slack and customer calls.",
+        "affectedTeam": "Customer Success"
+      },
+      "analysis": {
+        "currentSolution": "Salesforce + Slack + Spreadsheets",
+        "failureModes": [
+          "renewal visibility gaps",
+          "manual record cleanup",
+          "customer health inconsistencies"
+        ],
+        "rootCause": "Customer information is fragmented across tools.",
+        "businessImpact": "Renewal risk and reduced customer visibility.",
+        "automationPotential": "Medium"
+      },
+      "assertions": [
+        {
+          "label": "currentSolution",
+          "actual": "Salesforce + Slack + Spreadsheets",
+          "expected": "not Unknown",
+          "passed": true
+        },
+        {
+          "label": "failureModes",
+          "actual": [
+            "renewal visibility gaps",
+            "manual record cleanup",
+            "customer health inconsistencies"
+          ],
+          "expected": "exists",
+          "passed": true
+        },
+        {
+          "label": "rootCause",
+          "actual": "Customer information is fragmented across tools.",
+          "expected": "not Unknown",
+          "passed": true
+        },
+        {
+          "label": "businessImpact",
+          "actual": "Renewal risk and reduced customer visibility.",
+          "expected": "not Unknown",
+          "passed": true
+        },
+        {
+          "label": "automationPotential",
+          "actual": "Medium",
+          "expected": "exists",
+          "passed": true
+        },
+        {
+          "label": "automationPotential",
+          "actual": "Medium",
+          "expected": "Medium",
+          "passed": true
+        },
+        {
+          "label": "failureModes",
+          "actual": [
+            "renewal visibility gaps",
+            "manual record cleanup",
+            "customer health inconsistencies"
+          ],
+          "expected": "includes renewal visibility gaps",
+          "passed": true
+        },
+        {
+          "label": "failureModes",
+          "actual": [
+            "renewal visibility gaps",
+            "manual record cleanup",
+            "customer health inconsistencies"
+          ],
+          "expected": "includes manual record cleanup",
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "failedAssertions": []
+    },
+    {
+      "name": "Recruiting coordination",
+      "input": {
+        "rawText": "Recruiters move candidate information from LinkedIn into Greenhouse several times per day. Interview feedback arrives through Slack and email, forcing coordinators to manually update candidate status.",
+        "affectedTeam": "Recruiting"
+      },
+      "analysis": {
+        "currentSolution": "Slack + LinkedIn + Greenhouse + Email",
+        "failureModes": [
+          "candidate status drift",
+          "interview feedback bottlenecks",
+          "scheduling delays"
+        ],
+        "rootCause": "Candidate workflow spans disconnected recruiting systems.",
+        "businessImpact": "Slower hiring process and poor candidate experience.",
+        "automationPotential": "Medium"
+      },
+      "assertions": [
+        {
+          "label": "currentSolution",
+          "actual": "Slack + LinkedIn + Greenhouse + Email",
+          "expected": "not Unknown",
+          "passed": true
+        },
+        {
+          "label": "failureModes",
+          "actual": [
+            "candidate status drift",
+            "interview feedback bottlenecks",
+            "scheduling delays"
+          ],
+          "expected": "exists",
+          "passed": true
+        },
+        {
+          "label": "rootCause",
+          "actual": "Candidate workflow spans disconnected recruiting systems.",
+          "expected": "not Unknown",
+          "passed": true
+        },
+        {
+          "label": "businessImpact",
+          "actual": "Slower hiring process and poor candidate experience.",
+          "expected": "not Unknown",
+          "passed": true
+        },
+        {
+          "label": "automationPotential",
+          "actual": "Medium",
+          "expected": "exists",
+          "passed": true
+        },
+        {
+          "label": "automationPotential",
+          "actual": "Medium",
+          "expected": "Medium",
+          "passed": true
+        },
+        {
+          "label": "failureModes",
+          "actual": [
+            "candidate status drift",
+            "interview feedback bottlenecks",
+            "scheduling delays"
+          ],
+          "expected": "includes candidate status drift",
+          "passed": true
+        },
+        {
+          "label": "failureModes",
+          "actual": [
+            "candidate status drift",
+            "interview feedback bottlenecks",
+            "scheduling delays"
+          ],
+          "expected": "includes interview feedback bottlenecks",
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "failedAssertions": []
+    },
+    {
+      "name": "Support escalations",
+      "input": {
+        "rawText": "Support managers maintain a spreadsheet of critical Zendesk escalations because ownership isn't clear once engineering gets involved. Urgent issues are occasionally missed.",
+        "affectedTeam": "Support"
+      },
+      "analysis": {
+        "currentSolution": "Zendesk + Spreadsheets",
+        "failureModes": [
+          "ownership ambiguity",
+          "escalation tracking gaps",
+          "missed escalations"
+        ],
+        "rootCause": "Escalation ownership is not tracked in a single system.",
+        "businessImpact": "Longer response times and missed escalations.",
+        "automationPotential": "Medium"
+      },
+      "assertions": [
+        {
+          "label": "currentSolution",
+          "actual": "Zendesk + Spreadsheets",
+          "expected": "not Unknown",
+          "passed": true
+        },
+        {
+          "label": "failureModes",
+          "actual": [
+            "ownership ambiguity",
+            "escalation tracking gaps",
+            "missed escalations"
+          ],
+          "expected": "exists",
+          "passed": true
+        },
+        {
+          "label": "rootCause",
+          "actual": "Escalation ownership is not tracked in a single system.",
+          "expected": "not Unknown",
+          "passed": true
+        },
+        {
+          "label": "businessImpact",
+          "actual": "Longer response times and missed escalations.",
+          "expected": "not Unknown",
+          "passed": true
+        },
+        {
+          "label": "automationPotential",
+          "actual": "Medium",
+          "expected": "exists",
+          "passed": true
+        },
+        {
+          "label": "automationPotential",
+          "actual": "Medium",
+          "expected": "Medium",
+          "passed": true
+        },
+        {
+          "label": "failureModes",
+          "actual": [
+            "ownership ambiguity",
+            "escalation tracking gaps",
+            "missed escalations"
+          ],
+          "expected": "includes ownership ambiguity",
+          "passed": true
+        },
+        {
+          "label": "failureModes",
+          "actual": [
+            "ownership ambiguity",
+            "escalation tracking gaps",
+            "missed escalations"
+          ],
+          "expected": "includes missed escalations",
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "failedAssertions": []
+    },
+    {
+      "name": "Operations compliance",
+      "input": {
+        "rawText": "Operations managers collect compliance information from six internal systems at the end of every quarter. Reporting preparation requires manual spreadsheet consolidation before audits.",
+        "affectedTeam": "Operations"
+      },
+      "analysis": {
+        "currentSolution": "Spreadsheets + Internal systems",
+        "failureModes": [
+          "spreadsheet consolidation work",
+          "reporting delays",
+          "audit preparation bottlenecks"
+        ],
+        "rootCause": "Compliance reporting requires manual consolidation across systems.",
+        "businessImpact": "Audit preparation delays and reporting inefficiency.",
+        "automationPotential": "High"
+      },
+      "assertions": [
+        {
+          "label": "currentSolution",
+          "actual": "Spreadsheets + Internal systems",
+          "expected": "not Unknown",
+          "passed": true
+        },
+        {
+          "label": "failureModes",
+          "actual": [
+            "spreadsheet consolidation work",
+            "reporting delays",
+            "audit preparation bottlenecks"
+          ],
+          "expected": "exists",
+          "passed": true
+        },
+        {
+          "label": "rootCause",
+          "actual": "Compliance reporting requires manual consolidation across systems.",
+          "expected": "not Unknown",
+          "passed": true
+        },
+        {
+          "label": "businessImpact",
+          "actual": "Audit preparation delays and reporting inefficiency.",
+          "expected": "not Unknown",
+          "passed": true
+        },
+        {
+          "label": "automationPotential",
+          "actual": "High",
+          "expected": "exists",
+          "passed": true
+        },
+        {
+          "label": "automationPotential",
+          "actual": "High",
+          "expected": "High",
+          "passed": true
+        },
+        {
+          "label": "failureModes",
+          "actual": [
+            "spreadsheet consolidation work",
+            "reporting delays",
+            "audit preparation bottlenecks"
+          ],
+          "expected": "includes spreadsheet consolidation work",
+          "passed": true
+        },
+        {
+          "label": "failureModes",
+          "actual": [
+            "spreadsheet consolidation work",
+            "reporting delays",
+            "audit preparation bottlenecks"
+          ],
+          "expected": "includes audit preparation bottlenecks",
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "failedAssertions": []
+    }
+  ]
+}

@@ -47,6 +47,30 @@ function getScoreBadgeClassName(label: string) {
   return "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300";
 }
 
+function getAutomationPotentialBadgeClassName(value: string) {
+  if (value === "High") {
+    return "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300";
+  }
+
+  if (value === "Medium") {
+    return "bg-amber-100 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300";
+  }
+
+  return "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300";
+}
+
+function getEvidenceStrengthBadgeClassName(value: string) {
+  if (value === "high") {
+    return "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300";
+  }
+
+  if (value === "medium") {
+    return "bg-amber-100 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300";
+  }
+
+  return "bg-rose-100 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300";
+}
+
 function formatGeneratedAt(value: Date | string | null) {
   if (!value) return "Unknown";
   return new Date(value).toISOString().replace("T", " ").slice(0, 19);
@@ -235,6 +259,108 @@ export function OpportunityDashboard({
                     </span>{" "}
                     {item.outreachAngle}
                   </p>
+
+                  <div className="rounded-2xl border border-zinc-200 bg-zinc-50/80 p-3 dark:border-zinc-800 dark:bg-zinc-900/60">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <h3 className="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+                        Solution Gap Analysis
+                      </h3>
+                      <button
+                        type="button"
+                        onClick={() => toggleSection(item.id, "solution_gap")}
+                        className="rounded-full bg-white px-2.5 py-1 text-[11px] font-medium text-zinc-600 transition-colors hover:bg-zinc-100 dark:bg-zinc-950 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                      >
+                        {isOpportunitySectionExpanded(expandedSections, item.id, "solution_gap")
+                          ? "Hide Analysis"
+                          : "View Analysis"}
+                      </button>
+                    </div>
+                    {isOpportunitySectionExpanded(expandedSections, item.id, "solution_gap") ? (
+                      <div className="mt-2 space-y-2 text-xs text-zinc-500 dark:text-zinc-400">
+                        <div>
+                          <p className="font-medium text-zinc-700 dark:text-zinc-200">
+                            Current Solution
+                          </p>
+                          <p>{item.solutionGapAnalysis.currentSolution}</p>
+                        </div>
+                        <div>
+                          <p className="font-medium text-zinc-700 dark:text-zinc-200">
+                            Failure Modes
+                          </p>
+                          {item.solutionGapAnalysis.failureModes.length ? (
+                            <ul className="mt-1 list-disc space-y-0.5 pl-4">
+                              {item.solutionGapAnalysis.failureModes.map((mode) => (
+                                <li key={mode}>{mode}</li>
+                              ))}
+                            </ul>
+                          ) : (
+                            <p>None detected</p>
+                          )}
+                        </div>
+                        <div>
+                          <p className="font-medium text-zinc-700 dark:text-zinc-200">
+                            Root Cause
+                          </p>
+                          <p>{item.solutionGapAnalysis.rootCause}</p>
+                        </div>
+                        <div>
+                          <p className="font-medium text-zinc-700 dark:text-zinc-200">
+                            Business Impact
+                          </p>
+                          <p>{item.solutionGapAnalysis.businessImpact}</p>
+                        </div>
+                        <div>
+                          <p className="font-medium text-zinc-700 dark:text-zinc-200">
+                            Automation Potential
+                          </p>
+                          <span
+                            className={`mt-1 inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold ${getAutomationPotentialBadgeClassName(
+                              item.solutionGapAnalysis.automationPotential,
+                            )}`}
+                          >
+                            {item.solutionGapAnalysis.automationPotential}
+                          </span>
+                        </div>
+                      </div>
+                    ) : null}
+                  </div>
+
+                  <div className="rounded-2xl border border-zinc-200 bg-zinc-50/80 p-3 dark:border-zinc-800 dark:bg-zinc-900/60">
+                    <div className="space-y-2 text-xs text-zinc-500 dark:text-zinc-400">
+                      <div>
+                        <p className="font-semibold text-zinc-700 dark:text-zinc-200">
+                          Evidence Strength
+                        </p>
+                        <span
+                          className={`mt-1 inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase ${getEvidenceStrengthBadgeClassName(
+                            item.evidenceAnalysis.evidenceStrength,
+                          )}`}
+                        >
+                          {item.evidenceAnalysis.evidenceStrength}
+                        </span>
+                      </div>
+                      <div>
+                        <p className="font-medium text-zinc-700 dark:text-zinc-200">
+                          Evidence Score
+                        </p>
+                        <p className="mt-1 text-zinc-600 dark:text-zinc-300">
+                          {item.evidenceAnalysis.evidenceScore} / 10
+                        </p>
+                      </div>
+                      {item.evidenceAnalysis.evidenceReasons.length ? (
+                        <div>
+                          <p className="font-medium text-zinc-700 dark:text-zinc-200">
+                            Reasons
+                          </p>
+                          <ul className="mt-1 list-disc space-y-0.5 pl-4">
+                            {item.evidenceAnalysis.evidenceReasons.slice(0, 4).map((reason) => (
+                              <li key={reason}>{reason}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      ) : null}
+                    </div>
+                  </div>
 
                   <div className="rounded-2xl border border-zinc-200 bg-zinc-50/80 p-3 dark:border-zinc-800 dark:bg-zinc-900/60">
                     <div className="flex flex-wrap items-center justify-between gap-2">

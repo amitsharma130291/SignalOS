@@ -1,4 +1,6 @@
 import type { ReviewStatus } from "./review-status.ts";
+import type { AutomationPotential } from "./solution-gap-engine.ts";
+import { getEvidenceScoreModifier, type EvidenceStrength } from "./evidence-strength.ts";
 
 export type OpportunityScoreInput = {
   b2bScore?: number | null;
@@ -10,6 +12,8 @@ export type OpportunityScoreInput = {
   frequency?: string | null;
   currentSolution?: string | null;
   solutionGap?: string | null;
+  automationPotential?: AutomationPotential | string | null;
+  evidenceStrength?: EvidenceStrength | string | null;
   targetTitles?: unknown;
   icpGeneratedAt?: Date | string | null;
   rawInputStatus?: string | null;
@@ -80,6 +84,12 @@ function isQuarterlyCompliance(text: string, signal: OpportunityScoreInput) {
     (text.includes("compliance") || text.includes("audit")) &&
     (text.includes("spreadsheet") || text.includes("internal systems"))
   );
+}
+
+export function getAutomationPotentialBonus(automationPotential?: string | null) {
+  if (automationPotential === "High") return 5;
+  if (automationPotential === "Medium") return 2;
+  return 0;
 }
 
 export function calculateOpportunityScore(
@@ -154,6 +164,21 @@ export function calculateOpportunityScore(
   if (isQuarterlyCompliance(text, painSignal)) {
     score -= 20;
     reasons.push("Quarterly compliance workflow reduced score by 20 points.");
+  }
+
+  const automationBonus = getAutomationPotentialBonus(painSignal.automationPotential);
+  if (automationBonus > 0) {
+    score += automationBonus;
+    reasons.push(`${painSignal.automationPotential} automation potential added ${automationBonus} points.`);
+  }
+
+  const evidenceModifier = getEvidenceScoreModifier(painSignal.evidenceStrength);
+  if (evidenceModifier > 0) {
+    score += evidenceModifier;
+    reasons.push(`High evidence strength added ${evidenceModifier} points.`);
+  } else if (evidenceModifier < 0) {
+    score += evidenceModifier;
+    reasons.push(`Low evidence strength reduced score by ${Math.abs(evidenceModifier)} points.`);
   }
 
   const finalScore = clampScore(score);
