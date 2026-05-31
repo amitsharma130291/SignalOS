@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import { FounderConvictionEditor } from "@/components/founder-conviction-editor";
 import { GenerateDraftButton } from "@/components/message-draft-actions";
 import { OpportunityReviewActions } from "@/components/opportunity-review-actions";
@@ -25,6 +25,10 @@ type OpportunityFilter =
   | "high_opportunity"
   | "needs_review";
 
+type EvidencePackSectionId =
+  | "known"
+  | "validation";
+
 const FILTERS: { id: OpportunityFilter; label: string }[] = [
   { id: "all", label: "All" },
   { id: "approved", label: "Approved" },
@@ -34,6 +38,75 @@ const FILTERS: { id: OpportunityFilter; label: string }[] = [
   { id: "high_opportunity", label: "High Opportunity" },
   { id: "needs_review", label: "Needs Review" },
 ];
+
+const DEFAULT_OPEN_EVIDENCE_PACK_SECTIONS: EvidencePackSectionId[] = [];
+
+function formatEvidenceCategoryLabel(label: string) {
+  return label
+    .replace("Workflow Evidence", "Workflow")
+    .replace("System Evidence", "Systems")
+    .replace("Business Evidence", "Business Impact")
+    .replace("Ownership Evidence", "Ownership");
+}
+
+function formatKnownEvidenceItem(item: string) {
+  return item
+    .replace(" workflow cadence", " cadence")
+    .replace(" appears in the current workflow", "")
+    .replace(" team is affected", "")
+    .replace(" delay is present", " delays")
+    .replace(" workflow is present", "")
+    .replace(" is part of the workflow", "");
+}
+
+function getResearchSummaryField(summary: string, field: "Problem" | "Impact" | "Unknowns") {
+  const line = summary
+    .split("\n")
+    .find((part) => part.trim().toLowerCase().startsWith(`${field.toLowerCase()}:`));
+
+  return line?.replace(`${field}:`, "").trim() || "Not enough evidence yet";
+}
+
+function compactProblem(item: OpportunityDashboardItem) {
+  const team = item.affectedTeam === "Unknown" ? "Team" : item.affectedTeam;
+  const solution = item.currentSolution === "Unknown" ? "manual workflow" : item.currentSolution;
+
+  if (item.solutionGap.toLowerCase().includes("compliance")) {
+    return "Manual compliance reporting workflow";
+  }
+
+  if (item.solutionGap.toLowerCase().includes("reconciliation")) {
+    return "Manual finance reconciliation workflow";
+  }
+
+  if (item.solutionGap.toLowerCase().includes("escalation")) {
+    return "Manual escalation ownership workflow";
+  }
+
+  return `${team} workflow through ${solution}`;
+}
+
+function compactImpact(item: OpportunityDashboardItem) {
+  const impact = getResearchSummaryField(item.evidencePack.researchSummary, "Impact")
+    .replace(" make the workflow operationally important.", "")
+    .replace(" create operational risk and workflow friction.", " and operational friction")
+    .replace("The workflow matters because ", "")
+    .replace("manual ownership and follow-up create ", "");
+
+  return impact.length > 90 ? `${impact.slice(0, 87).trim()}...` : impact;
+}
+
+function getValidationGainBadgeClassName(gain: string) {
+  if (gain === "High") {
+    return "bg-rose-100 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300";
+  }
+
+  if (gain === "Medium") {
+    return "bg-amber-100 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300";
+  }
+
+  return "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300";
+}
 
 function getScoreBadgeClassName(label: string) {
   if (label === "high") {
@@ -59,16 +132,22 @@ function getAutomationPotentialBadgeClassName(value: string) {
   return "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300";
 }
 
-function getEvidenceStrengthBadgeClassName(value: string) {
-  if (value === "high") {
+function getReadinessStageBadgeClassName(stage: string) {
+  if (stage === "Outreach Ready") {
     return "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300";
   }
 
-  if (value === "medium") {
+  if (stage === "Validate") {
     return "bg-amber-100 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300";
   }
 
-  return "bg-rose-100 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300";
+  return "bg-sky-100 text-sky-700 dark:bg-sky-950/50 dark:text-sky-300";
+}
+
+function getMilestoneClassName(complete: boolean) {
+  return complete
+    ? "border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-900/70 dark:bg-emerald-950/30 dark:text-emerald-300"
+    : "border-zinc-200 bg-white text-zinc-600 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-300";
 }
 
 function formatGeneratedAt(value: Date | string | null) {
@@ -94,6 +173,9 @@ export function OpportunityDashboard({
   const [filter, setFilter] = useState<OpportunityFilter>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedSections, setExpandedSections] = useState<Set<string>>(() => new Set());
+  const [toggledEvidencePackSections, setToggledEvidencePackSections] = useState<Set<string>>(
+    () => new Set(),
+  );
   const filteredOpportunities = useMemo(
     () =>
       opportunities.filter(
@@ -105,6 +187,67 @@ export function OpportunityDashboard({
 
   function toggleSection(opportunityId: string, sectionId: OpportunitySectionId) {
     setExpandedSections((current) => toggleOpportunitySection(current, opportunityId, sectionId));
+  }
+
+  function getEvidencePackSectionKey(opportunityId: string, sectionId: EvidencePackSectionId) {
+    return `${opportunityId}:evidence_pack:${sectionId}`;
+  }
+
+  function isEvidencePackSectionExpanded(
+    opportunityId: string,
+    sectionId: EvidencePackSectionId,
+  ) {
+    const sectionKey = getEvidencePackSectionKey(opportunityId, sectionId);
+    const isDefaultOpen = DEFAULT_OPEN_EVIDENCE_PACK_SECTIONS.includes(sectionId);
+
+    return isDefaultOpen
+      ? !toggledEvidencePackSections.has(sectionKey)
+      : toggledEvidencePackSections.has(sectionKey);
+  }
+
+  function toggleEvidencePackSection(opportunityId: string, sectionId: EvidencePackSectionId) {
+    const sectionKey = getEvidencePackSectionKey(opportunityId, sectionId);
+
+    setToggledEvidencePackSections((current) => {
+      const nextSections = new Set(current);
+      if (nextSections.has(sectionKey)) {
+        nextSections.delete(sectionKey);
+      } else {
+        nextSections.add(sectionKey);
+      }
+      return nextSections;
+    });
+  }
+
+  function renderEvidencePackSection({
+    item,
+    sectionId,
+    title,
+    count,
+    children,
+  }: {
+    item: OpportunityDashboardItem;
+    sectionId: EvidencePackSectionId;
+    title: string;
+    count: number;
+    children: ReactNode;
+  }) {
+    const isExpanded = isEvidencePackSectionExpanded(item.id, sectionId);
+
+    return (
+      <div className="rounded-xl border border-zinc-200 bg-white/70 p-2 dark:border-zinc-800 dark:bg-zinc-950/60">
+        <button
+          type="button"
+          onClick={() => toggleEvidencePackSection(item.id, sectionId)}
+          className="flex w-full items-center justify-between gap-2 text-left font-medium text-zinc-700 dark:text-zinc-200"
+        >
+          <span>
+            {isExpanded ? "▾" : "▸"} {title} ({count})
+          </span>
+        </button>
+        {isExpanded ? <div className="mt-2">{children}</div> : null}
+      </div>
+    );
   }
 
   return (
@@ -326,58 +469,195 @@ export function OpportunityDashboard({
                   </div>
 
                   <div className="rounded-2xl border border-zinc-200 bg-zinc-50/80 p-3 dark:border-zinc-800 dark:bg-zinc-900/60">
-                    <div className="space-y-2 text-xs text-zinc-500 dark:text-zinc-400">
+                    <div className="space-y-3 text-xs text-zinc-500 dark:text-zinc-400">
                       <div className="flex flex-wrap items-start justify-between gap-2">
                         <div>
-                          <p className="font-semibold text-zinc-700 dark:text-zinc-200">
-                            Evidence Strength
-                          </p>
-                          <div className="mt-1 flex flex-wrap items-center gap-2">
+                          <h3 className="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+                            Opportunity Readiness
+                          </h3>
+                          <div className="mt-1.5 flex flex-wrap items-center gap-2 text-zinc-600 dark:text-zinc-300">
                             <span
-                              className={`inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase ${getEvidenceStrengthBadgeClassName(
-                                item.evidenceAnalysis.evidenceStrength,
+                              className={`inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase ${getReadinessStageBadgeClassName(
+                                item.opportunityReadiness.stage,
                               )}`}
                             >
-                              {item.evidenceAnalysis.evidenceStrength}
+                              {item.opportunityReadiness.stage}
                             </span>
-                            <span className="text-zinc-600 dark:text-zinc-300">
-                              {item.evidenceAnalysis.evidenceScore} / 10
+                            <span className="font-medium text-zinc-800 dark:text-zinc-100">
+                              {item.opportunityReadiness.completedMilestones} of{" "}
+                              {item.opportunityReadiness.totalMilestones} Qualification Milestones Complete
                             </span>
+                            <span>{item.opportunityReadiness.statusLabel}</span>
                           </div>
                         </div>
                         <button
                           type="button"
-                          onClick={() => toggleSection(item.id, "evidence")}
+                          onClick={() => toggleSection(item.id, "evidence_pack")}
                           className="rounded-full bg-white px-2.5 py-1 text-[11px] font-medium text-zinc-600 transition-colors hover:bg-zinc-100 dark:bg-zinc-950 dark:text-zinc-300 dark:hover:bg-zinc-800"
                         >
-                          {isOpportunitySectionExpanded(expandedSections, item.id, "evidence")
-                            ? "Hide Evidence"
-                            : "View Evidence"}
+                          {isOpportunitySectionExpanded(expandedSections, item.id, "evidence_pack")
+                            ? "Hide Readiness Details"
+                            : "View Readiness Details"}
                         </button>
                       </div>
-                      {isOpportunitySectionExpanded(expandedSections, item.id, "evidence") ? (
-                        <>
+
+                      <div>
+                        <p className="font-medium text-zinc-700 dark:text-zinc-200">
+                          Qualification Milestones
+                        </p>
+                        <ul className="mt-1.5 grid grid-cols-1 gap-1.5 sm:grid-cols-2 xl:grid-cols-5">
+                          {item.opportunityReadiness.milestones.map((milestone) => (
+                            <li
+                              key={milestone.name}
+                              className={`rounded-xl border px-2.5 py-2 ${getMilestoneClassName(
+                                milestone.complete,
+                              )}`}
+                            >
+                              <p className="font-semibold">
+                                {milestone.complete ? "✓" : "○"} {milestone.name}
+                              </p>
+                              <p className="mt-0.5 line-clamp-2 text-[11px] opacity-80">
+                                {milestone.detail}
+                              </p>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      {item.opportunityReadiness.stage === "Outreach Ready" ? (
+                        <div className="grid grid-cols-1 gap-2 rounded-xl border border-emerald-200 bg-emerald-50/80 p-2 text-emerald-800 dark:border-emerald-900/70 dark:bg-emerald-950/30 dark:text-emerald-300 sm:grid-cols-2">
                           <div>
-                            <p className="font-medium text-zinc-700 dark:text-zinc-200">
-                              Evidence Score
-                            </p>
-                            <p className="mt-1 text-zinc-600 dark:text-zinc-300">
-                              {item.evidenceAnalysis.evidenceScore} / 10
+                            <p className="font-medium">Buyer Path</p>
+                            <p className="mt-0.5">
+                              {item.opportunityReadiness.buyerPath.painOwner} →{" "}
+                              {item.opportunityReadiness.buyerPath.evaluator} →{" "}
+                              {item.opportunityReadiness.buyerPath.budgetOwner}
                             </p>
                           </div>
-                          {item.evidenceAnalysis.evidenceReasons.length ? (
+                          <div>
+                            <p className="font-medium">Outreach Recommendation</p>
+                            <p className="mt-0.5">{item.opportunityReadiness.outreachRecommendation}</p>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="grid grid-cols-1 gap-2 sm:grid-cols-[1fr_1fr]">
+                          <div className="rounded-xl border border-zinc-200 bg-white/70 p-2 dark:border-zinc-800 dark:bg-zinc-950/60">
+                            <p className="font-medium text-zinc-700 dark:text-zinc-200">Blockers</p>
+                            <ul className="mt-1 flex flex-wrap gap-1">
+                              {item.opportunityReadiness.blockers.map((blocker) => (
+                                <li
+                                  key={blocker.name}
+                                  className="rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-medium text-amber-800 dark:bg-amber-950/50 dark:text-amber-300"
+                                >
+                                  {blocker.name}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                          <div className="rounded-xl border border-zinc-200 bg-white/70 p-2 dark:border-zinc-800 dark:bg-zinc-950/60">
+                            <p className="font-medium text-zinc-700 dark:text-zinc-200">
+                              Next Best Action
+                            </p>
+                            <p className="mt-1 text-zinc-600 dark:text-zinc-300">
+                              {item.opportunityReadiness.nextBestAction}
+                            </p>
+                          </div>
+                        </div>
+                      )}
+
+                      {isOpportunitySectionExpanded(expandedSections, item.id, "evidence_pack") ? (
+                        <div className="space-y-2">
+                          <div className="grid grid-cols-1 gap-2 rounded-xl border border-zinc-200 bg-white/70 p-2 dark:border-zinc-800 dark:bg-zinc-950/60 sm:grid-cols-2">
                             <div>
-                              <p className="font-medium text-zinc-700 dark:text-zinc-200">
-                                Reasons
-                              </p>
-                              <ul className="mt-1 list-disc space-y-0.5 pl-4">
-                                {item.evidenceAnalysis.evidenceReasons.slice(0, 4).map((reason) => (
-                                  <li key={reason}>{reason}</li>
-                                ))}
-                              </ul>
+                              <p className="font-medium text-zinc-700 dark:text-zinc-200">Problem</p>
+                              <p className="mt-0.5 line-clamp-2">{compactProblem(item)}</p>
                             </div>
-                          ) : null}
-                        </>
+                            <div>
+                              <p className="font-medium text-zinc-700 dark:text-zinc-200">Impact</p>
+                              <p className="mt-0.5 line-clamp-2">{compactImpact(item)}</p>
+                            </div>
+                          </div>
+
+                          {renderEvidencePackSection({
+                            item,
+                            sectionId: "known",
+                            title: "Supporting Evidence",
+                            count: item.evidencePack.currentEvidence.known.length,
+                            children: (
+                              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-4">
+                                {item.evidencePack.evidenceCategories.map((category) => (
+                                  <div key={category.label}>
+                                    <p className="font-medium text-zinc-700 dark:text-zinc-200">
+                                      {formatEvidenceCategoryLabel(category.label)}
+                                    </p>
+                                    <ul className="mt-1 flex flex-wrap gap-1">
+                                      {category.items.map((item) => (
+                                        <li
+                                          key={item}
+                                          className="rounded-full bg-white px-2 py-0.5 text-[11px] font-medium text-zinc-600 dark:bg-zinc-950 dark:text-zinc-300"
+                                        >
+                                          {formatKnownEvidenceItem(item)}
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                ))}
+                              </div>
+                            ),
+                          })}
+
+                          {item.opportunityReadiness.stage === "Outreach Ready"
+                            ? null
+                            : renderEvidencePackSection({
+                                item,
+                                sectionId: "validation",
+                                title: "Validation Tasks",
+                                count: item.evidencePack.validationPlan.length,
+                                children: item.evidencePack.validationPlan.length ? (
+                                  <div className="overflow-hidden rounded-xl border border-zinc-200 bg-white/70 dark:border-zinc-800 dark:bg-zinc-950/60">
+                                    <div className="grid grid-cols-[72px_1fr] gap-2 border-b border-zinc-200 px-2 py-1.5 text-[11px] font-medium uppercase tracking-wide text-zinc-400 dark:border-zinc-800 dark:text-zinc-500 sm:grid-cols-[88px_1fr_1.4fr_1.2fr]">
+                                      <span>Gain</span>
+                                      <span>Task</span>
+                                      <span className="hidden sm:block">Question</span>
+                                      <span className="hidden sm:block">Why</span>
+                                    </div>
+                                    {item.evidencePack.validationPlan.map((validationItem) => (
+                                      <div
+                                        key={validationItem.validationItem}
+                                        className="grid grid-cols-[72px_1fr] gap-2 border-b border-zinc-100 px-2 py-1.5 last:border-b-0 dark:border-zinc-900 sm:grid-cols-[88px_1fr_1.4fr_1.2fr]"
+                                      >
+                                        <span
+                                          className={`w-fit rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase ${getValidationGainBadgeClassName(
+                                            validationItem.expectedConfidenceGain,
+                                          )}`}
+                                        >
+                                          {validationItem.expectedConfidenceGain}
+                                        </span>
+                                        <div>
+                                          <p className="font-medium text-zinc-700 dark:text-zinc-200">
+                                            {validationItem.validationItem}
+                                          </p>
+                                          <p className="mt-0.5 text-zinc-500 dark:text-zinc-400 sm:hidden">
+                                            Q: {validationItem.questionToAnswer}
+                                          </p>
+                                          <p className="mt-0.5 text-zinc-500 dark:text-zinc-400 sm:hidden">
+                                            Why: {validationItem.whyItMatters}
+                                          </p>
+                                        </div>
+                                        <p className="hidden text-zinc-600 dark:text-zinc-300 sm:block">
+                                          {validationItem.questionToAnswer}
+                                        </p>
+                                        <p className="hidden text-zinc-500 dark:text-zinc-400 sm:block">
+                                          {validationItem.whyItMatters}
+                                        </p>
+                                      </div>
+                                    ))}
+                                  </div>
+                                ) : (
+                                  <p>Validation tasks satisfied.</p>
+                                ),
+                              })}
+                        </div>
                       ) : null}
                     </div>
                   </div>

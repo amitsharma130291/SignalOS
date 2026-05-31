@@ -8,9 +8,17 @@ import {
   type EvidenceAnalysis,
 } from "./evidence-strength.ts";
 import {
+  generateEvidencePack,
+  type EvidencePack,
+} from "./evidence-pack-generator.ts";
+import {
   generateFounderConviction,
   type FounderConvictionResult,
 } from "./founder-conviction.ts";
+import {
+  generateOpportunityReadiness,
+  type OpportunityReadiness,
+} from "./opportunity-readiness.ts";
 import { calculateOpportunityScore } from "./opportunity-score.ts";
 import { getInterviewCount } from "./opportunity-validation.ts";
 import { hasHumanEditedState, preferHumanValue } from "./review-overrides.ts";
@@ -103,6 +111,8 @@ export type OpportunityDashboardItem = {
   solutionGap: string;
   solutionGapAnalysis: SolutionGapAnalysis;
   evidenceAnalysis: EvidenceAnalysis;
+  evidencePack: EvidencePack;
+  opportunityReadiness: OpportunityReadiness;
   buyerMapping: BuyerMapping;
   founderConviction: number | null;
   founderConvictionRecommendation: FounderConvictionResult;
@@ -236,6 +246,33 @@ export function shapeOpportunity(signal: PainSignalForOpportunity): OpportunityD
     solutionGap,
     businessImpact: solutionGapAnalysis.businessImpact,
   });
+  const evidencePack = generateEvidencePack({
+    rawText: signal.rawInput?.rawText,
+    pain,
+    urgency,
+    frequency,
+    affectedTeam,
+    currentSolution,
+    solutionGap,
+    monetizationScore,
+    founderConviction: signal.founderConviction,
+    evidenceAnalysis,
+    buyerMapping,
+  });
+  const opportunityReadiness = generateOpportunityReadiness({
+    pain,
+    affectedTeam,
+    frequency,
+    currentSolution,
+    solutionGap,
+    buyer,
+    budgetOwner,
+    outreachAngle: preferHumanValue(signal.humanOutreachAngle, signal.outreachAngle ?? "Unknown"),
+    evidenceAnalysis,
+    evidencePack,
+    buyerMapping,
+    solutionGapAnalysis,
+  });
 
   return {
     id: signal.id,
@@ -258,6 +295,8 @@ export function shapeOpportunity(signal: PainSignalForOpportunity): OpportunityD
     solutionGap,
     solutionGapAnalysis,
     evidenceAnalysis,
+    evidencePack,
+    opportunityReadiness,
     buyerMapping,
     founderConviction: signal.founderConviction ?? null,
     founderConvictionRecommendation,

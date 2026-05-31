@@ -31,6 +31,7 @@ describe("shapeOpportunity", () => {
     assert.equal(opportunity.solutionGap, "Unknown");
     assert.equal(opportunity.solutionGapAnalysis.automationPotential, "High");
     assert.ok(opportunity.buyerMapping.buyerClarityScore >= 0);
+    assert.equal(opportunity.opportunityReadiness.stage, "Discover");
     assert.equal(opportunity.founderConviction, null);
     assert.equal(opportunity.founderConvictionRecommendation.recommendation, "low");
     assert.equal(opportunity.interviewCount, 0);
