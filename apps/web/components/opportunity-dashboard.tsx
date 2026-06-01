@@ -21,6 +21,7 @@ import { getTrustBadge, type TrustState } from "@/lib/evidence-trust";
 import type { ReviewStatus } from "@/lib/review-status";
 import {
   buildValidationTaskViewModel,
+  shouldShowValidationTaskSection,
   type ValidationTaskPriority,
 } from "@/lib/validation-task-router";
 
@@ -989,12 +990,17 @@ export function OpportunityDashboard({
                     </div>
                   </div>
 
-                  <div className="rounded-xl border border-zinc-200 bg-zinc-50/80 p-2.5 dark:border-zinc-800 dark:bg-zinc-900/60">
-                    {(() => {
-                      const validationTaskView = buildValidationTaskViewModel(item.validationTasks);
-                      const isExpanded = isValidationTasksExpanded(item.id);
+                  {shouldShowValidationTaskSection({
+                    activationDecision: item.activationDecision.activationDecision,
+                    taskCount: item.validationTasks.length,
+                    blockerCount: item.opportunityReadiness.blockers.length,
+                  }) ? (
+                    <div className="rounded-xl border border-zinc-200 bg-zinc-50/80 p-2.5 dark:border-zinc-800 dark:bg-zinc-900/60">
+                      {(() => {
+                        const validationTaskView = buildValidationTaskViewModel(item.validationTasks);
+                        const isExpanded = isValidationTasksExpanded(item.id);
 
-                      return (
+                        return (
                         <div className="text-xs text-zinc-500 dark:text-zinc-400">
                           <div className="flex flex-wrap items-start justify-between gap-2">
                             <div>
@@ -1091,9 +1097,10 @@ export function OpportunityDashboard({
                             </div>
                           </div>
                         </div>
-                      );
-                    })()}
-                  </div>
+                        );
+                      })()}
+                    </div>
+                  ) : null}
 
                   <div className="rounded-2xl border border-zinc-200 bg-zinc-50/80 p-3 dark:border-zinc-800 dark:bg-zinc-900/60">
                     <div className="flex flex-wrap items-center justify-between gap-2">

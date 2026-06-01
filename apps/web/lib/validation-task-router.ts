@@ -45,6 +45,12 @@ export type ValidationTaskViewModel = {
   groups: ValidationTaskGroup[];
 };
 
+export type ValidationTaskSectionVisibilityInput = {
+  activationDecision: ActivationDecision;
+  taskCount: number;
+  blockerCount: number;
+};
+
 type TaskTemplate = {
   title: string;
   description: string;
@@ -364,4 +370,9 @@ export function buildValidationTaskViewModel(tasks: ValidationTask[]): Validatio
       }))
       .filter((group) => group.tasks.length > 0),
   };
+}
+
+export function shouldShowValidationTaskSection(input: ValidationTaskSectionVisibilityInput) {
+  if (input.taskCount > 0 || input.blockerCount > 0) return true;
+  return input.activationDecision !== "ENGAGE";
 }

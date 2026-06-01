@@ -6,6 +6,7 @@ import {
   buildValidationTaskViewModel,
   calculateValidationProgress,
   generateValidationTasks,
+  shouldShowValidationTaskSection,
   type ValidationTask,
 } from "./validation-task-router.ts";
 
@@ -308,5 +309,84 @@ describe("buildValidationTaskViewModel", () => {
 
     assert.equal(viewModel.groups[0].priority, "high");
     assert.equal(viewModel.groups[0].tasks[0].priority, "high");
+  });
+});
+
+describe("shouldShowValidationTaskSection", () => {
+  it("hides the section for fully ready ENGAGE opportunities", () => {
+    assert.equal(
+      shouldShowValidationTaskSection({
+        activationDecision: "ENGAGE",
+        taskCount: 0,
+        blockerCount: 0,
+      }),
+      false,
+    );
+  });
+
+  it("shows the section for ENGAGE when tasks exist", () => {
+    assert.equal(
+      shouldShowValidationTaskSection({
+        activationDecision: "ENGAGE",
+        taskCount: 1,
+        blockerCount: 0,
+      }),
+      true,
+    );
+  });
+
+  it("shows the section for ENGAGE when blockers exist", () => {
+    assert.equal(
+      shouldShowValidationTaskSection({
+        activationDecision: "ENGAGE",
+        taskCount: 0,
+        blockerCount: 1,
+      }),
+      true,
+    );
+  });
+
+  it("shows the section for VALIDATE", () => {
+    assert.equal(
+      shouldShowValidationTaskSection({
+        activationDecision: "VALIDATE",
+        taskCount: 3,
+        blockerCount: 1,
+      }),
+      true,
+    );
+  });
+
+  it("shows the section for MONITOR", () => {
+    assert.equal(
+      shouldShowValidationTaskSection({
+        activationDecision: "MONITOR",
+        taskCount: 2,
+        blockerCount: 0,
+      }),
+      true,
+    );
+  });
+
+  it("shows the section for ESCALATE", () => {
+    assert.equal(
+      shouldShowValidationTaskSection({
+        activationDecision: "ESCALATE",
+        taskCount: 2,
+        blockerCount: 0,
+      }),
+      true,
+    );
+  });
+
+  it("keeps IGNORE visible if blockers or tasks are present", () => {
+    assert.equal(
+      shouldShowValidationTaskSection({
+        activationDecision: "IGNORE",
+        taskCount: 0,
+        blockerCount: 1,
+      }),
+      true,
+    );
   });
 });
