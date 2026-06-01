@@ -260,6 +260,7 @@ export function shapeOpportunity(signal: PainSignalForOpportunity): OpportunityD
     buyerMapping,
   });
   const opportunityReadiness = generateOpportunityReadiness({
+    rawText: signal.rawInput?.rawText,
     pain,
     affectedTeam,
     frequency,
@@ -267,6 +268,15 @@ export function shapeOpportunity(signal: PainSignalForOpportunity): OpportunityD
     solutionGap,
     buyer,
     budgetOwner,
+    targetTitles,
+    humanConfirmedFields: {
+      businessImpact: Boolean(signal.humanPain || signal.humanNotes),
+      painOwner: Boolean(signal.humanAffectedTeam),
+      buyer: Boolean(signal.humanBuyer),
+      budgetOwner: Boolean(signal.humanBudgetOwner),
+      economicBuyer: Boolean(signal.humanBudgetOwner),
+      economicCase: Boolean(signal.humanBudgetOwner || signal.humanMonetizationScore),
+    },
     outreachAngle: preferHumanValue(signal.humanOutreachAngle, signal.outreachAngle ?? "Unknown"),
     evidenceAnalysis,
     evidencePack,

@@ -1,0 +1,388 @@
+{
+  "generatedAt": "2026-06-01T14:33:52.035Z",
+  "pipeline": "generateEvidenceStrength -> generateBuyerMapping -> generateEvidencePack -> generateOpportunityReadiness -> buildQualificationTrust",
+  "totals": {
+    "totalAssertions": 15,
+    "passedAssertions": 15,
+    "failedAssertions": 0,
+    "passPercentage": 100
+  },
+  "primitiveCases": [
+    {
+      "label": "missing state",
+      "field": {
+        "value": null,
+        "trustState": "missing",
+        "evidenceSources": [],
+        "evidenceCount": 0
+      }
+    },
+    {
+      "label": "inferred state",
+      "field": {
+        "value": "Controller",
+        "trustState": "inferred",
+        "evidenceSources": [
+          "buyer_mapping"
+        ],
+        "evidenceCount": 1
+      }
+    },
+    {
+      "label": "validated state",
+      "field": {
+        "value": "CFO",
+        "trustState": "validated",
+        "evidenceSources": [
+          "workflow_signal",
+          "job_posting"
+        ],
+        "evidenceCount": 2
+      }
+    },
+    {
+      "label": "human confirmed state",
+      "field": {
+        "value": "VP Finance",
+        "trustState": "human_confirmed",
+        "evidenceSources": [
+          "buyer_mapping",
+          "founder_confirmation"
+        ],
+        "evidenceCount": 2
+      }
+    }
+  ],
+  "qualificationTrust": {
+    "workflow": {
+      "value": "Stripe + NetSuite + spreadsheets",
+      "trustState": "validated",
+      "evidenceSources": [
+        "workflow_signal",
+        "solution_gap",
+        "readiness"
+      ],
+      "evidenceCount": 3
+    },
+    "businessImpact": {
+      "value": "Month-end close delays and reporting risk.",
+      "trustState": "validated",
+      "evidenceSources": [
+        "workflow_signal",
+        "solution_gap",
+        "readiness"
+      ],
+      "evidenceCount": 3
+    },
+    "painOwner": {
+      "value": "Finance Analyst",
+      "trustState": "validated",
+      "evidenceSources": [
+        "workflow_signal",
+        "buyer_mapping"
+      ],
+      "evidenceCount": 2
+    },
+    "buyer": {
+      "value": "Controller",
+      "trustState": "human_confirmed",
+      "evidenceSources": [
+        "buyer_mapping",
+        "icp",
+        "founder_confirmation"
+      ],
+      "evidenceCount": 3
+    },
+    "budgetOwner": {
+      "value": "CFO",
+      "trustState": "validated",
+      "evidenceSources": [
+        "icp",
+        "buyer_mapping"
+      ],
+      "evidenceCount": 2
+    },
+    "economicBuyer": {
+      "value": "CFO",
+      "trustState": "validated",
+      "evidenceSources": [
+        "buyer_mapping",
+        "icp"
+      ],
+      "evidenceCount": 2
+    },
+    "frequency": {
+      "value": "daily",
+      "trustState": "validated",
+      "evidenceSources": [
+        "workflow_signal",
+        "readiness"
+      ],
+      "evidenceCount": 2
+    },
+    "economicCase": {
+      "value": "Month-end close delays and reporting risk. + CFO",
+      "trustState": "inferred",
+      "evidenceSources": [],
+      "evidenceCount": 0
+    }
+  },
+  "readiness": {
+    "stage": "Outreach Ready",
+    "completedMilestones": 5,
+    "totalMilestones": 5,
+    "milestones": [
+      {
+        "name": "Workflow",
+        "blockerLabel": "Workflow Not Validated",
+        "detail": "Stripe + NetSuite + spreadsheets",
+        "complete": true,
+        "trustState": "validated",
+        "evidenceSources": [
+          "workflow_signal",
+          "solution_gap",
+          "readiness"
+        ],
+        "evidenceCount": 3
+      },
+      {
+        "name": "Business Impact",
+        "blockerLabel": "Business Impact Not Validated",
+        "detail": "Month-end close delays and reporting risk.",
+        "complete": true,
+        "trustState": "validated",
+        "evidenceSources": [
+          "workflow_signal",
+          "solution_gap",
+          "readiness"
+        ],
+        "evidenceCount": 3
+      },
+      {
+        "name": "Pain Owner",
+        "blockerLabel": "Pain Owner Not Validated",
+        "detail": "Finance Analyst",
+        "complete": true,
+        "trustState": "validated",
+        "evidenceSources": [
+          "workflow_signal",
+          "buyer_mapping"
+        ],
+        "evidenceCount": 2
+      },
+      {
+        "name": "Buyer Path",
+        "blockerLabel": "Buyer Path Not Validated",
+        "detail": "Controller",
+        "complete": true,
+        "trustState": "human_confirmed",
+        "evidenceSources": [
+          "buyer_mapping",
+          "icp",
+          "founder_confirmation"
+        ],
+        "evidenceCount": 3
+      },
+      {
+        "name": "Economic Case",
+        "blockerLabel": "Economic Case Not Validated",
+        "detail": "CFO",
+        "complete": true,
+        "trustState": "validated",
+        "evidenceSources": [
+          "solution_gap",
+          "buyer_mapping",
+          "readiness"
+        ],
+        "evidenceCount": 3
+      }
+    ],
+    "blockers": [],
+    "trustedFields": {
+      "workflow": {
+        "value": "Stripe + NetSuite + spreadsheets",
+        "trustState": "validated",
+        "evidenceSources": [
+          "workflow_signal",
+          "solution_gap",
+          "readiness"
+        ],
+        "evidenceCount": 3
+      },
+      "businessImpact": {
+        "value": "Month-end close delays and reporting risk.",
+        "trustState": "validated",
+        "evidenceSources": [
+          "workflow_signal",
+          "solution_gap",
+          "readiness"
+        ],
+        "evidenceCount": 3
+      },
+      "painOwner": {
+        "value": "Finance Analyst",
+        "trustState": "validated",
+        "evidenceSources": [
+          "workflow_signal",
+          "buyer_mapping"
+        ],
+        "evidenceCount": 2
+      },
+      "buyer": {
+        "value": "Controller",
+        "trustState": "human_confirmed",
+        "evidenceSources": [
+          "buyer_mapping",
+          "icp",
+          "founder_confirmation"
+        ],
+        "evidenceCount": 3
+      },
+      "budgetOwner": {
+        "value": "CFO",
+        "trustState": "validated",
+        "evidenceSources": [
+          "icp",
+          "buyer_mapping"
+        ],
+        "evidenceCount": 2
+      },
+      "economicBuyer": {
+        "value": "CFO",
+        "trustState": "validated",
+        "evidenceSources": [
+          "buyer_mapping",
+          "icp"
+        ],
+        "evidenceCount": 2
+      },
+      "frequency": {
+        "value": "daily",
+        "trustState": "validated",
+        "evidenceSources": [
+          "workflow_signal",
+          "readiness"
+        ],
+        "evidenceCount": 2
+      },
+      "economicCase": {
+        "value": "CFO + CFO + Manual reconciliation takes 12 hours per week, creates audit risk cost, and causes month-end close delays. Month-end close delays and reporting risk.",
+        "trustState": "validated",
+        "evidenceSources": [
+          "solution_gap",
+          "buyer_mapping",
+          "readiness"
+        ],
+        "evidenceCount": 3
+      }
+    },
+    "nextBestAction": "Generate reviewed outreach draft.",
+    "statusLabel": "Outreach ready",
+    "buyerPath": {
+      "painOwner": "Finance Analyst",
+      "evaluator": "Controller",
+      "budgetOwner": "CFO"
+    },
+    "outreachRecommendation": "Use the validated workflow pain as the outreach angle."
+  },
+  "assertions": [
+    {
+      "label": "missing state",
+      "actual": "missing",
+      "expected": "missing",
+      "passed": true
+    },
+    {
+      "label": "inferred state",
+      "actual": "inferred",
+      "expected": "inferred",
+      "passed": true
+    },
+    {
+      "label": "validated state",
+      "actual": "validated",
+      "expected": "validated",
+      "passed": true
+    },
+    {
+      "label": "human confirmed state",
+      "actual": "human_confirmed",
+      "expected": "human_confirmed",
+      "passed": true
+    },
+    {
+      "label": "missing evidence count",
+      "actual": 0,
+      "expected": 0,
+      "passed": true
+    },
+    {
+      "label": "validated evidence count",
+      "actual": 2,
+      "expected": 2,
+      "passed": true
+    },
+    {
+      "label": "validated source tracking",
+      "actual": [
+        "workflow_signal",
+        "job_posting"
+      ],
+      "expected": "includes job_posting",
+      "passed": true
+    },
+    {
+      "label": "source merging deduplicates",
+      "actual": 2,
+      "expected": 2,
+      "passed": true
+    },
+    {
+      "label": "badge generation",
+      "actual": "Human Confirmed",
+      "expected": "Human Confirmed",
+      "passed": true
+    },
+    {
+      "label": "qualification workflow trust",
+      "actual": "validated",
+      "expected": "validated",
+      "passed": true
+    },
+    {
+      "label": "qualification buyer trust",
+      "actual": "human_confirmed",
+      "expected": "human_confirmed",
+      "passed": true
+    },
+    {
+      "label": "readiness stage unchanged",
+      "actual": "Outreach Ready",
+      "expected": "Outreach Ready",
+      "passed": true
+    },
+    {
+      "label": "readiness milestones trust-aware",
+      "actual": true,
+      "expected": true,
+      "passed": true
+    },
+    {
+      "label": "readiness exposes trusted fields",
+      "actual": "human_confirmed",
+      "expected": "human_confirmed",
+      "passed": true
+    },
+    {
+      "label": "readiness source tracking",
+      "actual": [
+        "workflow_signal",
+        "solution_gap",
+        "readiness"
+      ],
+      "expected": "includes workflow_signal",
+      "passed": true
+    }
+  ],
+  "failedAssertions": []
+}

@@ -1,21 +1,31 @@
 import type { BuyerMapping } from "./buyer-mapping-engine.ts";
 import type { EvidenceAnalysis } from "./evidence-strength.ts";
 import type { EvidencePack } from "./evidence-pack-generator.ts";
+import {
+  buildQualificationTrust,
+  type QualificationTrustFields,
+  type TrustState,
+  type TrustedField,
+} from "./evidence-trust.ts";
 import type { SolutionGapAnalysis } from "./solution-gap-engine.ts";
 
 export type OpportunityReadinessStage = "Discover" | "Validate" | "Outreach Ready";
 
 export type QualificationMilestoneName =
-  | "Workflow Identified"
-  | "Business Impact Identified"
-  | "Pain Owner Identified"
-  | "Buyer Path Identified"
-  | "Economic Case Identified";
+  | "Workflow"
+  | "Business Impact"
+  | "Pain Owner"
+  | "Buyer Path"
+  | "Economic Case";
 
 export type QualificationMilestone = {
   name: QualificationMilestoneName;
   complete: boolean;
+  blockerLabel: string;
   detail: string;
+  trustState: TrustState;
+  evidenceSources: TrustedField<string>["evidenceSources"];
+  evidenceCount: number;
 };
 
 export type OpportunityReadiness = {
@@ -24,6 +34,7 @@ export type OpportunityReadiness = {
   totalMilestones: number;
   milestones: QualificationMilestone[];
   blockers: QualificationMilestone[];
+  trustedFields: QualificationTrustFields;
   nextBestAction: string;
   statusLabel: string;
   buyerPath: {
@@ -35,6 +46,7 @@ export type OpportunityReadiness = {
 };
 
 export type OpportunityReadinessInput = {
+  rawText?: string | null;
   pain?: string | null;
   affectedTeam?: string | null;
   frequency?: string | null;
@@ -42,6 +54,8 @@ export type OpportunityReadinessInput = {
   solutionGap?: string | null;
   buyer?: string | null;
   budgetOwner?: string | null;
+  targetTitles?: string[];
+  humanConfirmedFields?: Partial<Record<keyof QualificationTrustFields, boolean>>;
   outreachAngle?: string | null;
   evidenceAnalysis: EvidenceAnalysis;
   evidencePack: EvidencePack;
@@ -80,7 +94,74 @@ function hasConcreteBusinessImpact(input: OpportunityReadinessInput) {
   );
 }
 
-function buildMilestones(input: OpportunityReadinessInput): QualificationMilestone[] {
+function isTrustedForCompletion(trustState: TrustState) {
+  return trustState === "validated" || trustState === "human_confirmed";
+}
+
+function getTrustPriority(trustState: TrustState) {
+  if (trustState === "missing") return 0;
+  if (trustState === "inferred") return 1;
+  if (trustState === "validated") return 2;
+  return 3;
+}
+
+function getBlockerLabel(
+  name: QualificationMilestoneName,
+  trustedField: TrustedField<string>,
+  trustedFields: QualificationTrustFields,
+) {
+  if (name === "Economic Case" && trustedField.trustState === "missing") {
+    const budgetMissing =
+      trustedFields.budgetOwner.trustState === "missing" &&
+      trustedFields.economicBuyer.trustState === "missing";
+
+    return budgetMissing ? "Budget Owner Missing" : "Economic Case Missing";
+  }
+
+  if (trustedField.trustState === "missing") return `${name} Missing`;
+  if (trustedField.trustState === "inferred") return `${name} Inferred`;
+  return `${name} Not Validated`;
+}
+
+function hasExplicitEconomicEvidence(input: OpportunityReadinessInput) {
+  const text = [input.rawText, input.pain, input.solutionGap, input.solutionGapAnalysis.businessImpact]
+    .map(normalize)
+    .filter(Boolean)
+    .join(" ");
+
+  return [
+    "cost",
+    "revenue",
+    "dollar",
+    "$",
+    "hour",
+    "manual effort",
+    "headcount",
+    "audit risk",
+    "risk cost",
+  ].some((term) => text.includes(term));
+}
+
+function addTrustToMilestone(
+  milestone: Omit<QualificationMilestone, "complete" | "blockerLabel" | "trustState" | "evidenceSources" | "evidenceCount">,
+  trustedField: TrustedField<string>,
+  trustedFields: QualificationTrustFields,
+): QualificationMilestone {
+  return {
+    name: milestone.name,
+    blockerLabel: getBlockerLabel(milestone.name, trustedField, trustedFields),
+    detail: milestone.detail,
+    complete: isTrustedForCompletion(trustedField.trustState),
+    trustState: trustedField.trustState,
+    evidenceSources: trustedField.evidenceSources,
+    evidenceCount: trustedField.evidenceCount,
+  };
+}
+
+function buildMilestones(
+  input: OpportunityReadinessInput,
+  trustedFields: QualificationTrustFields,
+): QualificationMilestone[] {
   const workflowIdentified =
     input.evidenceAnalysis.evidenceReasons.includes("explicit workflow") ||
     isKnown(input.currentSolution) ||
@@ -94,42 +175,57 @@ function buildMilestones(input: OpportunityReadinessInput): QualificationMilesto
     input.buyerMapping.buyerClarityScore >= 7;
   const economicCaseIdentified =
     (isKnown(input.budgetOwner) || isKnown(input.buyerMapping.decisionMap.economicBuyer)) &&
-    !hasAnyGap(input, ["Budget owner confirmation", "Quantified manual effort", "Error/rework impact"]);
+    hasExplicitEconomicEvidence(input);
 
   return [
-    {
-      name: "Workflow Identified",
-      complete: workflowIdentified,
-      detail: workflowIdentified ? display(input.currentSolution) : "Workflow evidence needed",
-    },
-    {
-      name: "Business Impact Identified",
-      complete: businessImpactIdentified,
-      detail: businessImpactIdentified
-        ? input.solutionGapAnalysis.businessImpact
-        : "Business impact evidence needed",
-    },
-    {
-      name: "Pain Owner Identified",
-      complete: painOwnerIdentified,
-      detail: painOwnerIdentified
-        ? display(input.buyerMapping.decisionMap.suffers ?? input.affectedTeam)
-        : "Pain owner evidence needed",
-    },
-    {
-      name: "Buyer Path Identified",
-      complete: buyerPathIdentified,
-      detail: buyerPathIdentified
-        ? display(input.buyerMapping.decisionMap.buyer ?? input.buyer)
-        : "Evaluator evidence needed",
-    },
-    {
-      name: "Economic Case Identified",
-      complete: economicCaseIdentified,
-      detail: economicCaseIdentified
-        ? display(input.buyerMapping.decisionMap.economicBuyer ?? input.budgetOwner)
-        : "Budget and cost evidence needed",
-    },
+    addTrustToMilestone(
+      {
+        name: "Workflow",
+        detail: workflowIdentified ? display(input.currentSolution) : "Workflow evidence needed",
+      },
+      trustedFields.workflow,
+      trustedFields,
+    ),
+    addTrustToMilestone(
+      {
+        name: "Business Impact",
+        detail: businessImpactIdentified
+          ? input.solutionGapAnalysis.businessImpact
+          : "Business impact evidence needed",
+      },
+      trustedFields.businessImpact,
+      trustedFields,
+    ),
+    addTrustToMilestone(
+      {
+        name: "Pain Owner",
+        detail: painOwnerIdentified
+          ? display(input.buyerMapping.decisionMap.suffers ?? input.affectedTeam)
+          : "Pain owner evidence needed",
+      },
+      trustedFields.painOwner,
+      trustedFields,
+    ),
+    addTrustToMilestone(
+      {
+        name: "Buyer Path",
+        detail: buyerPathIdentified
+          ? display(input.buyerMapping.decisionMap.buyer ?? input.buyer)
+          : "Evaluator evidence needed",
+      },
+      trustedFields.buyer,
+      trustedFields,
+    ),
+    addTrustToMilestone(
+      {
+        name: "Economic Case",
+        detail: economicCaseIdentified
+          ? display(input.buyerMapping.decisionMap.economicBuyer ?? input.budgetOwner)
+          : "Budget and cost evidence needed",
+      },
+      trustedFields.economicCase,
+      trustedFields,
+    ),
   ];
 }
 
@@ -141,12 +237,23 @@ function getStage(evidenceScore: number, completedMilestones: number): Opportuni
 
 function getNextBestAction(stage: OpportunityReadinessStage, blockers: QualificationMilestone[]) {
   if (stage === "Outreach Ready") return "Generate reviewed outreach draft.";
-  const firstBlocker = blockers[0]?.name;
-  if (firstBlocker === "Workflow Identified") return "Validate the recurring workflow.";
-  if (firstBlocker === "Business Impact Identified") return "Quantify business impact.";
-  if (firstBlocker === "Pain Owner Identified") return "Confirm who owns the pain.";
-  if (firstBlocker === "Buyer Path Identified") return "Identify who evaluates this solution.";
-  if (firstBlocker === "Economic Case Identified") return "Confirm budget owner and cost impact.";
+  const firstBlocker = blockers[0]?.blockerLabel;
+  if (firstBlocker === "Workflow Missing" || firstBlocker === "Workflow Inferred") {
+    return "Validate the recurring workflow.";
+  }
+  if (firstBlocker === "Business Impact Missing" || firstBlocker === "Business Impact Inferred") {
+    return "Quantify business impact.";
+  }
+  if (firstBlocker === "Pain Owner Missing" || firstBlocker === "Pain Owner Inferred") {
+    return "Confirm who owns the pain.";
+  }
+  if (firstBlocker === "Buyer Path Missing" || firstBlocker === "Buyer Path Inferred") {
+    return "Identify pain owner and buyer path.";
+  }
+  if (firstBlocker === "Budget Owner Missing") return "Confirm budget owner.";
+  if (firstBlocker === "Economic Case Missing" || firstBlocker === "Economic Case Inferred") {
+    return "Validate budget and cost impact.";
+  }
   return "Review supporting evidence.";
 }
 
@@ -157,9 +264,36 @@ function getStatusLabel(stage: OpportunityReadinessStage, blockers: Qualificatio
 }
 
 export function generateOpportunityReadiness(input: OpportunityReadinessInput): OpportunityReadiness {
-  const milestones = buildMilestones(input);
+  const economicCase = [
+    input.budgetOwner,
+    input.buyerMapping.decisionMap.economicBuyer,
+    hasExplicitEconomicEvidence(input)
+      ? `${input.solutionGap ?? ""} ${input.solutionGapAnalysis.businessImpact}`.trim()
+      : null,
+  ]
+    .filter(isKnown)
+    .join(" + ");
+  const trustedFields = buildQualificationTrust({
+    workflow: input.currentSolution,
+    businessImpact: input.solutionGapAnalysis.businessImpact,
+    painOwner: input.buyerMapping.decisionMap.suffers ?? input.affectedTeam,
+    buyer: input.buyerMapping.decisionMap.buyer ?? input.buyer,
+    budgetOwner: input.budgetOwner,
+    economicBuyer: input.buyerMapping.decisionMap.economicBuyer,
+    frequency: input.frequency,
+    economicCase,
+    targetTitles: input.targetTitles,
+    humanConfirmedFields: input.humanConfirmedFields,
+    evidenceAnalysis: input.evidenceAnalysis,
+    evidencePack: input.evidencePack,
+    buyerMapping: input.buyerMapping,
+    solutionGapAnalysis: input.solutionGapAnalysis,
+  });
+  const milestones = buildMilestones(input, trustedFields);
   const completedMilestones = milestones.filter((milestone) => milestone.complete).length;
-  const blockers = milestones.filter((milestone) => !milestone.complete);
+  const blockers = milestones
+    .filter((milestone) => !milestone.complete)
+    .sort((first, second) => getTrustPriority(first.trustState) - getTrustPriority(second.trustState));
   const stage = getStage(input.evidenceAnalysis.evidenceScore, completedMilestones);
 
   return {
@@ -168,6 +302,7 @@ export function generateOpportunityReadiness(input: OpportunityReadinessInput): 
     totalMilestones: milestones.length,
     milestones,
     blockers,
+    trustedFields,
     nextBestAction: getNextBestAction(stage, blockers),
     statusLabel: getStatusLabel(stage, blockers),
     buyerPath: {

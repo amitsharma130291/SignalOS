@@ -17,6 +17,7 @@ import {
   matchesOpportunitySearch,
   type OpportunityDashboardItem,
 } from "@/lib/opportunity-dashboard";
+import { getTrustBadge } from "@/lib/evidence-trust";
 import type { ReviewStatus } from "@/lib/review-status";
 
 type OpportunityFilter =
@@ -144,10 +145,48 @@ function getReadinessStageBadgeClassName(stage: string) {
   return "bg-sky-100 text-sky-700 dark:bg-sky-950/50 dark:text-sky-300";
 }
 
-function getMilestoneClassName(complete: boolean) {
-  return complete
-    ? "border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-900/70 dark:bg-emerald-950/30 dark:text-emerald-300"
-    : "border-zinc-200 bg-white text-zinc-600 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-300";
+function getMilestoneClassName(trustState: string) {
+  if (trustState === "human_confirmed") {
+    return "border-sky-200 bg-sky-50 text-sky-800 dark:border-sky-900/70 dark:bg-sky-950/30 dark:text-sky-300";
+  }
+
+  if (trustState === "validated") {
+    return "border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-900/70 dark:bg-emerald-950/30 dark:text-emerald-300";
+  }
+
+  if (trustState === "inferred") {
+    return "border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-900/70 dark:bg-amber-950/30 dark:text-amber-300";
+  }
+
+  return "border-zinc-200 bg-white text-zinc-600 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-300";
+}
+
+function getMilestoneTitle({
+  complete,
+  name,
+  trustState,
+}: {
+  complete: boolean;
+  name: string;
+  trustState: string;
+}) {
+  if (complete) return `✓ ${name}`;
+  if (trustState === "missing") return `${name} Missing`;
+  return name;
+}
+
+function formatEvidenceProvenance(sourceCount: number, evidenceCount: number, trustState: string) {
+  const sourceLabel = sourceCount === 1 ? "source" : "sources";
+  const evidenceLabel = evidenceCount === 1 ? "evidence item" : "evidence items";
+  const prefix = trustState === "human_confirmed" ? "User Verified • " : "";
+
+  return `${prefix}${sourceCount} ${sourceLabel} • ${evidenceCount} ${evidenceLabel}`;
+}
+
+function formatTrustBadgeLabel(label: string, sourceCount: number) {
+  const sourceLabel = sourceCount === 1 ? "source" : "sources";
+
+  return `${label} • ${sourceCount} ${sourceLabel}`;
 }
 
 function formatGeneratedAt(value: Date | string | null) {
@@ -510,14 +549,31 @@ export function OpportunityDashboard({
                             <li
                               key={milestone.name}
                               className={`rounded-xl border px-2.5 py-2 ${getMilestoneClassName(
-                                milestone.complete,
+                                milestone.trustState,
                               )}`}
                             >
                               <p className="font-semibold">
-                                {milestone.complete ? "✓" : "○"} {milestone.name}
+                                {getMilestoneTitle(milestone)}
                               </p>
+                              <span
+                                className={`mt-1 inline-flex w-fit rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                                  getTrustBadge(milestone.trustState).className
+                                }`}
+                              >
+                                {formatTrustBadgeLabel(
+                                  getTrustBadge(milestone.trustState).label,
+                                  milestone.evidenceSources.length,
+                                )}
+                              </span>
                               <p className="mt-0.5 line-clamp-2 text-[11px] opacity-80">
                                 {milestone.detail}
+                              </p>
+                              <p className="mt-0.5 line-clamp-1 text-[10px] opacity-70">
+                                {formatEvidenceProvenance(
+                                  milestone.evidenceSources.length,
+                                  milestone.evidenceCount,
+                                  milestone.trustState,
+                                )}
                               </p>
                             </li>
                           ))}
@@ -533,6 +589,25 @@ export function OpportunityDashboard({
                               {item.opportunityReadiness.buyerPath.evaluator} →{" "}
                               {item.opportunityReadiness.buyerPath.budgetOwner}
                             </p>
+                            <div className="mt-1 flex flex-wrap gap-1">
+                              {[
+                                item.opportunityReadiness.trustedFields.painOwner,
+                                item.opportunityReadiness.trustedFields.buyer,
+                                item.opportunityReadiness.trustedFields.economicBuyer,
+                              ].map((field, index) => (
+                                <span
+                                  key={`${index}:${field.value ?? "unknown"}:${field.trustState}`}
+                                  className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                                    getTrustBadge(field.trustState).className
+                                  }`}
+                                >
+                                  {formatTrustBadgeLabel(
+                                    getTrustBadge(field.trustState).label,
+                                    field.evidenceSources.length,
+                                  )}
+                                </span>
+                              ))}
+                            </div>
                           </div>
                           <div>
                             <p className="font-medium">Outreach Recommendation</p>
@@ -549,7 +624,7 @@ export function OpportunityDashboard({
                                   key={blocker.name}
                                   className="rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-medium text-amber-800 dark:bg-amber-950/50 dark:text-amber-300"
                                 >
-                                  {blocker.name}
+                                  {blocker.blockerLabel}
                                 </li>
                               ))}
                             </ul>
