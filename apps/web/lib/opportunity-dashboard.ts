@@ -1,5 +1,9 @@
 import type { Prisma } from "@prisma/client";
 import {
+  generateActivationDecision,
+  type ActivationDecisionResult,
+} from "./activation-decision.ts";
+import {
   generateBuyerMapping,
   type BuyerMapping,
 } from "./buyer-mapping-engine.ts";
@@ -112,6 +116,7 @@ export type OpportunityDashboardItem = {
   solutionGapAnalysis: SolutionGapAnalysis;
   evidenceAnalysis: EvidenceAnalysis;
   evidencePack: EvidencePack;
+  activationDecision: ActivationDecisionResult;
   opportunityReadiness: OpportunityReadiness;
   buyerMapping: BuyerMapping;
   founderConviction: number | null;
@@ -283,6 +288,28 @@ export function shapeOpportunity(signal: PainSignalForOpportunity): OpportunityD
     buyerMapping,
     solutionGapAnalysis,
   });
+  const opportunityScore = calculateOpportunityScore({
+    b2bScore: signal.b2bScore,
+    monetizationScore,
+    urgency,
+    rawText: signal.rawInput?.rawText,
+    pain,
+    affectedTeam,
+    frequency,
+    currentSolution,
+    solutionGap,
+    automationPotential: solutionGapAnalysis.automationPotential,
+    evidenceStrength: evidenceAnalysis.evidenceStrength,
+    targetTitles,
+    icpGeneratedAt: signal.icpGeneratedAt,
+    rawInputStatus: filterStatus,
+    status: reviewStatus,
+  });
+  const activationDecision = generateActivationDecision({
+    opportunityReadiness,
+    opportunityScore,
+    founderConvictionRecommendation,
+  });
 
   return {
     id: signal.id,
@@ -306,6 +333,7 @@ export function shapeOpportunity(signal: PainSignalForOpportunity): OpportunityD
     solutionGapAnalysis,
     evidenceAnalysis,
     evidencePack,
+    activationDecision,
     opportunityReadiness,
     buyerMapping,
     founderConviction: signal.founderConviction ?? null,
@@ -333,23 +361,7 @@ export function shapeOpportunity(signal: PainSignalForOpportunity): OpportunityD
           generatedAt: latestMessage.generatedAt ?? null,
         }
       : null,
-    opportunityScore: calculateOpportunityScore({
-      b2bScore: signal.b2bScore,
-      monetizationScore,
-      urgency,
-      rawText: signal.rawInput?.rawText,
-      pain,
-      affectedTeam,
-      frequency,
-      currentSolution,
-      solutionGap,
-      automationPotential: solutionGapAnalysis.automationPotential,
-      evidenceStrength: evidenceAnalysis.evidenceStrength,
-      targetTitles,
-      icpGeneratedAt: signal.icpGeneratedAt,
-      rawInputStatus: filterStatus,
-      status: reviewStatus,
-    }),
+    opportunityScore,
   };
 }
 
