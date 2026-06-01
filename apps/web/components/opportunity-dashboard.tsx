@@ -19,6 +19,10 @@ import {
 } from "@/lib/opportunity-dashboard";
 import { getTrustBadge, type TrustState } from "@/lib/evidence-trust";
 import type { ReviewStatus } from "@/lib/review-status";
+import {
+  buildValidationTaskViewModel,
+  type ValidationTaskPriority,
+} from "@/lib/validation-task-router";
 
 type OpportunityFilter =
   | "all"
@@ -107,6 +111,22 @@ function getValidationGainBadgeClassName(gain: string) {
   }
 
   return "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300";
+}
+
+function getValidationTaskPriorityBadgeClassName(priority: ValidationTaskPriority) {
+  if (priority === "high") {
+    return "bg-amber-100 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300";
+  }
+
+  if (priority === "medium") {
+    return "bg-sky-100 text-sky-700 dark:bg-sky-950/50 dark:text-sky-300";
+  }
+
+  return "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300";
+}
+
+function formatValidationTaskPriority(priority: ValidationTaskPriority) {
+  return priority.toUpperCase();
 }
 
 function getScoreBadgeClassName(label: string) {
@@ -371,6 +391,9 @@ export function OpportunityDashboard({
   const [collapsedActivationDecisions, setCollapsedActivationDecisions] = useState<Set<string>>(
     () => new Set(),
   );
+  const [collapsedValidationTasks, setCollapsedValidationTasks] = useState<Set<string>>(
+    () => new Set(),
+  );
   const [toggledEvidencePackSections, setToggledEvidencePackSections] = useState<Set<string>>(
     () => new Set(),
   );
@@ -393,6 +416,22 @@ export function OpportunityDashboard({
 
   function toggleActivationDecision(opportunityId: string) {
     setCollapsedActivationDecisions((current) => {
+      const nextSections = new Set(current);
+      if (nextSections.has(opportunityId)) {
+        nextSections.delete(opportunityId);
+      } else {
+        nextSections.add(opportunityId);
+      }
+      return nextSections;
+    });
+  }
+
+  function isValidationTasksExpanded(opportunityId: string) {
+    return !collapsedValidationTasks.has(opportunityId);
+  }
+
+  function toggleValidationTasks(opportunityId: string) {
+    setCollapsedValidationTasks((current) => {
       const nextSections = new Set(current);
       if (nextSections.has(opportunityId)) {
         nextSections.delete(opportunityId);
@@ -948,6 +987,112 @@ export function OpportunityDashboard({
                         </div>
                       ) : null}
                     </div>
+                  </div>
+
+                  <div className="rounded-xl border border-zinc-200 bg-zinc-50/80 p-2.5 dark:border-zinc-800 dark:bg-zinc-900/60">
+                    {(() => {
+                      const validationTaskView = buildValidationTaskViewModel(item.validationTasks);
+                      const isExpanded = isValidationTasksExpanded(item.id);
+
+                      return (
+                        <div className="text-xs text-zinc-500 dark:text-zinc-400">
+                          <div className="flex flex-wrap items-start justify-between gap-2">
+                            <div>
+                              <h3 className="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+                                Validation Tasks
+                              </h3>
+                              <div className="mt-1 flex flex-wrap items-center gap-2">
+                                <span className="font-medium text-zinc-800 dark:text-zinc-100">
+                                  {validationTaskView.progressLabel}
+                                </span>
+                                <span>{validationTaskView.progress.completionPercent}%</span>
+                                <span>
+                                  {validationTaskView.progress.totalTasks}{" "}
+                                  {validationTaskView.progress.totalTasks === 1 ? "task" : "tasks"}
+                                </span>
+                              </div>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => toggleValidationTasks(item.id)}
+                              className="inline-flex shrink-0 items-center gap-1 rounded-full bg-white px-2 py-0.5 text-[11px] font-semibold text-zinc-600 transition-colors hover:bg-zinc-100 dark:bg-zinc-950 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                              aria-expanded={isExpanded}
+                            >
+                              <span
+                                className={`transition-transform duration-200 ${
+                                  isExpanded ? "rotate-180" : "rotate-0"
+                                }`}
+                              >
+                                ▾
+                              </span>
+                              {isExpanded ? "Collapse" : "Expand"}
+                            </button>
+                          </div>
+
+                          <div
+                            className={`grid transition-[grid-template-rows,opacity] duration-200 ease-out ${
+                              isExpanded
+                                ? "grid-rows-[1fr] opacity-100"
+                                : "grid-rows-[0fr] opacity-0"
+                            }`}
+                          >
+                            <div className="overflow-hidden">
+                              {validationTaskView.hasTasks ? (
+                                <div className="mt-2 space-y-2">
+                                  {validationTaskView.groups.map((group) => (
+                                    <div
+                                      key={group.priority}
+                                      className="rounded-xl border border-zinc-200 bg-white/70 p-2 dark:border-zinc-800 dark:bg-zinc-950/60"
+                                    >
+                                      <span
+                                        className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold ${getValidationTaskPriorityBadgeClassName(
+                                          group.priority,
+                                        )}`}
+                                      >
+                                        {formatValidationTaskPriority(group.priority)}
+                                      </span>
+                                      <ul className="mt-1.5 divide-y divide-zinc-100 dark:divide-zinc-900">
+                                        {group.tasks.map((task) => (
+                                          <li
+                                            key={task.id}
+                                            className="grid grid-cols-[1fr_auto] gap-2 py-1.5 first:pt-0 last:pb-0"
+                                          >
+                                            <div>
+                                              <p className="font-medium text-zinc-700 dark:text-zinc-200">
+                                                {task.status === "completed" ? "✓ " : ""}
+                                                {task.title}
+                                              </p>
+                                              <p className="mt-0.5 line-clamp-2 text-[11px] text-zinc-500 dark:text-zinc-400">
+                                                {task.description}
+                                              </p>
+                                            </div>
+                                            <span
+                                              className={`h-fit rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                                                task.status === "completed"
+                                                  ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300"
+                                                  : "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300"
+                                              }`}
+                                            >
+                                              {task.status === "completed" ? "Completed" : "Pending"}
+                                            </span>
+                                          </li>
+                                        ))}
+                                      </ul>
+                                    </div>
+                                  ))}
+                                </div>
+                              ) : (
+                                <p className="mt-2 rounded-xl border border-zinc-200 bg-white/70 p-2 font-medium text-zinc-600 dark:border-zinc-800 dark:bg-zinc-950/60 dark:text-zinc-300">
+                                  {item.activationDecision.activationDecision === "ENGAGE"
+                                    ? "No validation tasks required"
+                                    : validationTaskView.emptyState}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })()}
                   </div>
 
                   <div className="rounded-2xl border border-zinc-200 bg-zinc-50/80 p-3 dark:border-zinc-800 dark:bg-zinc-900/60">

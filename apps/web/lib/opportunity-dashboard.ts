@@ -31,6 +31,10 @@ import {
   generateSolutionGapAnalysis,
   type SolutionGapAnalysis,
 } from "./solution-gap-engine.ts";
+import {
+  generateValidationTasks,
+  type ValidationTask,
+} from "./validation-task-router.ts";
 
 type RawInputForOpportunity = {
   rawText?: string | null;
@@ -117,6 +121,7 @@ export type OpportunityDashboardItem = {
   evidenceAnalysis: EvidenceAnalysis;
   evidencePack: EvidencePack;
   activationDecision: ActivationDecisionResult;
+  validationTasks: ValidationTask[];
   opportunityReadiness: OpportunityReadiness;
   buyerMapping: BuyerMapping;
   founderConviction: number | null;
@@ -310,6 +315,11 @@ export function shapeOpportunity(signal: PainSignalForOpportunity): OpportunityD
     opportunityScore,
     founderConvictionRecommendation,
   });
+  const validationTasks = generateValidationTasks({
+    opportunityId: signal.id,
+    activationDecision: activationDecision.activationDecision,
+    blockers: opportunityReadiness.blockers,
+  });
 
   return {
     id: signal.id,
@@ -334,6 +344,7 @@ export function shapeOpportunity(signal: PainSignalForOpportunity): OpportunityD
     evidenceAnalysis,
     evidencePack,
     activationDecision,
+    validationTasks,
     opportunityReadiness,
     buyerMapping,
     founderConviction: signal.founderConviction ?? null,
