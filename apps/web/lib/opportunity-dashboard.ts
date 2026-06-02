@@ -23,6 +23,10 @@ import {
   generateOpportunityReadiness,
   type OpportunityReadiness,
 } from "./opportunity-readiness.ts";
+import {
+  generateOpportunityThesis,
+  type OpportunityThesis,
+} from "./opportunity-thesis.ts";
 import { calculateOpportunityScore } from "./opportunity-score.ts";
 import { getInterviewCount } from "./opportunity-validation.ts";
 import { hasHumanEditedState, preferHumanValue } from "./review-overrides.ts";
@@ -122,6 +126,7 @@ export type OpportunityDashboardItem = {
   evidencePack: EvidencePack;
   activationDecision: ActivationDecisionResult;
   validationTasks: ValidationTask[];
+  opportunityThesis: OpportunityThesis;
   opportunityReadiness: OpportunityReadiness;
   buyerMapping: BuyerMapping;
   founderConviction: number | null;
@@ -320,6 +325,21 @@ export function shapeOpportunity(signal: PainSignalForOpportunity): OpportunityD
     activationDecision: activationDecision.activationDecision,
     blockers: opportunityReadiness.blockers,
   });
+  const opportunityThesis = generateOpportunityThesis({
+    rawText: signal.rawInput?.rawText,
+    pain,
+    affectedTeam,
+    frequency,
+    urgency,
+    currentSolution,
+    solutionGap,
+    buyer,
+    budgetOwner,
+    activationDecision,
+    opportunityReadiness,
+    buyerMapping,
+    solutionGapAnalysis,
+  });
 
   return {
     id: signal.id,
@@ -345,6 +365,7 @@ export function shapeOpportunity(signal: PainSignalForOpportunity): OpportunityD
     evidencePack,
     activationDecision,
     validationTasks,
+    opportunityThesis,
     opportunityReadiness,
     buyerMapping,
     founderConviction: signal.founderConviction ?? null,

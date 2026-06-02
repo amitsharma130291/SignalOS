@@ -395,6 +395,9 @@ export function OpportunityDashboard({
   const [collapsedValidationTasks, setCollapsedValidationTasks] = useState<Set<string>>(
     () => new Set(),
   );
+  const [collapsedOpportunityTheses, setCollapsedOpportunityTheses] = useState<Set<string>>(
+    () => new Set(),
+  );
   const [toggledEvidencePackSections, setToggledEvidencePackSections] = useState<Set<string>>(
     () => new Set(),
   );
@@ -433,6 +436,22 @@ export function OpportunityDashboard({
 
   function toggleValidationTasks(opportunityId: string) {
     setCollapsedValidationTasks((current) => {
+      const nextSections = new Set(current);
+      if (nextSections.has(opportunityId)) {
+        nextSections.delete(opportunityId);
+      } else {
+        nextSections.add(opportunityId);
+      }
+      return nextSections;
+    });
+  }
+
+  function isOpportunityThesisExpanded(opportunityId: string) {
+    return !collapsedOpportunityTheses.has(opportunityId);
+  }
+
+  function toggleOpportunityThesis(opportunityId: string) {
+    setCollapsedOpportunityTheses((current) => {
       const nextSections = new Set(current);
       if (nextSections.has(opportunityId)) {
         nextSections.delete(opportunityId);
@@ -1101,6 +1120,180 @@ export function OpportunityDashboard({
                       })()}
                     </div>
                   ) : null}
+
+                  <div className="rounded-xl border border-zinc-200 bg-zinc-50/80 p-2.5 dark:border-zinc-800 dark:bg-zinc-900/60">
+                    {(() => {
+                      const isExpanded = isOpportunityThesisExpanded(item.id);
+
+                      return (
+                        <div className="text-xs text-zinc-500 dark:text-zinc-400">
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="min-w-0 flex-1">
+                              <h3 className="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+                                Opportunity Thesis
+                              </h3>
+                              <p
+                                className="mt-1 inline-flex items-center gap-1 text-[11px] font-semibold text-zinc-600 dark:text-zinc-300"
+                                title={item.opportunityThesis.confidenceExplanation}
+                              >
+                                {item.opportunityThesis.confidenceLabel} (
+                                {Math.round(item.opportunityThesis.confidence * 100)}%)
+                                <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-zinc-200 text-[10px] text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
+                                  i
+                                </span>
+                              </p>
+                              <p className="mt-0.5 text-[10px] text-zinc-500 dark:text-zinc-400">
+                                {item.opportunityThesis.confidenceExplanation}
+                              </p>
+                              <div className="mt-1 flex flex-wrap gap-1.5">
+                                {item.opportunityThesis.healthIndicators.map((indicator) => (
+                                  <span
+                                    key={indicator.label}
+                                    className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${
+                                      indicator.status === "validated"
+                                        ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300"
+                                        : "bg-amber-100 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300"
+                                    }`}
+                                  >
+                                    {indicator.status === "validated" ? "✓" : "⚠"}{" "}
+                                    {indicator.label}
+                                  </span>
+                                ))}
+                              </div>
+                              <p
+                                className="mt-1 line-clamp-2 text-sm font-semibold leading-snug text-zinc-900 dark:text-zinc-50"
+                                title={item.opportunityThesis.thesisHeadline}
+                              >
+                                {item.opportunityThesis.thesisHeadline}
+                              </p>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => toggleOpportunityThesis(item.id)}
+                              className="inline-flex shrink-0 items-center gap-1 rounded-full bg-white px-2 py-0.5 text-[11px] font-semibold text-zinc-600 transition-colors hover:bg-zinc-100 dark:bg-zinc-950 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                              aria-expanded={isExpanded}
+                            >
+                              <span
+                                className={`transition-transform duration-200 ${
+                                  isExpanded ? "rotate-180" : "rotate-0"
+                                }`}
+                              >
+                                ▾
+                              </span>
+                              {isExpanded ? "Collapse" : "Expand"}
+                            </button>
+                          </div>
+
+                          <div
+                            className={`grid transition-[grid-template-rows,opacity] duration-200 ease-out ${
+                              isExpanded
+                                ? "grid-rows-[1fr] opacity-100"
+                                : "grid-rows-[0fr] opacity-0"
+                            }`}
+                          >
+                            <div className="overflow-hidden">
+                              <div className="mt-3 rounded-xl border border-zinc-200 bg-white/70 p-2.5 dark:border-zinc-800 dark:bg-zinc-950/60">
+                                <p className="font-medium text-zinc-700 dark:text-zinc-200">
+                                  Executive Narrative
+                                </p>
+                                <p className="mt-1 leading-relaxed text-zinc-600 dark:text-zinc-300">
+                                  {item.opportunityThesis.executiveSummary}
+                                </p>
+                              </div>
+
+                              <div className="my-2 h-px bg-zinc-200 dark:bg-zinc-800" />
+
+                              <dl className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
+                                <div className="rounded-xl border border-zinc-200 bg-white/70 p-2 dark:border-zinc-800 dark:bg-zinc-950/60">
+                                  <dt className="font-medium text-zinc-700 dark:text-zinc-200">
+                                    Problem
+                                  </dt>
+                                  <dd className="mt-1 space-y-1 text-zinc-600 dark:text-zinc-300">
+                                    <p className="font-medium text-zinc-700 dark:text-zinc-200">
+                                      {item.opportunityThesis.problemSummary}
+                                    </p>
+                                    <p>{item.opportunityThesis.problemSupportingDetail}</p>
+                                  </dd>
+                                </div>
+                                <div className="rounded-xl border border-zinc-200 bg-white/70 p-2 dark:border-zinc-800 dark:bg-zinc-950/60">
+                                  <dt className="font-medium text-zinc-700 dark:text-zinc-200">
+                                    Pain Owner
+                                  </dt>
+                                  <dd className="mt-0.5 line-clamp-2 text-zinc-600 dark:text-zinc-300">
+                                    {item.opportunityThesis.painOwner}
+                                  </dd>
+                                </div>
+                                <div className="rounded-xl border border-zinc-200 bg-white/70 p-2 dark:border-zinc-800 dark:bg-zinc-950/60">
+                                  <dt className="font-medium text-zinc-700 dark:text-zinc-200">
+                                    Business Impact
+                                  </dt>
+                                  <dd className="mt-0.5 line-clamp-3 text-zinc-600 dark:text-zinc-300">
+                                    {item.opportunityThesis.businessImpact}
+                                  </dd>
+                                </div>
+                                <div className="rounded-xl border border-zinc-200 bg-white/70 p-2 dark:border-zinc-800 dark:bg-zinc-950/60">
+                                  <dt className="font-medium text-zinc-700 dark:text-zinc-200">
+                                    Buyer Path
+                                  </dt>
+                                  <dd className="mt-1 space-y-1">
+                                    {item.opportunityThesis.buyerPathRoles.length ? (
+                                      item.opportunityThesis.buyerPathRoles.map((role) => (
+                                        <div
+                                          key={role.label}
+                                          className="grid grid-cols-[96px_1fr] items-baseline gap-2"
+                                        >
+                                          <span className="text-[11px] font-semibold text-zinc-500 dark:text-zinc-400">
+                                            {role.label}
+                                          </span>
+                                          <span className="font-medium text-zinc-700 dark:text-zinc-200">
+                                            {role.value === "Unknown"
+                                              ? role.label === "Buyer"
+                                                ? "Buyer not yet identified"
+                                                : role.label === "Economic Buyer"
+                                                  ? "Economic buyer not yet identified"
+                                                  : "Champion not yet identified"
+                                              : role.value}
+                                          </span>
+                                        </div>
+                                      ))
+                                    ) : (
+                                      <span className="text-zinc-600 dark:text-zinc-300">
+                                        Buying path requires validation.
+                                      </span>
+                                    )}
+                                  </dd>
+                                </div>
+                                <div className="rounded-xl border border-zinc-200 bg-white/70 p-2 dark:border-zinc-800 dark:bg-zinc-950/60">
+                                  <dt className="font-medium text-zinc-700 dark:text-zinc-200">
+                                    Economic Case
+                                  </dt>
+                                  <dd className="mt-0.5 line-clamp-3 text-zinc-600 dark:text-zinc-300">
+                                    {item.opportunityThesis.economicCase}
+                                  </dd>
+                                </div>
+                                <div className="rounded-xl border border-zinc-200 bg-white/70 p-2 dark:border-zinc-800 dark:bg-zinc-950/60">
+                                  <dt className="font-medium text-zinc-700 dark:text-zinc-200">
+                                    Why Now
+                                  </dt>
+                                  <dd className="mt-0.5 line-clamp-3 text-zinc-600 dark:text-zinc-300">
+                                    {item.opportunityThesis.whyNow}
+                                  </dd>
+                                </div>
+                              </dl>
+                              <div className="mt-2 rounded-xl border border-zinc-200 bg-white/70 p-2 dark:border-zinc-800 dark:bg-zinc-950/60">
+                                <p className="font-medium text-zinc-700 dark:text-zinc-200">
+                                  Current Solution Failure
+                                </p>
+                                <p className="mt-0.5 line-clamp-3 text-zinc-600 dark:text-zinc-300">
+                                  {item.opportunityThesis.whyCurrentSolutionFails}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })()}
+                  </div>
 
                   <div className="rounded-2xl border border-zinc-200 bg-zinc-50/80 p-3 dark:border-zinc-800 dark:bg-zinc-900/60">
                     <div className="flex flex-wrap items-center justify-between gap-2">
