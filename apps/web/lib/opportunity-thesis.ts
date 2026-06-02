@@ -128,19 +128,6 @@ function getOpportunityKind(input: OpportunityThesisInput): OpportunityKind {
   return "general";
 }
 
-function isEconomicCaseTrusted(input: OpportunityThesisInput) {
-  return isTrusted(input.opportunityReadiness.trustedFields.economicCase.trustState);
-}
-
-function getConfidenceEconomicBase(confidence: number) {
-  const label = getOpportunityThesisConfidenceLabel(confidence);
-
-  if (label === "Very High Confidence") return "Economic impact appears validated.";
-  if (label === "High Confidence") return "Economic impact appears likely but requires confirmation.";
-  if (label === "Moderate Confidence") return "Economic impact is emerging but not fully validated.";
-  return "Economic impact remains speculative.";
-}
-
 function toTeamLabel(input: OpportunityThesisInput) {
   const team = display(input.buyerMapping.department, display(input.affectedTeam, "Teams"));
   const normalized = normalize(team);
@@ -366,7 +353,7 @@ function getBuyerPath(input: OpportunityThesisInput) {
   return knownRoles.map((role) => role.value).join(" -> ");
 }
 
-function getEconomicCase(input: OpportunityThesisInput, confidence: number) {
+function getEconomicCase(input: OpportunityThesisInput) {
   const economicCase = input.opportunityReadiness.trustedFields.economicCase;
   const kind = getOpportunityKind(input);
   const hasBudgetOwner =
@@ -374,60 +361,62 @@ function getEconomicCase(input: OpportunityThesisInput, confidence: number) {
     isTrusted(input.opportunityReadiness.trustedFields.economicBuyer.trustState);
   const evidenceText = compactList([economicCase.value, input.rawText, input.pain]).join(" ");
   const hoursMatch = evidenceText.match(/\b\d+\s*(?:-|to)\s*\d+\s*hours?\b|\b\d+\s*hours?\b/i);
-  const confidenceBase = getConfidenceEconomicBase(confidence);
+  const ownershipNote = hasBudgetOwner
+    ? "Economic ownership is mapped."
+    : "Economic ownership still needs confirmation.";
 
   if (isTrusted(economicCase.trustState) && hasBudgetOwner) {
     if (hoursMatch) {
-      return `${confidenceBase} Manual work creates ${hoursMatch[0]} per week of reporting overhead, which matters because close delays reduce operating visibility; exact cost ownership still needs confirmation.`;
+      return `Manual reconciliation consumes ${hoursMatch[0]} per week that could be spent on close review and exception resolution. Impact validated; ${ownershipNote}`;
     }
 
     if (kind === "sales_ops") {
-      return `${confidenceBase} Forecast risk can distort revenue planning, which matters because leadership decisions depend on pipeline accuracy; economic ownership still needs confirmation.`;
+      return `Forecast errors can misallocate pipeline coverage, rep coaching, and management attention. Impact validated; ${ownershipNote}`;
     }
     if (kind === "customer_success") {
-      return `${confidenceBase} Renewal visibility gaps create potential revenue exposure, which matters because missed risk signals can turn into churn; the size of revenue exposure still needs validation.`;
+      return `Late renewal-risk detection puts retention dollars and expansion planning at risk. Impact validated; ${ownershipNote}`;
     }
     if (kind === "support") {
-      return `${confidenceBase} Escalation delays create service-quality risk, which matters because slower response times can affect retention and support capacity; budget ownership still needs confirmation.`;
+      return `Manual escalation coordination consumes support capacity and raises the cost of complex cases. Impact validated; ${ownershipNote}`;
     }
     if (kind === "finance") {
-      return `${confidenceBase} Reporting delays create close-cycle risk, which matters because finance teams lose confidence in operating numbers; exact cost impact still needs quantification.`;
+      return `Manual close work consumes finance capacity and increases the cost of producing reliable operating numbers. Impact validated; ${ownershipNote}`;
     }
 
-    return `${confidenceBase} Workflow friction creates operating risk, which matters because unresolved manual work compounds across repeated cycles; cost impact still needs validation.`;
+    return `Recurring workflow friction consumes operating capacity that could be used for higher-value review work. Impact validated; ${ownershipNote}`;
   }
 
   if (economicCase.trustState === "inferred") {
     if (kind === "sales_ops") {
-      return `${confidenceBase} Forecast quality appears impacted, creating planning risk for revenue teams; economic ownership still requires confirmation.`;
+      return `Forecast errors can misallocate pipeline coverage, rep coaching, and management attention. Impact not fully validated; ${ownershipNote}`;
     }
     if (kind === "customer_success") {
-      return `${confidenceBase} Renewal risk is evident, creating potential churn exposure; revenue impact has not yet been validated.`;
+      return `Late renewal-risk detection puts retention dollars and expansion planning at risk. Impact not fully validated; ${ownershipNote}`;
     }
     if (kind === "support") {
-      return `${confidenceBase} Escalation inefficiencies are visible, creating customer experience and capacity risk; budget ownership remains unclear.`;
+      return `Manual escalation coordination consumes support capacity and raises the cost of complex cases. Impact not fully validated; ${ownershipNote}`;
     }
     if (kind === "finance") {
-      return `${confidenceBase} Reporting delays appear material, creating close-cycle risk; cost impact has not yet been quantified.`;
+      return `Manual close work consumes finance capacity and increases the cost of producing reliable operating numbers. Impact not fully validated; ${ownershipNote}`;
     }
 
-    return `${confidenceBase} Operational friction is visible, creating execution risk; cost evidence and budget ownership remain incomplete.`;
+    return `Workflow friction consumes operating capacity that could be used for higher-value review work. Impact not fully validated; ${ownershipNote}`;
   }
 
   if (kind === "sales_ops") {
-    return `${confidenceBase} Forecast risk may affect revenue planning, but financial exposure and economic ownership remain unvalidated.`;
+    return `Forecast errors can misallocate pipeline coverage, rep coaching, and management attention. Impact not validated; ${ownershipNote}`;
   }
   if (kind === "customer_success") {
-    return `${confidenceBase} Renewal risk may create churn exposure, but revenue impact has not yet been validated.`;
+    return `Late renewal-risk detection can put retention dollars and expansion planning at risk. Impact not validated; ${ownershipNote}`;
   }
   if (kind === "support") {
-    return `${confidenceBase} Escalation delays may create support capacity and customer experience risk, but budget ownership remains unclear.`;
+    return `Manual escalation coordination can consume support capacity and raise the cost of complex cases. Impact not validated; ${ownershipNote}`;
   }
   if (kind === "finance") {
-    return `${confidenceBase} Close delays may create reporting risk, but cost impact has not yet been quantified.`;
+    return `Manual close work can consume finance capacity and increase the cost of producing reliable operating numbers. Impact not validated; ${ownershipNote}`;
   }
 
-  return `${confidenceBase} Operational risk may exist, but cost justification and buyer economics remain unvalidated.`;
+  return `Workflow friction can consume operating capacity that could be used for higher-value review work. Impact not validated; ${ownershipNote}`;
 }
 
 function getWhyNow(input: OpportunityThesisInput) {
@@ -435,19 +424,19 @@ function getWhyNow(input: OpportunityThesisInput) {
   const frequency = normalize(input.frequency);
 
   if (text.includes("month-end") || text.includes("month end") || text.includes("close")) {
-    return "Month-end close delays create recurring reporting pressure every reporting cycle.";
+    return "Close work recurs on a fixed reporting calendar, so unresolved exceptions carry into every cycle.";
   }
   if (text.includes("forecast")) {
-    return "Forecast accuracy directly affects planning and revenue execution.";
+    return "Forecast calls and pipeline reviews depend on current inputs before leadership commits the plan.";
   }
   if (text.includes("renewal") || text.includes("customer health")) {
-    return "Renewal visibility gaps increase churn risk if left unresolved.";
+    return "Renewal reviews are time-bound, so late risk discovery leaves fewer save options.";
   }
   if (text.includes("escalation") || text.includes("support")) {
-    return "Escalation delays negatively impact customer experience and team responsiveness.";
+    return "Escalations degrade quickly when ownership waits across queues.";
   }
   if (text.includes("compliance") || text.includes("audit")) {
-    return "Audit preparation creates recurring compliance pressure.";
+    return "Audit and compliance requests arrive on fixed deadlines that leave little room for manual catch-up.";
   }
   if (input.activationDecision.activationDecision === "MONITOR") {
     if (frequency === "daily" || frequency === "weekly") {
@@ -456,10 +445,10 @@ function getWhyNow(input: OpportunityThesisInput) {
     return "Additional evidence is required before timing can be assessed.";
   }
   if (text.includes("reporting delays") || text.includes("reporting risk")) {
-    return "Reporting delays are already affecting operations.";
+    return "The reporting cycle is already active, making validation time-sensitive.";
   }
   if (frequency === "daily" || frequency === "weekly" || frequency === "monthly") {
-    return `The workflow occurs ${frequency} and creates recurring operational friction.`;
+    return `The workflow runs ${frequency}, so small misses recur before the team can reset the process.`;
   }
   if (input.activationDecision.activationDecision === "ENGAGE") {
     return "Qualification evidence supports outreach now.";
@@ -482,26 +471,26 @@ function getWhyCurrentSolutionFails(input: OpportunityThesisInput) {
   const failureModes = input.solutionGapAnalysis.failureModes;
 
   if (text.includes("forecast")) {
-    return "Because revenue operations data is fragmented across multiple GTM systems, the team cannot maintain forecast confidence, resulting in slower planning and revenue execution.";
+    return "Because revenue operations data is fragmented across multiple GTM systems, forecast changes cannot be reconciled in one governed view.";
   }
   if (text.includes("renewal") || text.includes("customer health")) {
-    return "Because customer health data is spread across several tools, the team cannot identify renewal risk early, resulting in avoidable churn exposure.";
+    return "Because customer health data is spread across several tools, account risk signals cannot be assembled before renewal review.";
   }
   if (text.includes("escalation") || text.includes("support")) {
-    return "Because escalation ownership is not consistently tracked, the team cannot route follow-up reliably, resulting in slower response times and customer experience risk.";
+    return "Because escalation ownership is not consistently tracked, handoffs cannot be routed reliably from Slack to the support system.";
   }
   if (text.includes("compliance") || text.includes("audit")) {
-    return "Because compliance evidence is coordinated manually, the team cannot stay audit-ready, resulting in recurring compliance pressure.";
+    return "Because compliance evidence is coordinated manually, audit status cannot be kept current across owners and documents.";
   }
   if (text.includes("month-end") || text.includes("month end") || text.includes("reconcile")) {
-    return "Because finance data is disconnected across systems, the team cannot resolve exceptions cleanly during close, resulting in reporting risk and close-cycle delays.";
+    return "Because finance data is disconnected across systems, payout exceptions and ledger status cannot be reconciled in one workflow.";
   }
   if (text.includes("spreadsheet")) {
-    return "Because spreadsheet coordination is manual, the team cannot keep workflow state current, resulting in reconciliation risk and slower execution.";
+    return "Because spreadsheet coordination is manual, workflow state cannot stay current across owners.";
   }
 
   if (getToolCount(input.currentSolution) >= 3 || text.includes("multiple systems")) {
-    return "Because workflow data is fragmented across systems, the team cannot maintain consistent visibility, resulting in cross-system manual work.";
+    return "Because workflow data is fragmented across systems, status changes cannot be governed from a single source of truth.";
   }
 
   if (failureModes.length > 0) {
@@ -512,7 +501,7 @@ function getWhyCurrentSolutionFails(input: OpportunityThesisInput) {
     return sentence(input.solutionGapAnalysis.rootCause);
   }
 
-  return "Because current workflow evidence is incomplete, the team cannot confirm the failure mode, resulting in unresolved validation risk.";
+  return "Because current workflow evidence is incomplete, the failure mechanism cannot be confirmed yet.";
 }
 
 function getWorkflowName(input: OpportunityThesisInput) {
@@ -542,56 +531,15 @@ function getThesisHeadline(
   return truncateSentence(`${team} are experiencing ${impact} caused by ${cause}`, 140);
 }
 
-function getBuyerPathNarrative(kind: OpportunityKind, roles: OpportunityThesisBuyerPathRole[]) {
-  const [champion, buyer, economicBuyer] = roles;
-  const hasChampion = champion?.value && champion.value !== "Unknown";
-  const buyingInfluencers = [buyer?.value, economicBuyer?.value].filter(
-    (value): value is string => Boolean(value && value !== "Unknown"),
-  );
-
-  if (!hasChampion) return "Buyer ownership still needs to be mapped before engagement.";
-  if (buyingInfluencers.length === 0) {
-    return `Workflow ownership appears to sit with ${champion.value}, while buyer and economic owner still require validation.`;
-  }
-
-  const influence = buyingInfluencers.join(" and ");
-
-  if (kind === "finance") {
-    return sentence(
-      `Workflow ownership appears to sit with ${champion.value}, with buying influence through ${influence}`,
-    );
-  }
-  if (kind === "sales_ops") {
-    return sentence(
-      `This initiative is most likely being driven by ${champion.value}, with commercial ownership through ${influence}`,
-    );
-  }
-  if (kind === "customer_success") {
-    return sentence(
-      `${champion.value} appears to be the primary stakeholder, with renewal ownership connected to ${influence}`,
-    );
-  }
-  if (kind === "support") {
-    return sentence(
-      `${champion.value} appears closest to the operational pain, while ${influence} likely shapes purchasing approval`,
-    );
-  }
-
-  return sentence(
-    `${champion.value} appears to be the primary stakeholder, with buying influence through ${influence}`,
-  );
-}
-
 function getOpeningNarrative(
   kind: OpportunityKind,
-  painOwner: string,
   team: string,
   workflowName: string,
   solutionContext: string,
 ) {
   if (kind === "finance") {
     return sentence(
-      `${team} is relying on ${solutionContext} to complete ${workflowName}, with ${painOwner} closest to the operating pain`,
+      `${team} is relying on ${solutionContext} to complete ${workflowName}`,
     );
   }
   if (kind === "sales_ops") {
@@ -606,7 +554,7 @@ function getOpeningNarrative(
   }
   if (kind === "support") {
     return sentence(
-      `${painOwner} appears closest to the escalation workflow, where ownership is tracked across ${solutionContext}`,
+      `${team} is managing escalation follow-up across ${solutionContext}`,
     );
   }
   if (kind === "operations") {
@@ -618,20 +566,49 @@ function getOpeningNarrative(
   return sentence(`${team} currently manages ${workflowName} across ${solutionContext}`);
 }
 
-function getValidationNarrative(input: OpportunityThesisInput, thesis: { economicCase: string }) {
-  if (input.activationDecision.activationDecision === "ENGAGE") return "";
+function getExecutiveRootCause(input: OpportunityThesisInput) {
+  const kind = getOpportunityKind(input);
+  const solutionContext = getSolutionContext(input);
 
-  if (!isEconomicCaseTrusted(input)) {
-    if (thesis.economicCase.includes("Budget ownership") || thesis.economicCase.includes("budget")) {
-      return "Budget ownership remains unresolved.";
-    }
-    if (thesis.economicCase.includes("Cost impact") || thesis.economicCase.includes("cost")) {
-      return "Cost justification remains incomplete.";
-    }
-    return "Economic validation should be completed before engagement.";
+  if (kind === "finance") {
+    return sentence(`The root cause is disconnected payment, ledger, and spreadsheet data across ${solutionContext}`);
+  }
+  if (kind === "sales_ops") {
+    return sentence(`The root cause is pipeline data changing across systems without one governed forecast view`);
+  }
+  if (kind === "customer_success") {
+    return sentence(`The root cause is customer health data moving across tools before renewal risk is assembled`);
+  }
+  if (kind === "support") {
+    return sentence(`The root cause is escalation ownership moving across queues without a reliable handoff record`);
+  }
+  if (kind === "operations") {
+    return sentence(`The root cause is audit evidence being tracked across documents, owners, and manual updates`);
   }
 
-  return "Further qualification is recommended before outreach.";
+  return sentence(`The root cause is workflow state moving across systems without one governed operating view`);
+}
+
+function getExecutiveConsequence(input: OpportunityThesisInput) {
+  const kind = getOpportunityKind(input);
+
+  if (kind === "finance") {
+    return "Finance leaders get slower exception review and less dependable close handoffs.";
+  }
+  if (kind === "sales_ops") {
+    return "Revenue leaders spend planning time reconciling inputs instead of pressure-testing the forecast.";
+  }
+  if (kind === "customer_success") {
+    return "Customer Success leaders lose time to diagnose account risk before renewal conversations.";
+  }
+  if (kind === "support") {
+    return "Support leaders lose visibility into who owns the next action on complex customer issues.";
+  }
+  if (kind === "operations") {
+    return "Operations leaders spend review time chasing evidence instead of resolving readiness gaps.";
+  }
+
+  return "Leaders lose operating visibility and spend review time reconstructing workflow status.";
 }
 
 function getTrustCoverage(readiness: OpportunityReadiness) {
@@ -674,8 +651,36 @@ export function getOpportunityThesisConfidenceLabel(
   return "Low Confidence";
 }
 
-function getConfidenceExplanation() {
-  return "Confidence is based on evidence quality, buyer clarity, business impact validation, and workflow coverage.";
+function getConfidenceExplanation(input: OpportunityThesisInput, confidence: number) {
+  const label = getOpportunityThesisConfidenceLabel(confidence);
+  const fields = input.opportunityReadiness.trustedFields;
+  const missing = [
+    isTrusted(fields.workflow.trustState) ? null : "workflow evidence",
+    isTrusted(fields.buyer.trustState) ? null : "buyer clarity",
+    isTrusted(fields.businessImpact.trustState) ? null : "impact validation",
+    isTrusted(fields.economicCase.trustState) ? null : "economic impact validation",
+    isTrusted(fields.budgetOwner.trustState) || isTrusted(fields.economicBuyer.trustState)
+      ? null
+      : "economic ownership validation",
+  ].filter((value): value is string => Boolean(value));
+
+  if (label === "Very High Confidence") {
+    return "All qualification dimensions are validated: workflow evidence, buyer clarity, impact validation, economic impact, and economic ownership.";
+  }
+  if (label === "High Confidence") {
+    return missing.length
+      ? `Strong evidence exists across most dimensions; remaining gaps: ${missing.join(", ")}.`
+      : "Strong evidence exists across workflow, buyer, impact, and economic dimensions.";
+  }
+  if (label === "Moderate Confidence") {
+    return missing.length
+      ? `Confidence is constrained by missing ${missing.join(", ")}.`
+      : "Confidence is moderate because validation depth is still developing.";
+  }
+
+  return missing.length
+    ? `Low confidence reflects missing ${missing.join(", ")}.`
+    : "Low confidence reflects limited evidence depth across the opportunity.";
 }
 
 function getHealthIndicators(
@@ -685,6 +690,8 @@ function getHealthIndicators(
   const problemValidated = isTrusted(fields.workflow.trustState);
   const buyerIdentified = isTrusted(fields.buyer.trustState);
   const economicCaseComplete = isTrusted(fields.economicCase.trustState);
+  const economicOwnershipComplete =
+    isTrusted(fields.budgetOwner.trustState) || isTrusted(fields.economicBuyer.trustState);
   const businessImpactValidated = isTrusted(fields.businessImpact.trustState);
   const indicators: OpportunityThesisHealthIndicator[] = [];
 
@@ -698,8 +705,12 @@ function getHealthIndicators(
     status: businessImpactValidated ? "validated" : "warning",
   });
   indicators.push({
-    label: economicCaseComplete ? "Economic Impact Validated" : "Economic Validation Needed",
+    label: economicCaseComplete ? "Economic Impact Validated" : "Economic Impact Needed",
     status: economicCaseComplete ? "validated" : "warning",
+  });
+  indicators.push({
+    label: economicOwnershipComplete ? "Economic Ownership Validated" : "Economic Ownership Needed",
+    status: economicOwnershipComplete ? "validated" : "warning",
   });
 
   return indicators;
@@ -707,29 +718,18 @@ function getHealthIndicators(
 
 function getExecutiveSummary(
   input: OpportunityThesisInput,
-  thesis: Omit<
-    OpportunityThesis,
-    "executiveSummary" | "confidenceLabel" | "confidenceExplanation" | "healthIndicators"
-  >,
 ) {
   const kind = getOpportunityKind(input);
   const team = display(input.buyerMapping.department, display(input.affectedTeam, "The team"));
   const workflowName = getWorkflowName(input);
   const solutionContext = getSolutionContext(input);
-  const painOwner =
-    thesis.painOwner === "Unknown" ? "The pain owner still requires validation" : thesis.painOwner;
-  const validationNarrative = getValidationNarrative(input, thesis);
   const summary = compactSentenceList([
-    getOpeningNarrative(kind, painOwner, team, workflowName, solutionContext),
-    thesis.whyCurrentSolutionFails,
-    thesis.buyerPath === "Buying path requires validation."
-      ? "The buying path still requires validation."
-      : getBuyerPathNarrative(kind, thesis.buyerPathRoles),
-    thesis.economicCase,
-    validationNarrative,
+    getOpeningNarrative(kind, team, workflowName, solutionContext),
+    getExecutiveRootCause(input),
+    getExecutiveConsequence(input),
   ]);
 
-  return summary.slice(0, 7).join(" ");
+  return summary.slice(0, 3).join(" ");
 }
 
 export function generateOpportunityThesis(input: OpportunityThesisInput): OpportunityThesis {
@@ -746,17 +746,17 @@ export function generateOpportunityThesis(input: OpportunityThesisInput): Opport
     businessImpact,
     buyerPath: getBuyerPath(input),
     buyerPathRoles,
-    economicCase: getEconomicCase(input, confidence),
+    economicCase: getEconomicCase(input),
     whyNow: getWhyNow(input),
     whyCurrentSolutionFails: getWhyCurrentSolutionFails(input),
     confidence,
   };
 
   return {
-    executiveSummary: getExecutiveSummary(input, thesisWithoutSummary),
+    executiveSummary: getExecutiveSummary(input),
     ...thesisWithoutSummary,
     confidenceLabel: getOpportunityThesisConfidenceLabel(confidence),
-    confidenceExplanation: getConfidenceExplanation(),
+    confidenceExplanation: getConfidenceExplanation(input, confidence),
     healthIndicators: getHealthIndicators(input),
   };
 }

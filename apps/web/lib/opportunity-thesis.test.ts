@@ -137,6 +137,14 @@ function sentenceCount(value: string) {
   return value.split(/[.!?]\s+/).filter((sentence) => sentence.trim().length > 0).length;
 }
 
+function firstSentence(value: string) {
+  return value.split(/(?<=[.!?])\s+/)[0]?.trim() ?? "";
+}
+
+function escapeRegex(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 describe("generateOpportunityThesis", () => {
   it("produces a complete high-confidence thesis for fully qualified ENGAGE opportunities", () => {
     const thesis = generateOpportunityThesis(input());
@@ -155,10 +163,10 @@ describe("generateOpportunityThesis", () => {
       { label: "Buyer", value: "Controller" },
       { label: "Economic Buyer", value: "CFO" },
     ]);
-    assert.match(thesis.economicCase, /finance teams lose confidence in operating numbers/);
+    assert.match(thesis.economicCase, /consumes finance capacity/);
     assert.equal(
       thesis.whyNow,
-      "Month-end close delays create recurring reporting pressure every reporting cycle.",
+      "Close work recurs on a fixed reporting calendar, so unresolved exceptions carry into every cycle.",
     );
     assert.match(thesis.whyCurrentSolutionFails, /Because finance data is disconnected/);
     assert.ok(thesis.confidence >= 0.85);
@@ -179,9 +187,9 @@ describe("generateOpportunityThesis", () => {
       }),
     );
 
-    assert.match(thesis.economicCase, /Close delays may create reporting risk/);
+    assert.match(thesis.economicCase, /Manual close work can consume finance capacity/);
     assert.ok(thesis.confidence < 0.85);
-    assert.match(thesis.executiveSummary, /Cost justification remains incomplete/);
+    assert.match(thesis.executiveSummary, /slower exception review/);
     assert.doesNotMatch(thesis.executiveSummary, /Additional validation is required before outreach/);
   });
 
@@ -210,7 +218,7 @@ describe("generateOpportunityThesis", () => {
     ]);
     assert.equal(
       thesis.whyNow,
-      "Month-end close delays create recurring reporting pressure every reporting cycle.",
+      "Close work recurs on a fixed reporting calendar, so unresolved exceptions carry into every cycle.",
     );
   });
 
@@ -283,7 +291,7 @@ describe("generateOpportunityThesis", () => {
     assert.equal(thesis.painOwner, "Unknown");
     assert.equal(thesis.businessImpact, "Business impact requires validation.");
     assert.equal(thesis.buyerPath, "Buying path requires validation.");
-    assert.match(thesis.economicCase, /Economic impact remains speculative/);
+    assert.match(thesis.economicCase, /Manual close work can consume finance capacity/);
   });
 
   it("calculates higher confidence when more fields are validated", () => {
@@ -318,22 +326,71 @@ describe("generateOpportunityThesis", () => {
       }),
     );
 
-    assert.match(thesis.executiveSummary, /Cost justification remains incomplete/);
-    assert.match(thesis.executiveSummary, /Economic impact/);
+    assert.match(thesis.executiveSummary, /root cause is disconnected payment/);
+    assert.match(thesis.executiveSummary, /slower exception review/);
     assert.doesNotMatch(thesis.executiveSummary, /Additional validation is required before outreach/);
     assert.doesNotMatch(thesis.executiveSummary, /Champion:|Buyer:|Economic Buyer:/);
   });
 
-  it("generates a 4-6 sentence investment memo narrative", () => {
+  it("generates a 3-5 sentence executive briefing narrative", () => {
     const thesis = generateOpportunityThesis(input());
 
-    assert.ok(sentenceCount(thesis.executiveSummary) >= 4);
-    assert.ok(sentenceCount(thesis.executiveSummary) <= 6);
+    assert.ok(sentenceCount(thesis.executiveSummary) >= 3);
+    assert.ok(sentenceCount(thesis.executiveSummary) <= 5);
     assert.match(thesis.executiveSummary, /is relying on/);
-    assert.match(thesis.executiveSummary, /Workflow ownership appears/);
-    assert.match(thesis.executiveSummary, /close-cycle risk/);
+    assert.doesNotMatch(thesis.executiveSummary, /Workflow ownership maps/);
+    assert.doesNotMatch(thesis.executiveSummary, /Finance Ops Manager|Controller|CFO/);
+    assert.match(thesis.executiveSummary, /less dependable close handoffs/);
     assert.doesNotMatch(thesis.executiveSummary, /The likely champion is/);
     assert.doesNotMatch(thesis.executiveSummary, /Problem|Business Impact|Buyer Path|Economic Case/);
+  });
+
+  it("avoids weak qualification language in executive thesis copy", () => {
+    const thesis = generateOpportunityThesis(input());
+    const combinedCopy = [
+      thesis.executiveSummary,
+      thesis.economicCase,
+      thesis.whyCurrentSolutionFails,
+    ].join(" ");
+
+    assert.doesNotMatch(combinedCopy, /\bappears\b|\bseems\b|appears likely|appears validated|\bmay\b/i);
+    assert.doesNotMatch(
+      combinedCopy,
+      /Available evidence points to material economic impact|Economic impact appears likely|Economic impact remains speculative|budget ownership remains unresolved|budget ownership remains unclear/i,
+    );
+  });
+
+  it("keeps thesis sections concise with distinct executive purposes", () => {
+    const thesis = generateOpportunityThesis(input());
+    const combinedCopy = [
+      thesis.executiveSummary,
+      thesis.businessImpact,
+      thesis.economicCase,
+      thesis.whyNow,
+      thesis.whyCurrentSolutionFails,
+    ].join(" ");
+
+    assert.ok(sentenceCount(thesis.executiveSummary) >= 3);
+    assert.ok(sentenceCount(thesis.executiveSummary) <= 5);
+    assert.ok(sentenceCount(thesis.problem) <= 2);
+    assert.equal(sentenceCount(thesis.businessImpact), 1);
+    assert.ok(sentenceCount(thesis.economicCase) <= 2);
+    assert.equal(sentenceCount(thesis.whyNow), 1);
+    assert.equal(sentenceCount(thesis.whyCurrentSolutionFails), 1);
+
+    assert.doesNotMatch(
+      combinedCopy,
+      /revenue execution quality|material impact|appears likely|appears material|potential exposure/i,
+    );
+    assert.doesNotMatch(
+      thesis.executiveSummary,
+      new RegExp(escapeRegex(firstSentence(thesis.economicCase))),
+    );
+    assert.doesNotMatch(thesis.executiveSummary, new RegExp(escapeRegex(thesis.whyNow)));
+    assert.doesNotMatch(
+      thesis.executiveSummary,
+      new RegExp(escapeRegex(thesis.whyCurrentSolutionFails)),
+    );
   });
 
   it("splits problem into summary and supporting detail", () => {
@@ -366,7 +423,7 @@ describe("generateOpportunityThesis", () => {
       }),
     );
 
-    assert.match(thesis.executiveSummary, /Cost justification remains incomplete/);
+    assert.match(thesis.executiveSummary, /slower exception review/);
     assert.doesNotMatch(thesis.executiveSummary, /Additional validation is required before outreach/);
   });
 
@@ -502,7 +559,7 @@ describe("generateOpportunityThesis", () => {
 
     assert.equal(
       thesis.whyNow,
-      "Escalation delays negatively impact customer experience and team responsiveness.",
+      "Escalations degrade quickly when ownership waits across queues.",
     );
   });
 
@@ -637,7 +694,10 @@ describe("generateOpportunityThesis", () => {
       }),
     );
 
-    assert.equal(thesis.whyNow, "Audit preparation creates recurring compliance pressure.");
+    assert.equal(
+      thesis.whyNow,
+      "Audit and compliance requests arrive on fixed deadlines that leave little room for manual catch-up.",
+    );
   });
 
   it("differentiates sales ops narrative from generic spreadsheet fallback", () => {
@@ -671,12 +731,12 @@ describe("generateOpportunityThesis", () => {
     );
 
     assert.match(thesis.executiveSummary, /Sales Operations is trying to keep forecast inputs aligned/);
-    assert.match(thesis.executiveSummary, /Because revenue operations data is fragmented/);
+    assert.match(thesis.executiveSummary, /root cause is pipeline data changing/);
     assert.doesNotMatch(thesis.executiveSummary, /Manual spreadsheet coordination/);
-    assert.match(thesis.economicCase, /planning risk for revenue teams/);
+    assert.match(thesis.economicCase, /misallocate pipeline coverage/);
     assert.equal(
       thesis.whyNow,
-      "Forecast accuracy directly affects planning and revenue execution.",
+      "Forecast calls and pipeline reviews depend on current inputs before leadership commits the plan.",
     );
   });
 
@@ -711,11 +771,11 @@ describe("generateOpportunityThesis", () => {
     );
 
     assert.match(thesis.executiveSummary, /Customer Success is trying to understand renewal risk/);
-    assert.match(thesis.executiveSummary, /Because customer health data is spread/);
-    assert.match(thesis.economicCase, /potential churn exposure/);
+    assert.match(thesis.executiveSummary, /root cause is customer health data moving/);
+    assert.match(thesis.economicCase, /retention dollars/);
     assert.equal(
       thesis.whyNow,
-      "Renewal visibility gaps increase churn risk if left unresolved.",
+      "Renewal reviews are time-bound, so late risk discovery leaves fewer save options.",
     );
   });
 
@@ -752,12 +812,12 @@ describe("generateOpportunityThesis", () => {
       }),
     );
 
-    assert.match(thesis.executiveSummary, /Support Manager appears closest to the escalation workflow/);
-    assert.match(thesis.executiveSummary, /Because escalation ownership is not consistently tracked/);
-    assert.match(thesis.economicCase, /customer experience and capacity risk/);
+    assert.match(thesis.executiveSummary, /Support is managing escalation follow-up/);
+    assert.match(thesis.executiveSummary, /root cause is escalation ownership moving/);
+    assert.match(thesis.economicCase, /support capacity/);
     assert.equal(
       thesis.whyNow,
-      "Escalation delays negatively impact customer experience and team responsiveness.",
+      "Escalations degrade quickly when ownership waits across queues.",
     );
   });
 
@@ -808,9 +868,9 @@ describe("generateOpportunityThesis", () => {
       }),
     );
 
-    assert.match(validated.economicCase, /finance teams lose confidence in operating numbers/);
-    assert.match(partial.economicCase, /close-cycle risk/);
-    assert.match(missing.economicCase, /Close delays may create reporting risk/);
+    assert.match(validated.economicCase, /consumes finance capacity/);
+    assert.match(partial.economicCase, /Manual close work consumes finance capacity/);
+    assert.match(missing.economicCase, /Manual close work can consume finance capacity/);
   });
 
   it("uses explicit effort evidence in validated economic case", () => {
@@ -828,7 +888,7 @@ describe("generateOpportunityThesis", () => {
 
     assert.equal(
       thesis.economicCase,
-      "Economic impact appears validated. Manual work creates 10-15 hours per week of reporting overhead, which matters because close delays reduce operating visibility; exact cost ownership still needs confirmation.",
+      "Manual reconciliation consumes 10-15 hours per week that could be spent on close review and exception resolution. Impact validated; Economic ownership is mapped.",
     );
   });
 
@@ -869,9 +929,11 @@ describe("generateOpportunityThesis", () => {
       }),
     );
 
-    assert.match(high.economicCase, /^High|^Economic impact appears likely/);
-    assert.match(moderate.economicCase, /^Economic impact is emerging/);
-    assert.match(low.economicCase, /^Economic impact remains speculative/);
+    assert.match(high.economicCase, /^Manual close work consumes finance capacity/);
+    assert.match(moderate.economicCase, /^Manual close work consumes finance capacity/);
+    assert.match(low.economicCase, /^Manual close work can consume finance capacity/);
+    assert.match(high.economicCase, /Impact not fully validated/);
+    assert.match(low.economicCase, /Economic ownership still needs confirmation/);
   });
 
   it("keeps current solution failure distinct from problem framing", () => {
@@ -879,7 +941,7 @@ describe("generateOpportunityThesis", () => {
 
     assert.notEqual(thesis.problemSummary, thesis.whyCurrentSolutionFails);
     assert.match(thesis.problemSummary, /performed manually/);
-    assert.match(thesis.whyCurrentSolutionFails, /^Because .+, the team cannot .+, resulting in .+\.$/);
+    assert.match(thesis.whyCurrentSolutionFails, /^Because .+, .+ cannot .+\.$/);
   });
 
   it("generates distinct executive narrative openings by opportunity type", () => {
@@ -974,7 +1036,9 @@ describe("generateOpportunityThesis", () => {
       "Impact Validated",
       "Economic Impact Validated",
       "Buyer Validation Needed",
-      "Economic Validation Needed",
+      "Economic Impact Needed",
+      "Economic Ownership Validated",
+      "Economic Ownership Needed",
       "Cost Validation Needed",
     ]);
 
@@ -1001,19 +1065,20 @@ describe("generateOpportunityThesis", () => {
       }),
     );
 
-    assert.match(thesis.confidenceExplanation, /evidence quality/);
+    assert.match(thesis.confidenceExplanation, /remaining gaps: economic impact validation/);
     assert.deepEqual(
       thesis.healthIndicators.map((indicator) => indicator.label),
       [
         "Problem Validated",
         "Buyer Identified",
         "Impact Validated",
-        "Economic Validation Needed",
+        "Economic Impact Needed",
+        "Economic Ownership Validated",
       ],
     );
     assert.deepEqual(
       thesis.healthIndicators.map((indicator) => indicator.status),
-      ["validated", "validated", "validated", "warning"],
+      ["validated", "validated", "validated", "warning", "validated"],
     );
   });
 
