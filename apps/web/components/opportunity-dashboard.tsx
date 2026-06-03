@@ -214,6 +214,35 @@ function getActivationDecisionMeaning(decision: string) {
   return "Signals are emerging, but qualification evidence remains incomplete.";
 }
 
+function getMarketValidationScoreClassName(score: number) {
+  if (score >= 75) {
+    return "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300";
+  }
+
+  if (score >= 45) {
+    return "bg-amber-100 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300";
+  }
+
+  return "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300";
+}
+
+function formatMarketValidationSourceLabel(source: string) {
+  if (source === "g2") return "G2";
+  if (source === "hackernews") return "Hacker News";
+  if (source === "forum") return "Forum";
+  return source.charAt(0).toUpperCase() + source.slice(1);
+}
+
+function getMarketValidationSources(item: OpportunityDashboardItem) {
+  return [
+    { label: "Reddit", count: item.marketValidation.sourceBreakdown.reddit },
+    { label: "G2", count: item.marketValidation.sourceBreakdown.g2 },
+    { label: "Capterra", count: item.marketValidation.sourceBreakdown.capterra },
+    { label: "Hacker News", count: item.marketValidation.sourceBreakdown.hackernews },
+    { label: "Forums", count: item.marketValidation.sourceBreakdown.forums },
+  ].filter((source) => source.count > 0);
+}
+
 function getActivationDecisionDisplayReason(item: OpportunityDashboardItem) {
   const decision = item.activationDecision.activationDecision;
   const primaryBlocker = item.opportunityReadiness.blockers[0]?.name;
@@ -398,6 +427,9 @@ export function OpportunityDashboard({
   const [collapsedOpportunityTheses, setCollapsedOpportunityTheses] = useState<Set<string>>(
     () => new Set(),
   );
+  const [collapsedMarketValidations, setCollapsedMarketValidations] = useState<Set<string>>(
+    () => new Set(),
+  );
   const [toggledEvidencePackSections, setToggledEvidencePackSections] = useState<Set<string>>(
     () => new Set(),
   );
@@ -452,6 +484,22 @@ export function OpportunityDashboard({
 
   function toggleOpportunityThesis(opportunityId: string) {
     setCollapsedOpportunityTheses((current) => {
+      const nextSections = new Set(current);
+      if (nextSections.has(opportunityId)) {
+        nextSections.delete(opportunityId);
+      } else {
+        nextSections.add(opportunityId);
+      }
+      return nextSections;
+    });
+  }
+
+  function isMarketValidationExpanded(opportunityId: string) {
+    return !collapsedMarketValidations.has(opportunityId);
+  }
+
+  function toggleMarketValidation(opportunityId: string) {
+    setCollapsedMarketValidations((current) => {
       const nextSections = new Set(current);
       if (nextSections.has(opportunityId)) {
         nextSections.delete(opportunityId);
@@ -1288,6 +1336,154 @@ export function OpportunityDashboard({
                                   {item.opportunityThesis.whyCurrentSolutionFails}
                                 </p>
                               </div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })()}
+                  </div>
+
+                  <div className="rounded-xl border border-zinc-200 bg-zinc-50/80 p-2.5 dark:border-zinc-800 dark:bg-zinc-900/60">
+                    {(() => {
+                      const isExpanded = isMarketValidationExpanded(item.id);
+                      const sources = getMarketValidationSources(item);
+
+                      return (
+                        <div className="text-xs text-zinc-500 dark:text-zinc-400">
+                          <div className="flex items-start justify-between gap-2">
+                            <div>
+                              <h3 className="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+                                Market Validation
+                              </h3>
+                              <div className="mt-1 flex flex-wrap items-center gap-2">
+                                <span
+                                  className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${getMarketValidationScoreClassName(
+                                    item.marketValidation.evidenceScore,
+                                  )}`}
+                                >
+                                  Evidence Score: {item.marketValidation.evidenceScore}/100
+                                </span>
+                                <span className="font-medium text-zinc-800 dark:text-zinc-100">
+                                  Market Signal: {item.marketValidation.marketSignal}
+                                </span>
+                                <span className="font-medium text-zinc-800 dark:text-zinc-100">
+                                  {item.marketValidation.complaintCount}{" "}
+                                  {item.marketValidation.complaintCount === 1
+                                    ? "complaint"
+                                    : "complaints"}{" "}
+                                  found
+                                </span>
+                                <span>
+                                  {item.marketValidation.evidenceSources.length} evidence sources
+                                </span>
+                              </div>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => toggleMarketValidation(item.id)}
+                              className="inline-flex shrink-0 items-center gap-1 rounded-full bg-white px-2 py-0.5 text-[11px] font-semibold text-zinc-600 transition-colors hover:bg-zinc-100 dark:bg-zinc-950 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                              aria-expanded={isExpanded}
+                            >
+                              <span
+                                className={`transition-transform duration-200 ${
+                                  isExpanded ? "rotate-180" : "rotate-0"
+                                }`}
+                              >
+                                ▾
+                              </span>
+                              {isExpanded ? "Collapse" : "Expand"}
+                            </button>
+                          </div>
+
+                          <div
+                            className={`grid transition-[grid-template-rows,opacity] duration-200 ease-out ${
+                              isExpanded
+                                ? "grid-rows-[1fr] opacity-100"
+                                : "grid-rows-[0fr] opacity-0"
+                            }`}
+                          >
+                            <div className="overflow-hidden">
+                              {item.marketValidation.complaintCount === 0 ? (
+                                <p className="mt-2 rounded-xl border border-zinc-200 bg-white/70 p-2 font-medium text-zinc-600 dark:border-zinc-800 dark:bg-zinc-950/60 dark:text-zinc-300">
+                                  No external market evidence generated yet.
+                                </p>
+                              ) : (
+                                <div className="mt-2 space-y-2.5">
+                                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+                                    <div className="rounded-xl border border-zinc-200 bg-white/70 p-2 dark:border-zinc-800 dark:bg-zinc-950/60">
+                                      <p className="font-medium text-zinc-700 dark:text-zinc-200">
+                                        Sources
+                                      </p>
+                                      <dl className="mt-1 space-y-1">
+                                        {sources.map((source) => (
+                                          <div
+                                            key={source.label}
+                                            className="flex items-center justify-between gap-3"
+                                          >
+                                            <dt>{source.label}</dt>
+                                            <dd className="font-semibold text-zinc-700 dark:text-zinc-200">
+                                              {source.count}
+                                            </dd>
+                                          </div>
+                                        ))}
+                                      </dl>
+                                    </div>
+                                    <div className="rounded-xl border border-zinc-200 bg-white/70 p-2 dark:border-zinc-800 dark:bg-zinc-950/60 sm:col-span-2">
+                                      <p className="font-medium text-zinc-700 dark:text-zinc-200">
+                                        Top Themes
+                                      </p>
+                                      <div className="mt-1.5 flex flex-wrap gap-1.5">
+                                        {item.marketValidation.topThemes.map((theme) => (
+                                          <span
+                                            key={theme}
+                                            className="rounded-full bg-zinc-100 px-2 py-0.5 text-[11px] font-medium text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300"
+                                          >
+                                            {theme}
+                                          </span>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  <div className="rounded-xl border border-zinc-200 bg-white/70 p-2 dark:border-zinc-800 dark:bg-zinc-950/60">
+                                    <p className="font-medium text-zinc-700 dark:text-zinc-200">
+                                      Representative Examples
+                                    </p>
+                                    <ul className="mt-1.5 list-disc space-y-1.5 pl-4">
+                                      {item.marketValidation.painExamples
+                                        .slice(0, 3)
+                                        .map((example) => (
+                                          <li key={example}>{example}</li>
+                                        ))}
+                                    </ul>
+                                  </div>
+
+                                  <div className="rounded-xl border border-zinc-200 bg-white/70 p-2 dark:border-zinc-800 dark:bg-zinc-950/60">
+                                    <p className="font-medium text-zinc-700 dark:text-zinc-200">
+                                      Evidence Sources
+                                    </p>
+                                    <ul className="mt-1.5 space-y-2.5">
+                                      {item.marketValidation.evidenceSources.slice(0, 5).map((source) => (
+                                        <li
+                                          key={`${source.source}:${source.identifier}`}
+                                          className="min-w-0 rounded-lg border border-zinc-100 bg-zinc-50/70 p-2 dark:border-zinc-900 dark:bg-zinc-900/50"
+                                          title={source.url}
+                                        >
+                                          <p className="text-[11px] font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+                                            [{formatMarketValidationSourceLabel(source.source)}]
+                                          </p>
+                                          <p className="mt-1 text-zinc-700 dark:text-zinc-200">
+                                            {source.excerpt || source.title || source.identifier}
+                                          </p>
+                                          <p className="mt-1.5 break-words text-[10px] font-medium leading-snug text-zinc-400 dark:text-zinc-500">
+                                            Evidence ID: {source.identifier}
+                                          </p>
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                </div>
+                              )}
                             </div>
                           </div>
                         </div>

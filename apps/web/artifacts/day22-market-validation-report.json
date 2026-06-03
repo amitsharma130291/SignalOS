@@ -1,0 +1,426 @@
+{
+  "generatedAt": "2026-06-03T00:32:16.793Z",
+  "mode": "mock-first",
+  "externalCalls": false,
+  "cases": [
+    {
+      "name": "Finance",
+      "queries": [
+        "stripe netsuite reconciliation spreadsheet",
+        "month end close manual reconciliation",
+        "finance operations payout reconciliation"
+      ],
+      "complaintCount": 6,
+      "evidenceScore": 83,
+      "marketSignal": "Moderate",
+      "themes": [
+        "Reconciliation mismatch",
+        "Spreadsheet tracking",
+        "Reporting delays",
+        "Manual cleanup",
+        "Fragmented systems"
+      ],
+      "sourceBreakdown": {
+        "reddit": 2,
+        "g2": 1,
+        "capterra": 1,
+        "hackernews": 1,
+        "forums": 1
+      },
+      "representativeExamples": [
+        "Finance teams report payout mismatches across Stripe and NetSuite.",
+        "Month-end close is delayed by manual spreadsheet reconciliation.",
+        "Payout exceptions require manual cleanup before finance can finish reporting."
+      ],
+      "sourceUrls": [
+        "mock://reddit/finance-stripe-netsuite-reconciliation",
+        "mock://g2/finance-month-end-close-spreadsheets",
+        "mock://forum/finance-payout-mismatch-cleanup",
+        "mock://capterra/finance-ledger-reconciliation",
+        "mock://hackernews/finance-close-spreadsheet-tracking",
+        "mock://reddit/finance-payout-exception-thread"
+      ],
+      "evidenceSources": [
+        {
+          "source": "reddit",
+          "title": "Stripe and NetSuite payout reconciliation",
+          "identifier": "finance-stripe-netsuite-reconciliation",
+          "url": "mock://reddit/finance-stripe-netsuite-reconciliation",
+          "excerpt": "Finance teams report payout mismatches across Stripe and NetSuite.",
+          "confidence": 0.7
+        },
+        {
+          "source": "g2",
+          "title": "Month-end close spreadsheet reconciliation",
+          "identifier": "finance-month-end-close-spreadsheets",
+          "url": "mock://g2/finance-month-end-close-spreadsheets",
+          "excerpt": "Month-end close is delayed by manual spreadsheet reconciliation.",
+          "confidence": 0.9
+        },
+        {
+          "source": "forum",
+          "title": "Payout mismatch workflow",
+          "identifier": "finance-payout-mismatch-cleanup",
+          "url": "mock://forum/finance-payout-mismatch-cleanup",
+          "excerpt": "Payout exceptions require manual cleanup before finance can finish reporting.",
+          "confidence": 0.7
+        },
+        {
+          "source": "capterra",
+          "title": "Finance reconciliation review",
+          "identifier": "finance-ledger-reconciliation",
+          "url": "mock://capterra/finance-ledger-reconciliation",
+          "excerpt": "Teams compare payment processor exports with ledger entries to find reconciliation mismatches.",
+          "confidence": 0.9
+        },
+        {
+          "source": "hackernews",
+          "title": "Spreadsheet close operations",
+          "identifier": "finance-close-spreadsheet-tracking",
+          "url": "mock://hackernews/finance-close-spreadsheet-tracking",
+          "excerpt": "Spreadsheet tracking creates reporting delays when close tasks move across owners.",
+          "confidence": 0.8
+        },
+        {
+          "source": "reddit",
+          "title": "Finance payout exception thread",
+          "identifier": "finance-payout-exception-thread",
+          "url": "mock://reddit/finance-payout-exception-thread",
+          "excerpt": "Finance operators describe manual payout reconciliation as the recurring close bottleneck.",
+          "confidence": 0.7
+        }
+      ]
+    },
+    {
+      "name": "Sales Ops",
+      "queries": [
+        "sales forecast spreadsheet reconciliation",
+        "hubspot salesforce forecast mismatch",
+        "revops forecast data cleanup"
+      ],
+      "complaintCount": 6,
+      "evidenceScore": 93,
+      "marketSignal": "Strong",
+      "themes": [
+        "Spreadsheet tracking",
+        "Forecast accuracy",
+        "Manual cleanup",
+        "Fragmented systems"
+      ],
+      "sourceBreakdown": {
+        "reddit": 1,
+        "g2": 2,
+        "capterra": 1,
+        "hackernews": 1,
+        "forums": 1
+      },
+      "representativeExamples": [
+        "Sales teams reconcile forecast spreadsheets after Salesforce and HubSpot disagree.",
+        "Forecast accuracy drops when CRM fields need manual cleanup before pipeline review.",
+        "RevOps teams spend hours cleaning pipeline data across sales systems."
+      ],
+      "sourceUrls": [
+        "mock://reddit/sales-forecast-spreadsheet-reconciliation",
+        "mock://g2/sales-crm-forecast-mismatch",
+        "mock://forum/revops-pipeline-data-cleanup",
+        "mock://capterra/sales-forecast-governance",
+        "mock://hackernews/sales-forecast-fragmented-systems",
+        "mock://g2/sales-forecast-spreadsheet-review"
+      ],
+      "evidenceSources": [
+        {
+          "source": "reddit",
+          "title": "Sales forecast spreadsheet reconciliation",
+          "identifier": "sales-forecast-spreadsheet-reconciliation",
+          "url": "mock://reddit/sales-forecast-spreadsheet-reconciliation",
+          "excerpt": "Sales teams reconcile forecast spreadsheets after Salesforce and HubSpot disagree.",
+          "confidence": 0.7
+        },
+        {
+          "source": "g2",
+          "title": "CRM forecast mismatch",
+          "identifier": "sales-crm-forecast-mismatch",
+          "url": "mock://g2/sales-crm-forecast-mismatch",
+          "excerpt": "Forecast accuracy drops when CRM fields need manual cleanup before pipeline review.",
+          "confidence": 0.9
+        },
+        {
+          "source": "forum",
+          "title": "RevOps data cleanup",
+          "identifier": "revops-pipeline-data-cleanup",
+          "url": "mock://forum/revops-pipeline-data-cleanup",
+          "excerpt": "RevOps teams spend hours cleaning pipeline data across sales systems.",
+          "confidence": 0.7
+        },
+        {
+          "source": "capterra",
+          "title": "Forecast governance",
+          "identifier": "sales-forecast-governance",
+          "url": "mock://capterra/sales-forecast-governance",
+          "excerpt": "Manual cleanup is required when sales stages differ across HubSpot and Salesforce.",
+          "confidence": 0.9
+        },
+        {
+          "source": "hackernews",
+          "title": "Fragmented GTM systems",
+          "identifier": "sales-forecast-fragmented-systems",
+          "url": "mock://hackernews/sales-forecast-fragmented-systems",
+          "excerpt": "Fragmented systems make weekly forecast calls depend on spreadsheet tracking.",
+          "confidence": 0.8
+        },
+        {
+          "source": "g2",
+          "title": "Forecast spreadsheet review",
+          "identifier": "sales-forecast-spreadsheet-review",
+          "url": "mock://g2/sales-forecast-spreadsheet-review",
+          "excerpt": "Sales managers describe forecast review as a cleanup exercise across CRM exports.",
+          "confidence": 0.9
+        }
+      ]
+    },
+    {
+      "name": "Customer Success",
+      "queries": [
+        "renewal spreadsheet salesforce slack",
+        "customer success renewal visibility gaps",
+        "customer health data spreadsheet"
+      ],
+      "complaintCount": 6,
+      "evidenceScore": 83,
+      "marketSignal": "Moderate",
+      "themes": [
+        "Spreadsheet tracking",
+        "Renewal visibility",
+        "Fragmented systems"
+      ],
+      "sourceBreakdown": {
+        "reddit": 1,
+        "g2": 1,
+        "capterra": 1,
+        "hackernews": 1,
+        "forums": 2
+      },
+      "representativeExamples": [
+        "Customer Success teams track renewals in spreadsheets because Salesforce context is incomplete.",
+        "Renewal visibility suffers when customer health data sits across Slack and Salesforce.",
+        "Teams miss renewal risk signals when account notes and health scores live in fragmented systems."
+      ],
+      "sourceUrls": [
+        "mock://reddit/cs-renewal-spreadsheet-tracking",
+        "mock://g2/cs-customer-health-visibility",
+        "mock://forum/cs-renewal-risk-fragmented-systems",
+        "mock://capterra/cs-health-score-spreadsheet",
+        "mock://hackernews/cs-slack-renewal-context",
+        "mock://forum/cs-renewal-risk-spreadsheet-backup"
+      ],
+      "evidenceSources": [
+        {
+          "source": "reddit",
+          "title": "Renewal tracking spreadsheet",
+          "identifier": "cs-renewal-spreadsheet-tracking",
+          "url": "mock://reddit/cs-renewal-spreadsheet-tracking",
+          "excerpt": "Customer Success teams track renewals in spreadsheets because Salesforce context is incomplete.",
+          "confidence": 0.7
+        },
+        {
+          "source": "g2",
+          "title": "Customer health visibility",
+          "identifier": "cs-customer-health-visibility",
+          "url": "mock://g2/cs-customer-health-visibility",
+          "excerpt": "Renewal visibility suffers when customer health data sits across Slack and Salesforce.",
+          "confidence": 0.9
+        },
+        {
+          "source": "forum",
+          "title": "CS renewal risk review",
+          "identifier": "cs-renewal-risk-fragmented-systems",
+          "url": "mock://forum/cs-renewal-risk-fragmented-systems",
+          "excerpt": "Teams miss renewal risk signals when account notes and health scores live in fragmented systems.",
+          "confidence": 0.7
+        },
+        {
+          "source": "capterra",
+          "title": "Health score spreadsheet",
+          "identifier": "cs-health-score-spreadsheet",
+          "url": "mock://capterra/cs-health-score-spreadsheet",
+          "excerpt": "Spreadsheet tracking becomes the backup process for customer health reviews.",
+          "confidence": 0.9
+        },
+        {
+          "source": "hackernews",
+          "title": "Slack renewal context",
+          "identifier": "cs-slack-renewal-context",
+          "url": "mock://hackernews/cs-slack-renewal-context",
+          "excerpt": "Renewal handoffs break when Slack context is not connected to CRM account records.",
+          "confidence": 0.8
+        },
+        {
+          "source": "forum",
+          "title": "Renewal risk spreadsheet backup",
+          "identifier": "cs-renewal-risk-spreadsheet-backup",
+          "url": "mock://forum/cs-renewal-risk-spreadsheet-backup",
+          "excerpt": "Customer Success teams use spreadsheet trackers when renewal health views are incomplete.",
+          "confidence": 0.7
+        }
+      ]
+    },
+    {
+      "name": "Support",
+      "queries": [
+        "zendesk escalation spreadsheet ownership",
+        "support escalation ownership unclear",
+        "missed escalations support operations"
+      ],
+      "complaintCount": 5,
+      "evidenceScore": 75,
+      "marketSignal": "Moderate",
+      "themes": [
+        "Spreadsheet tracking",
+        "Escalation ownership",
+        "Manual cleanup",
+        "Fragmented systems"
+      ],
+      "sourceBreakdown": {
+        "reddit": 1,
+        "g2": 1,
+        "capterra": 1,
+        "hackernews": 1,
+        "forums": 1
+      },
+      "representativeExamples": [
+        "Support teams use spreadsheets to track Zendesk escalation ownership.",
+        "Urgent tickets get missed when escalation ownership is unclear across Slack and Zendesk.",
+        "Support operations teams manually follow up on escalations because spreadsheet tracking drifts."
+      ],
+      "sourceUrls": [
+        "mock://reddit/support-zendesk-escalation-ownership",
+        "mock://g2/support-missed-urgent-tickets",
+        "mock://forum/support-escalation-spreadsheet-tracking",
+        "mock://capterra/support-escalation-handoff-gaps",
+        "mock://hackernews/support-queue-ownership"
+      ],
+      "evidenceSources": [
+        {
+          "source": "reddit",
+          "title": "Zendesk escalation ownership",
+          "identifier": "support-zendesk-escalation-ownership",
+          "url": "mock://reddit/support-zendesk-escalation-ownership",
+          "excerpt": "Support teams use spreadsheets to track Zendesk escalation ownership.",
+          "confidence": 0.7
+        },
+        {
+          "source": "g2",
+          "title": "Missed urgent tickets",
+          "identifier": "support-missed-urgent-tickets",
+          "url": "mock://g2/support-missed-urgent-tickets",
+          "excerpt": "Urgent tickets get missed when escalation ownership is unclear across Slack and Zendesk.",
+          "confidence": 0.9
+        },
+        {
+          "source": "forum",
+          "title": "Support operations escalation tracking",
+          "identifier": "support-escalation-spreadsheet-tracking",
+          "url": "mock://forum/support-escalation-spreadsheet-tracking",
+          "excerpt": "Support operations teams manually follow up on escalations because spreadsheet tracking drifts.",
+          "confidence": 0.7
+        },
+        {
+          "source": "capterra",
+          "title": "Escalation handoff gaps",
+          "identifier": "support-escalation-handoff-gaps",
+          "url": "mock://capterra/support-escalation-handoff-gaps",
+          "excerpt": "Escalation handoffs break when ticket owners change outside the support system.",
+          "confidence": 0.9
+        },
+        {
+          "source": "hackernews",
+          "title": "Support queue ownership",
+          "identifier": "support-queue-ownership",
+          "url": "mock://hackernews/support-queue-ownership",
+          "excerpt": "Fragmented systems make it hard to see who owns the next escalation action.",
+          "confidence": 0.8
+        }
+      ]
+    },
+    {
+      "name": "Operations",
+      "queries": [
+        "compliance reporting spreadsheet audit prep",
+        "audit evidence collection spreadsheets",
+        "manual compliance reporting internal systems"
+      ],
+      "complaintCount": 5,
+      "evidenceScore": 75,
+      "marketSignal": "Moderate",
+      "themes": [
+        "Spreadsheet tracking",
+        "Audit preparation",
+        "Reporting delays",
+        "Manual cleanup",
+        "Fragmented systems"
+      ],
+      "sourceBreakdown": {
+        "reddit": 1,
+        "g2": 1,
+        "capterra": 1,
+        "hackernews": 1,
+        "forums": 1
+      },
+      "representativeExamples": [
+        "Operations teams collect audit evidence in spreadsheets before compliance reviews.",
+        "Manual compliance reporting requires evidence collection across internal systems.",
+        "Audit preparation slows down when owners update evidence in separate spreadsheets."
+      ],
+      "sourceUrls": [
+        "mock://reddit/operations-audit-prep-spreadsheets",
+        "mock://g2/operations-manual-compliance-reporting",
+        "mock://forum/operations-audit-evidence-collection",
+        "mock://capterra/operations-compliance-status",
+        "mock://hackernews/operations-audit-trail-cleanup"
+      ],
+      "evidenceSources": [
+        {
+          "source": "reddit",
+          "title": "Audit prep spreadsheet evidence",
+          "identifier": "operations-audit-prep-spreadsheets",
+          "url": "mock://reddit/operations-audit-prep-spreadsheets",
+          "excerpt": "Operations teams collect audit evidence in spreadsheets before compliance reviews.",
+          "confidence": 0.7
+        },
+        {
+          "source": "g2",
+          "title": "Manual compliance reporting",
+          "identifier": "operations-manual-compliance-reporting",
+          "url": "mock://g2/operations-manual-compliance-reporting",
+          "excerpt": "Manual compliance reporting requires evidence collection across internal systems.",
+          "confidence": 0.9
+        },
+        {
+          "source": "forum",
+          "title": "Audit evidence collection",
+          "identifier": "operations-audit-evidence-collection",
+          "url": "mock://forum/operations-audit-evidence-collection",
+          "excerpt": "Audit preparation slows down when owners update evidence in separate spreadsheets.",
+          "confidence": 0.7
+        },
+        {
+          "source": "capterra",
+          "title": "Compliance workflow status",
+          "identifier": "operations-compliance-status",
+          "url": "mock://capterra/operations-compliance-status",
+          "excerpt": "Spreadsheet tracking makes compliance status hard to reconcile before audit deadlines.",
+          "confidence": 0.9
+        },
+        {
+          "source": "hackernews",
+          "title": "Internal systems audit trail",
+          "identifier": "operations-audit-trail-cleanup",
+          "url": "mock://hackernews/operations-audit-trail-cleanup",
+          "excerpt": "Fragmented systems create manual cleanup for audit trails and evidence requests.",
+          "confidence": 0.8
+        }
+      ]
+    }
+  ],
+  "passed": true
+}

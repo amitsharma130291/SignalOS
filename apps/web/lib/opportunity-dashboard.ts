@@ -39,6 +39,10 @@ import {
   generateValidationTasks,
   type ValidationTask,
 } from "./validation-task-router.ts";
+import {
+  generateMarketValidation,
+  type MarketValidation,
+} from "./market-validation.ts";
 
 type RawInputForOpportunity = {
   rawText?: string | null;
@@ -127,6 +131,7 @@ export type OpportunityDashboardItem = {
   activationDecision: ActivationDecisionResult;
   validationTasks: ValidationTask[];
   opportunityThesis: OpportunityThesis;
+  marketValidation: MarketValidation;
   opportunityReadiness: OpportunityReadiness;
   buyerMapping: BuyerMapping;
   founderConviction: number | null;
@@ -340,6 +345,14 @@ export function shapeOpportunity(signal: PainSignalForOpportunity): OpportunityD
     buyerMapping,
     solutionGapAnalysis,
   });
+  const marketValidation = generateMarketValidation({
+    rawText: signal.rawInput?.rawText,
+    pain,
+    affectedTeam,
+    currentSolution,
+    solutionGap,
+    opportunityThesis,
+  });
 
   return {
     id: signal.id,
@@ -366,6 +379,7 @@ export function shapeOpportunity(signal: PainSignalForOpportunity): OpportunityD
     activationDecision,
     validationTasks,
     opportunityThesis,
+    marketValidation,
     opportunityReadiness,
     buyerMapping,
     founderConviction: signal.founderConviction ?? null,
